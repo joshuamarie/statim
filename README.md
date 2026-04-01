@@ -55,6 +55,13 @@ pak::pak("joshuamarie/statim")
 
 MIT © Joshua Marie
 
+## Contributing
+
+We are sincerely grateful for contributions; they are beneficial for
+the project and for us as maintainers. Please read
+[CONTRIBUTING.md](CONTRIBUTING.md) for development setup, pull request
+guidelines, and workflow notes.
+
 ## Code of Conduct
 
 Please note that the statim project is released with a [Contributor Code
