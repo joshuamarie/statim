@@ -18,13 +18,13 @@ A function with signature
 \verb{function(.model, .data, ..., .extra_defs)}.
 }
 \description{
-\code{new_htest_fn()} is a developer-interface function, a constructor for user-facing
+\code{HTEST_FN()} is a developer-interface function, a constructor for user-facing
 test functions like \code{\link[=TTEST]{TTEST()}}. It returns a function with a consistent
 signature that routes to the correct implementation based on the model ID
 and method variant.
 }
 \examples{
-MY_TEST = new_htest_fn(
+MY_TEST = HTEST_FN(
     cls = "mytest",
     defs = list(my_def_two),
     .name = "My Test"
