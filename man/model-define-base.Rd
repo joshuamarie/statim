@@ -13,6 +13,32 @@ define_model(.x, ...)
 
 \method{define_model}{data.frame}(.x, to_analyze, ...)
 }
+\arguments{
+\item{.x}{A model ID object from \code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, \code{\link[=pairwise]{pairwise()}}, or a
+formula — \strong{or} a data frame when using the data-first pipe style.}
+
+\item{...}{Currently unused.}
+
+\item{data}{A data frame. When called on a model-ID object this defaults to
+\code{parent.frame()}, resolving bare variable names against the calling
+environment. When calling on a data frame, pass the model ID as
+\code{to_analyze}.}
+
+\item{to_analyze}{A model ID or formula (only used in the
+\code{define_model.data.frame} method).}
+}
+\value{
+A \code{def_model} S3 object containing \code{model_id} and \code{processed}.
+}
 \description{
-Model define constructor
+\code{define_model()} captures a model ID and optional data into a \code{def_model}
+object that can be passed into \code{\link[=prepare_test]{prepare_test()}}.
+}
+\examples{
+# model-ID first
+define_model(x_by(extra, group), sleep)
+
+# data-frame first (pipe-friendly)
+sleep |> define_model(x_by(extra, group))
+
 }

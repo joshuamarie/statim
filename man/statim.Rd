@@ -4,12 +4,17 @@
 \name{statim}
 \alias{statim-package}
 \alias{statim}
-\title{statim: Higer Level Interface for Statistical Inference}
+\title{statim: Higher Level Interface for Statistical Inference}
 \description{
 This is a high-level package, attempting the re-imagination of "grammar of statistical inference" framework in a package, mixing with 'ggplot2' / 'tidyverse' paradigm.
 }
 \author{
 \strong{Maintainer}: Joshua Marie \email{joshua.marie.k@gmail.com}
+
+Authors:
+\itemize{
+  \item Antoine Soetewey \email{antoine.soetewey@uclouvain.be} (\href{https://orcid.org/0000-0001-8159-0804}{ORCID})
+}
 
 }
 \keyword{internal}

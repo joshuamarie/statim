@@ -4,7 +4,7 @@
 \alias{conclude}
 \alias{conclude.test_lazy}
 \alias{conclude.engine_set}
-\title{Running conclusions with \code{conclude()}}
+\title{Execute a lazy test pipeline}
 \usage{
 conclude(.x, ...)
 
@@ -12,12 +12,42 @@ conclude(.x, ...)
 
 \method{conclude}{engine_set}(.x, ...)
 }
+\arguments{
+\item{.x}{A \code{test_lazy} or \code{engine_set} object produced by
+\code{\link[=prepare_test]{prepare_test()}} (optionally followed by \code{\link[=through]{through()}} and/or \code{\link[=via]{via()}}).}
+
+\item{...}{Currently unused.}
+}
+\value{
+An \code{htest_spec} S3 object.
+}
 \description{
-Executing the "lazy" pipeline to return the test you want to perform.
+\code{conclude()} is the terminal step of the pipeline. It resolves the
+method variant and engine, builds the execution context, runs the
+implementation, and returns an \code{htest_spec} object.
 }
 \details{
-Everything is same as using \link[=eager-exec-test]{\code{run_test()}}, except you are allowed
-to write the whole pipeline, which it directly executes the test implementation, and after
-writing some recalibrations, e.g. using \code{\link[=via]{via()}} to switch from the classical method to
-a certain type of method such as bootstrapping.
+The engine and method variant are resolved in this order:
+\enumerate{
+\item If \code{\link[=via]{via()}} was called, its \code{method_name} and \code{engine} win.
+\item If \code{\link[=through]{through()}} was called (producing an \code{engine_set}), its engine is
+used with method \code{""} (the classical path).
+\item Otherwise \code{engine = "default"} and \code{method = ""} are used.
+}
+}
+\examples{
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    conclude()
+
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    via("boot", n = 2000) |>
+    conclude()
+
+}
+\seealso{
+\code{\link[=prepare_test]{prepare_test()}}, \code{\link[=through]{through()}}, \code{\link[=via]{via()}}, \code{\link[=HTEST_FN]{HTEST_FN()}}
 }

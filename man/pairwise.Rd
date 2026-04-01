@@ -6,6 +6,22 @@
 \usage{
 pairwise(..., direction = "lt")
 }
+\arguments{
+\item{...}{Bare variable names to pair up.}
+
+\item{direction}{A string controlling which pairs are kept. One of
+\code{"lt"} (default, strict lower-triangle), \code{"lteq"}, \code{"gt"}, \code{"gteq"},
+\code{"eq"}, \code{"neq"}, or \code{"all"}.}
+}
+\value{
+A \code{pairwise} / \code{model_id} S3 object.
+}
 \description{
-Use this when you want to define the pairwise relationship.
+Use this when you want to define all pairwise combinations of a set of
+variables.
+}
+\examples{
+pairwise(a, b, c)
+pairwise(a, b, c, direction = "all")
+
 }

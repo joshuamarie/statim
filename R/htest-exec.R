@@ -1,12 +1,35 @@
-#' Running conclusions with `conclude()`
+#' Execute a lazy test pipeline
 #'
-#' Executing the "lazy" pipeline to return the test you want to perform.
+#' `conclude()` is the terminal step of the pipeline. It resolves the
+#' method variant and engine, builds the execution context, runs the
+#' implementation, and returns an `htest_spec` object.
+#'
+#' @param .x A `test_lazy` or `engine_set` object produced by
+#'   [prepare_test()] (optionally followed by [through()] and/or [via()]).
+#' @param ... Currently unused.
+#'
+#' @return An `htest_spec` S3 object.
 #'
 #' @details
-#' Everything is same as using \link[=eager-exec-test]{`run_test()`}, except you are allowed
-#' to write the whole pipeline, which it directly executes the test implementation, and after
-#' writing some recalibrations, e.g. using [via()] to switch from the classical method to
-#' a certain type of method such as bootstrapping.
+#' The engine and method variant are resolved in this order:
+#' 1. If [via()] was called, its `method_name` and `engine` win.
+#' 2. If [through()] was called (producing an `engine_set`), its engine is
+#'    used with method `""` (the classical path).
+#' 3. Otherwise `engine = "default"` and `method = ""` are used.
+#'
+#' @seealso [prepare_test()], [through()], [via()], [HTEST_FN()]
+#'
+#' @examples
+#' sleep |>
+#'     define_model(x_by(extra, group)) |>
+#'     prepare_test(TTEST) |>
+#'     conclude()
+#'
+#' sleep |>
+#'     define_model(x_by(extra, group)) |>
+#'     prepare_test(TTEST) |>
+#'     via("boot", n = 2000) |>
+#'     conclude()
 #'
 #' @export
 conclude = function(.x, ...) {

@@ -75,7 +75,7 @@ build_htest = function(defs, args, cls, model_id, .data = NULL, .name) {
     lookup = build_lookup(defs)
 
     if (!is.null(model_id)) {
-        run_htest(lookup, args, cls, model_id, .data, .name)
+        run_htest(defs, args, cls, model_id, .data, .name)
     } else {
         defer_htest(lookup, args, cls, defs, .name)
     }

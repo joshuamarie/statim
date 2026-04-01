@@ -1,5 +1,27 @@
 #' Model define constructor
 #'
+#' `define_model()` captures a model ID and optional data into a `def_model`
+#' object that can be passed into [prepare_test()].
+#'
+#' @param .x A model ID object from [x_by()], [rel()], [pairwise()], or a
+#'   formula — **or** a data frame when using the data-first pipe style.
+#' @param data A data frame. When called on a model-ID object this defaults to
+#'   `parent.frame()`, resolving bare variable names against the calling
+#'   environment. When calling on a data frame, pass the model ID as
+#'   `to_analyze`.
+#' @param to_analyze A model ID or formula (only used in the
+#'   `define_model.data.frame` method).
+#' @param ... Currently unused.
+#'
+#' @return A `def_model` S3 object containing `model_id` and `processed`.
+#'
+#' @examples
+#' # model-ID first
+#' define_model(x_by(extra, group), sleep)
+#'
+#' # data-frame first (pipe-friendly)
+#' sleep |> define_model(x_by(extra, group))
+#'
 #' @name model-define-base
 #' @export
 define_model = function(.x, ...) {

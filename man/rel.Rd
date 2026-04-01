@@ -6,6 +6,18 @@
 \usage{
 rel(x, resp)
 }
+\arguments{
+\item{x}{The predictor variable (bare name).}
+
+\item{resp}{The response variable (bare name).}
+}
+\value{
+A \code{rel} / \code{model_id} S3 object.
+}
 \description{
-Use this when you want to define the relationship between groups.
+Use this when you want to define the relationship between two variables.
+}
+\examples{
+rel(speed, dist)
+
 }
