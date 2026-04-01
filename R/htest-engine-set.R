@@ -12,6 +12,8 @@
 #' @seealso [via()], [conclude()], [update()]
 #'
 #' @examples
+#' # The "cpp" engine is hypothetical; replace with a registered engine name.
+#' \dontrun{
 #' sleep |>
 #'     define_model(x_by(extra, group)) |>
 #'     prepare_test(TTEST) |>
@@ -24,6 +26,7 @@
 #'     through("cpp") |>
 #'     via("boot", n = 2000) |>
 #'     conclude()
+#' }
 #'
 #' @export
 through = function(.x, engine, ...) {

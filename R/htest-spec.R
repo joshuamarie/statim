@@ -12,6 +12,9 @@
 #'   Use a different string to register an alternative engine, e.g. `"cpp"`.
 #' @param method A `method_spec` object declaring the method variant and
 #'   its default arguments. `NULL` for classical implementations.
+#' @param fun_args A `fun_args` object from [fun_args()] declaring the default
+#'   values and required status of each test argument. `NULL` if the
+#'   implementation does not use [ic_arg()].
 #' @param compatible_params A character vector of `ParamDef` types this
 #'   implementation can interpret via `write_claim()`. E.g. `c("MU")`.
 #' @param vars A named list of extractor functions. Each function takes

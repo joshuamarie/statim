@@ -2,7 +2,7 @@ ttest_def_two = test_define(
     model_type = "x_by",
     impl_class = "ttest_two",
     fun_args = fun_args(
-        .paired = TRUE,
+        .paired = FALSE,
         .mu = 0,
         .alt = "two.sided",
         .ci = 0.95
@@ -19,7 +19,7 @@ ttest_def_two = test_define(
         if (length(lvls) != 2L) {
             cli::cli_abort(c(
                 "Two-sample t-test requires exactly 2 groups.",
-                "i" = "Found {length(lvls)} group{{?s}} in {.val {self$name('group')}}."
+                "i" = "Found {length(lvls)} group{{?s}} in {.val {ic_name(self, 'group')}}."
             ))
         }
 
@@ -33,6 +33,8 @@ ttest_def_two = test_define(
         )
     },
     print = function(x, ...) {
+        rlang::check_installed(c("broom", "pander"),
+            reason = "to print t-test results in tabular form")
         pander::pander(broom::tidy(x$data))
         invisible(x)
     }
@@ -152,6 +154,9 @@ ttest_def_permute_rfast = test_define(
         group = function(p) p$group_data[[1]]
     ),
     run = function(self) {
+        rlang::check_installed("Rfast2",
+            reason = "to run the Rfast2-backed permutation t-test engine")
+
         B = ic_method_arg(self, "B")
         grp = as.character(ic_pull(self, "group"))
         resp = ic_pull(self, "x")

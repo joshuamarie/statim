@@ -6,6 +6,18 @@
 \usage{
 x_by(x, group)
 }
+\arguments{
+\item{x}{The response variable (bare name).}
+
+\item{group}{The grouping variable (bare name).}
+}
+\value{
+An \code{x_by} / \code{model_id} S3 object.
+}
 \description{
 Use this when you want to compare \code{x} by \code{group}.
+}
+\examples{
+x_by(extra, group)
+
 }

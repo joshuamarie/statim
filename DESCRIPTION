@@ -1,11 +1,15 @@
 Package: statim
 Type: Package
-Title: Higer Level Interface for Statistical Inference
+Title: Higher Level Interface for Statistical Inference
 Version: 0.1.0
 Authors@R: c(
     person("Joshua", "Marie", 
            email = "joshua.marie.k@gmail.com", 
-           role = c("aut", "cre"))
+           role = c("aut", "cre")),
+    person("Antoine", "Soetewey", 
+           email = "antoine.soetewey@uclouvain.be", 
+           role = "aut",
+           comment = c(ORCID = "0000-0001-8159-0804"))
     )
 Description: This is a high-level package, attempting the re-imagination of 
     "grammar of statistical inference" framework in a package, mixing with 
@@ -13,24 +17,25 @@ Description: This is a high-level package, attempting the re-imagination of
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
-    purrr,
+Imports:
     rlang,
     cli,
-    glue,
     vctrs,
     tibble,
     tidyr,
     dplyr,
+    tidyselect,
     stats,
     utils,
-    ggplot2,
     S7
-Suggests: 
+Suggests:
     testthat (>= 3.0.0),
     magrittr,
     box,
-    rmarkdown
+    rmarkdown,
+    broom,
+    pander,
+    Rfast2
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 Depends: 

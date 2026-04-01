@@ -24,6 +24,8 @@ A \code{test_lazy} object.
 The engine is inherited by \code{\link[=via]{via()}} if called afterwards.
 }
 \examples{
+# The "cpp" engine is hypothetical; replace with a registered engine name.
+\dontrun{
 sleep |>
     define_model(x_by(extra, group)) |>
     prepare_test(TTEST) |>
@@ -36,7 +38,7 @@ sleep |>
     through("cpp") |>
     via("boot", n = 2000) |>
     conclude()
-
+}
 }
 \seealso{
 \code{\link[=via]{via()}}, \code{\link[=conclude]{conclude()}}, \code{\link[=update]{update()}}

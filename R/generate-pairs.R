@@ -1,3 +1,5 @@
+utils::globalVariables(c(".data", "xy"))
+
 inequality = function(a, b, direction = "lteq") {
     op = switch(
         direction,

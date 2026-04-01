@@ -30,6 +30,10 @@ Use a different string to register an alternative engine, e.g. \code{"cpp"}.}
 \item{method}{A \code{method_spec} object declaring the method variant and
 its default arguments. \code{NULL} for classical implementations.}
 
+\item{fun_args}{A \code{fun_args} object from \code{\link[=fun_args]{fun_args()}} declaring the default
+values and required status of each test argument. \code{NULL} if the
+implementation does not use \code{\link[=ic_arg]{ic_arg()}}.}
+
 \item{compatible_params}{A character vector of \code{ParamDef} types this
 implementation can interpret via \code{write_claim()}. E.g. \code{c("MU")}.}
 

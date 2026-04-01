@@ -11,16 +11,28 @@ prepare_test(.x, .test, ...)
 \method{prepare_test}{def_model}(.x, .test, ...)
 }
 \arguments{
-\item{.x}{A \code{stat_infer_pipeline} object.}
+\item{.x}{A \code{def_model} object from \code{\link[=define_model]{define_model()}}.}
+
+\item{.test}{A test function such as \link{TTEST}, or a \code{test_spec} object
+returned by calling such a function with no arguments.}
 
 \item{...}{Additional arguments passed to methods.}
-
-\item{test}{A single test specification from a test function like \code{TTEST()}.}
 }
 \value{
-A \code{stat_infer_pipeline} object.
+A \code{test_lazy} S3 object.
 }
 \description{
-\code{prepare_test()} registers a single test for lazy execution. Use this
-when you intend to call \code{plot_test()} after \code{run_test()}.
+\code{prepare_test()} attaches a test specification to a \code{def_model} object,
+producing a \code{test_lazy} ready for optional recalibration with \code{\link[=via]{via()}} or
+\code{\link[=through]{through()}} before being executed with \code{\link[=conclude]{conclude()}}.
+}
+\examples{
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    conclude()
+
+}
+\seealso{
+\code{\link[=define_model]{define_model()}}, \code{\link[=via]{via()}}, \code{\link[=through]{through()}}, \code{\link[=conclude]{conclude()}}
 }

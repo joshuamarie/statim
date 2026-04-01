@@ -24,12 +24,13 @@ signature that routes to the correct implementation based on the model ID
 and method variant.
 }
 \examples{
+\dontrun{
 MY_TEST = HTEST_FN(
     cls = "mytest",
     defs = list(my_def_two),
     .name = "My Test"
 )
-
+}
 }
 \seealso{
 \code{\link[=test_define]{test_define()}}, \code{\link[=prepare_test]{prepare_test()}}, \code{\link[=via]{via()}}, \code{\link[=conclude]{conclude()}}

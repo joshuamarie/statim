@@ -72,11 +72,10 @@ defer_htest = function(lookup, args, cls, defs, .name) {
 }
 
 build_htest = function(defs, args, cls, model_id, .data = NULL, .name) {
-    lookup = build_lookup(defs)
-
     if (!is.null(model_id)) {
-        run_htest(lookup, args, cls, model_id, .data, .name)
+        run_htest(defs, args, cls, model_id, .data, .name)
     } else {
+        lookup = build_lookup(defs)
         defer_htest(lookup, args, cls, defs, .name)
     }
 }
@@ -137,11 +136,13 @@ print.htest_spec = function(x, ...) {
 #' @seealso [test_define()], [prepare_test()], [via()], [conclude()]
 #'
 #' @examples
+#' \dontrun{
 #' MY_TEST = HTEST_FN(
 #'     cls = "mytest",
 #'     defs = list(my_def_two),
 #'     .name = "My Test"
 #' )
+#' }
 #'
 #' @export
 HTEST_FN = function(cls, defs, .name) {

@@ -4,6 +4,7 @@
 #'
 #' @param x The model IDs to be extracted.
 #' @param data The given data frame when supplied. It can be a `NULL` or a missing argument
+#' @param ... Currently unused; passed through for S3 method compatibility.
 #'
 #' @name model-processor
 #' @export
