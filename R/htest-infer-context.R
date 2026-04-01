@@ -1,7 +1,41 @@
+#' Execution context for test implementations
+#'
+#' `infer_context()` constructs the execution context passed as `self` into
+#' the `run` function of a [test_define()] object. It is built once inside
+#' [conclude()] or the eager path of [HTEST_FN()] and never exposed to the
+#' end user.
+#'
+#' Extension authors interact with the context exclusively through the
+#' accessor functions [ic_pull()], [ic_arg()], [ic_method_arg()],
+#' [ic_name()], and [ic_claim()]. Direct access to the list fields is
+#' not part of the public API and may change without notice.
+#'
+#' @param processed A named list returned by `model_processor()`. Contains
+#'   the subsetted data and resolved variable names for the model ID.
+#' @param args A named list of test arguments supplied by the user via
+#'   `...` in the test function, or via [update()].
+#' @param extractors A named list of extractor functions declared in
+#'   `test_define()` via the `vars` property. Each function takes
+#'   `processed` and returns the variable for that role.
+#' @param fun_args A `fun_args` object from [fun_args()] declaring the
+#'   default values and required status of each test argument. `NULL` if
+#'   the implementation does not declare `fun_args`.
+#' @param claims A named list of resolved `ClaimDef` objects from
+#'   `write_claim()`. `NULL` if no claims were declared.
+#' @param method_args A named list of method-level arguments supplied via
+#'   [via()] or [update()]. E.g. `n`, `seed`, `engine`.
+#'
+#' @return An `infer_context` S3 object.
+#'
+#' @seealso [ic_pull()], [ic_arg()], [ic_method_arg()], [test_define()],
+#'   [conclude()]
+#'
+#' @keywords internal
 infer_context = function(
     processed,
     args,
     extractors,
+    fun_args = NULL,
     claims = NULL,
     method_args = NULL
 ) {
@@ -9,6 +43,7 @@ infer_context = function(
         processed = processed,
         args = args,
         extractors = extractors,
+        fun_args = fun_args,
         claims = claims,
         method_args = method_args %||% list()
     )
@@ -78,7 +113,21 @@ ic_name = function(x, role) {
 #' @rdname infer-context-accessors
 #' @export
 ic_arg = function(x, name, default = NULL) {
-    x$args[[name]] %||% default
+    if (!is.null(x$args[[name]])) return(x$args[[name]])
+
+    if (!is.null(x$fun_args)) {
+        decl = x$fun_args[[name]]
+        if (!is.null(decl)) {
+            if (decl$required) {
+                cli::cli_abort(
+                    "Argument {.arg {name}} is required but was not supplied."
+                )
+            }
+            return(decl$default)
+        }
+    }
+
+    default
 }
 
 #' @rdname infer-context-accessors
