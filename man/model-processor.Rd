@@ -22,9 +22,9 @@ model_processor(x, ...)
 \arguments{
 \item{x}{The model IDs to be extracted.}
 
-\item{data}{The given data frame when supplied. It can be a \code{NULL} or a missing argument}
-
 \item{...}{Currently unused; passed through for S3 method compatibility.}
+
+\item{data}{The given data frame when supplied. It can be a \code{NULL} or a missing argument}
 }
 \description{
 A function for development use to extract the information in model IDs.

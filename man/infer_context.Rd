@@ -6,8 +6,8 @@
 \usage{
 infer_context(
   processed,
-  args,
-  extractors,
+  args = list(),
+  extractors = list(),
   fun_args = NULL,
   claims = NULL,
   method_args = NULL
