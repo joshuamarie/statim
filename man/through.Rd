@@ -39,6 +39,7 @@ sleep |>
     via("boot", n = 2000) |>
     conclude()
 }
+
 }
 \seealso{
 \code{\link[=via]{via()}}, \code{\link[=conclude]{conclude()}}, \code{\link[=update]{update()}}

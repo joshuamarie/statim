@@ -31,6 +31,7 @@ MY_TEST = HTEST_FN(
     .name = "My Test"
 )
 }
+
 }
 \seealso{
 \code{\link[=test_define]{test_define()}}, \code{\link[=prepare_test]{prepare_test()}}, \code{\link[=via]{via()}}, \code{\link[=conclude]{conclude()}}
