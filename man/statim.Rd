@@ -8,6 +8,14 @@
 \description{
 This is a high-level package, attempting the re-imagination of "grammar of statistical inference" framework in a package, mixing with 'ggplot2' / 'tidyverse' paradigm.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/joshuamarie/statim}
+  \item Report bugs at \url{https://github.com/joshuamarie/statim/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Joshua Marie \email{joshua.marie.k@gmail.com}
 
