@@ -18,6 +18,23 @@ sleep |>
     prepare_test(TTEST) |>
     update(.paired = TRUE) |>
     conclude()
-#> Error in find_def(.x$test_spec$lookup, model_type = model_type, method_name = method_name,     engine = engine): No implementation found for "formula::::default".
+#> -- Summary ---------------------------------------------------------------------
+#> 
+#> ───────────────────────────────────────────────────────
+#>   groups     type     est_type   est    t-stat  pval   
+#> ───────────────────────────────────────────────────────
+#>   group   two sample  mu_diff   -1.580  -1.861  0.079  
+#> ───────────────────────────────────────────────────────
+#> 
+#> 
+#> -- Confidence Interval ---------------------------------------------------------
+#> 
+#> ──────────────────────────────────────────
+#>   groups     type     lower_95  upper_95  
+#> ──────────────────────────────────────────
+#>   group   two sample   -3.365    0.205    
+#> ──────────────────────────────────────────
+#> 
+#> 
 
 ```
