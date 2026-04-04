@@ -2,7 +2,7 @@
 
 > This package is under active development. APIs may change.
 
-**Higer Level Interface for Statistical Inference**
+**Higher Level Interface for Statistical Inference**
 
 ## What does *statim* mean?
 
