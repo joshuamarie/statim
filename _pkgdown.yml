@@ -23,25 +23,19 @@ navbar:
     # left: [intro, reference, articles, tutorials, news]
     left: [intro, reference]
     right: [search, github, lightswitch, blog]
+  # TODO: uncomment and update href once a vignette is created
   # components:
   #   intro:
   #     text: Get started
-  #     href: articles/tabstats.html
-  #   reference:
-  #     text: Reference
-  #     href: reference/index.html
-  #   articles:
-  #     text: Articles
-  #     menu:
-  #       - text: Getting Started
-  #         href: articles/tabstats.html
+  #     href: articles/statim.html
+  components:
     blog:
       text: Blog
       icon: fa-blog
       href: https://joshuamarie.com
     github:
       icon: fab fa-github fa-lg
-      href: https://github.com/joshuamarie/tabstats
+      href: https://github.com/joshuamarie/statim
       aria-label: GitHub
 
 reference:
@@ -61,14 +55,14 @@ reference:
     - pairwise
 
   - subtitle: H-test configuration
-    desc: Verbs that defines the test you want to execute
+    desc: Verbs that define the test you want to execute
     contents:
-    - prepare-test
     - via
     - through
+    - update.test_lazy
 
   - subtitle: H-test executioner
-    desc: Complete contingency table displayer
+    desc: Execute the prepared test pipeline
     contents:
     - conclude
 
@@ -79,20 +73,15 @@ reference:
   - subtitle: H-test pipeline
     desc: Functions to express the grammar for H-test pipeline
     contents:
-    - define_model
     - prepare_test
     # - write_claim
-    - via
-    - through
-    - update.test_lazy
-    - conclude
 
-  - subtitle: Null Hypotheses handlers
-    desc: Functions to express the grammar for generating, modifying, and describing null hypothesis models
-    contents:
-    - define_model
-    # - write_claims
-    # - generate_null
+  # TODO: Null Hypotheses handlers section — uncomment when write_claims / generate_null are implemented
+  # - subtitle: Null Hypotheses handlers
+  #   desc: Functions to express the grammar for generating, modifying, and describing null hypothesis models
+  #   contents:
+  #   - write_claims
+  #   - generate_null
 
   - title: Low Level API
     desc: Main functions to interact with 'statim' API
@@ -121,7 +110,11 @@ reference:
     - HTEST_FN
 
   - title: Battery-ready H-test functions
-    desc: Functions used for Hypothesis testing
+    desc: >
+      Functions used for Hypothesis testing. TTEST supports classical two-sample
+      and paired t-tests, as well as method variants available via via(): "boot"
+      (bootstrap confidence interval) and "permute" (permutation test, with a
+      "rfast" engine backed by Rfast2).
     contents:
     - TTEST
 
