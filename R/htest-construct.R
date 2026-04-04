@@ -151,6 +151,21 @@ HTEST_FN = function(cls, defs, .name) {
     force(.name)
 
     function(.model = NULL, .data = NULL, ..., .extra_defs = list()) {
+        more_args = list(...)
+        if (!is.null(more_args$method)) {
+            rlang::abort(
+                c(
+                    "The `method` argument is not supported on the eager path.",
+                    "i" = "Use the pipeline with `via()` instead:",
+                    "i" = paste0(
+                        "data |> define_model(...) |> prepare_test(...) |> ",
+                        "via(\"", more_args$method, "\") |> conclude()"
+                    )
+                ),
+                class = "statim_error_eager_method"
+            )
+        }
+
         build_htest(
             cls = cls,
             args = list(...),
