@@ -99,18 +99,18 @@ allowed.
 
 ### H-test configuration
 
-Verbs that defines the test you want to execute
+Verbs that define the test you want to execute
 
-- [`prepare_test()`](https://joshuamarie.github.io/statim/reference/prepare-test.md)
-  : Lazily prepare a single test
 - [`via()`](https://joshuamarie.github.io/statim/reference/via.md) :
   Recalibrate the test method variant
 - [`through()`](https://joshuamarie.github.io/statim/reference/through.md)
   : Set the computational engine for a test pipeline
+- [`update(`*`<test_lazy>`*`)`](https://joshuamarie.github.io/statim/reference/update.test_lazy.md)
+  : Recalibrate arguments from the main pipeline
 
 ### H-test executioner
 
-Complete contingency table displayer
+Execute the prepared test pipeline
 
 - [`conclude()`](https://joshuamarie.github.io/statim/reference/conclude.md)
   : Execute a lazy test pipeline
@@ -123,26 +123,8 @@ Functions that signifies “grammar of statistical inference”
 
 Functions to express the grammar for H-test pipeline
 
-- [`define_model()`](https://joshuamarie.github.io/statim/reference/model-define-base.md)
-  : Model define constructor
 - [`prepare_test()`](https://joshuamarie.github.io/statim/reference/prepare-test.md)
   : Lazily prepare a single test
-- [`via()`](https://joshuamarie.github.io/statim/reference/via.md) :
-  Recalibrate the test method variant
-- [`through()`](https://joshuamarie.github.io/statim/reference/through.md)
-  : Set the computational engine for a test pipeline
-- [`update(`*`<test_lazy>`*`)`](https://joshuamarie.github.io/statim/reference/update.test_lazy.md)
-  : Recalibrate arguments from the main pipeline
-- [`conclude()`](https://joshuamarie.github.io/statim/reference/conclude.md)
-  : Execute a lazy test pipeline
-
-### Null Hypotheses handlers
-
-Functions to express the grammar for generating, modifying, and
-describing null hypothesis models
-
-- [`define_model()`](https://joshuamarie.github.io/statim/reference/model-define-base.md)
-  : Model define constructor
 
 ## Low Level API
 
@@ -188,7 +170,10 @@ Acts like a storage room to store the metadata of H-test definitions
 
 ## Battery-ready H-test functions
 
-Functions used for Hypothesis testing
+Functions used for Hypothesis testing. TTEST supports classical
+two-sample and paired t-tests, as well as method variants available via
+via(): “boot” (bootstrap confidence interval) and “permute” (permutation
+test, with a “rfast” engine backed by Rfast2).
 
 - [`TTEST()`](https://joshuamarie.github.io/statim/reference/TTEST.md) :
   T-Test
