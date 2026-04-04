@@ -39,17 +39,17 @@ pairwise(a, b, c)
 #> [[1]]
 #> <quosure>
 #> expr: ^a
-#> env:  0x55b57cbe6c70
+#> env:  0x55ee0cf70520
 #> 
 #> [[2]]
 #> <quosure>
 #> expr: ^b
-#> env:  0x55b57cbe6c70
+#> env:  0x55ee0cf70520
 #> 
 #> [[3]]
 #> <quosure>
 #> expr: ^c
-#> env:  0x55b57cbe6c70
+#> env:  0x55ee0cf70520
 #> 
 #> 
 #> 
@@ -69,17 +69,17 @@ pairwise(a, b, c, direction = "all")
 #> [[1]]
 #> <quosure>
 #> expr: ^a
-#> env:  0x55b57cbe6c70
+#> env:  0x55ee0cf70520
 #> 
 #> [[2]]
 #> <quosure>
 #> expr: ^b
-#> env:  0x55b57cbe6c70
+#> env:  0x55ee0cf70520
 #> 
 #> [[3]]
 #> <quosure>
 #> expr: ^c
-#> env:  0x55b57cbe6c70
+#> env:  0x55ee0cf70520
 #> 
 #> 
 #> 

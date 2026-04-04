@@ -29,12 +29,12 @@ x_by(extra, group)
 #> [[1]]
 #> <quosure>
 #> expr: ^extra
-#> env:  0x55b57cb36818
+#> env:  0x55ee15d7fb50
 #> 
 #> [[2]]
 #> <quosure>
 #> expr: ^group
-#> env:  0x55b57cb36818
+#> env:  0x55ee15d7fb50
 #> 
 #> attr(,"class")
 #> [1] "x_by"     "model_id"

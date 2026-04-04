@@ -69,26 +69,99 @@
 
 <p><strong>Higher Level Interface for Statistical Inference</strong></p>
 <div class="section level2">
-<h2 id="what-does-statim-mean">What does <em>statim</em> mean?<a class="anchor" aria-label="anchor" href="#what-does-statim-mean"></a>
+<h2 id="package-overview">Package Overview<a class="anchor" aria-label="anchor" href="#package-overview"></a>
 </h2>
-<p><em>statim</em> is a Latin word for “immediately, at once”. The name carries a double meaning:</p>
+<p>What does <a href="https://github.com/joshuamarie/statim" class="external-link">statim</a> mean?</p>
+<p><a href="https://github.com/joshuamarie/statim" class="external-link">statim</a> is a Latin word for “immediately, at once”. The name carries a double meaning:</p>
 <ul>
 <li>
 <em>stat</em>: as in statistics, the domain this package lives in</li>
 <li>
-<em>im</em> (<em>statim</em>): as in immediate, signalling that inference should be expressible as a direct declaration, not a sequence of mechanical steps</li>
+<em>im</em> (<em>statim</em>): as in immediate, signalling that inference should be expressible as a direct declaration, not somewhat a sequence of mechanical steps</li>
 </ul>
-<p>The philosophy: you declare <em>what</em> you want to infer. <a href="https://github.com/joshuamarie/statim" class="external-link">statim</a> figures out <em>how</em>.</p>
+<p>This simply means: you declare <em>what</em> statistical inference you want to perform, then <a href="https://github.com/joshuamarie/statim" class="external-link">statim</a> immediately delivers <em>how</em>.</p>
 </div>
 <div class="section level2">
-<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p><a href="https://github.com/joshuamarie/statim" class="external-link">statim</a> re-imagines the grammar of statistical inference in R. You think about statistical statements:</p>
+<p>The package is yet to be submitted into CRAN.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Stable version (not yet released)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"statim"</span><span class="op">)</span></span></code></pre></div>
+<p>For the time being, you can install the current implementation on GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Development version from GitHub</span></span>
+<span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"joshuamarie/statim"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="usages">Usages<a class="anchor" aria-label="anchor" href="#usages"></a>
+</h2>
+<p><a href="https://github.com/joshuamarie/statim" class="external-link">statim</a> provides a human-readable, easy-to-write syntax. <a href="https://github.com/joshuamarie/statim" class="external-link">statim</a> is a much higher-level package, inherits most of strongest features in R that makes the code easy to write and understand, such as <a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a> / <a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a>’s use of <code>&lt;tidyselect-helpers&gt;</code>. This re-imagines the grammar of statistical inference implementation in R. It embodies almost the same paradigm as <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a>, except it enforces the use of actual pipes, not <code>+</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuamarie/statim" class="external-link">statim</a></span><span class="op">)</span></span></code></pre></div>
+<p>Here’s an example of a quick H-test pipeline:</p>
+<ol style="list-style-type: decimal">
+<li>
+<p>tidyverse-like grammar semantics</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sleep</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/model-define-base.html">define_model</a></span><span class="op">(</span><span class="fu"><a href="reference/x_by.html">x_by</a></span><span class="op">(</span><span class="va">extra</span>, <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/prepare-test.html">prepare_test</a></span><span class="op">(</span><span class="va">TTEST</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="reference/conclude.html">conclude</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; -- Summary ---------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ─────────────────────────────────</span></span>
+<span><span class="co">#&gt;   groups   diff   t-stat  pval   </span></span>
+<span><span class="co">#&gt; ─────────────────────────────────</span></span>
+<span><span class="co">#&gt;   group   -1.580  -1.861  0.079  </span></span>
+<span><span class="co">#&gt; ─────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; -- Confidence Interval ---------------------------------------------------------</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ──────────────────────────────</span></span>
+<span><span class="co">#&gt;   groups  lower_95  upper_95  </span></span>
+<span><span class="co">#&gt; ──────────────────────────────</span></span>
+<span><span class="co">#&gt;   group    -3.365    0.205    </span></span>
+<span><span class="co">#&gt; ──────────────────────────────</span></span>
+<span></span>
+<span><span class="va">sleep</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="reference/model-define-base.html">define_model</a></span><span class="op">(</span><span class="fu"><a href="reference/x_by.html">x_by</a></span><span class="op">(</span><span class="va">extra</span>, <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="reference/prepare-test.html">prepare_test</a></span><span class="op">(</span><span class="va">TTEST</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="reference/via.html">via</a></span><span class="op">(</span><span class="st">"permute"</span>, n <span class="op">=</span> <span class="fl">500L</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="reference/conclude.html">conclude</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>The bottom part of this code is the part where the “pipeline” is re-calibrated from the classical t-test procedure, into permutation t-test.</p>
+</li>
+<li>
+<p>1-liner syntax</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/TTEST.html">TTEST</a></span><span class="op">(</span><span class="fu"><a href="reference/x_by.html">x_by</a></span><span class="op">(</span><span class="va">extra</span>, <span class="va">group</span><span class="op">)</span>, <span class="va">sleep</span><span class="op">)</span></span>
+<span><span class="co">#&gt; -- Summary ---------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ─────────────────────────────────</span></span>
+<span><span class="co">#&gt;   groups   diff   t-stat  pval   </span></span>
+<span><span class="co">#&gt; ─────────────────────────────────</span></span>
+<span><span class="co">#&gt;   group   -1.580  -1.861  0.079  </span></span>
+<span><span class="co">#&gt; ─────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; -- Confidence Interval ---------------------------------------------------------</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ──────────────────────────────</span></span>
+<span><span class="co">#&gt;   groups  lower_95  upper_95  </span></span>
+<span><span class="co">#&gt; ──────────────────────────────</span></span>
+<span><span class="co">#&gt;   group    -3.365    0.205    </span></span>
+<span><span class="co">#&gt; ──────────────────────────────</span></span></code></pre></div>
+</li>
+</ol>
+<!-- --><ol style="list-style-type: decimal">
+<li>is better since you can re-calibrate the declaration of the H-test you want to perform. Otherwise, (2) if you want to eagerly run the actual H-test.</li>
+</ol>
+</div>
+<div class="section level2">
+<h2 id="core-ideas">Core Ideas<a class="anchor" aria-label="anchor" href="#core-ideas"></a>
+</h2>
 <p>The package is designed around three ideas:</p>
 <ol style="list-style-type: decimal">
 <li>
@@ -100,14 +173,6 @@
 <li>
 <strong>Extensible implementations</strong>: every test is a <code><a href="reference/test_define.html">test_define()</a></code> object; bring your own engine, your own method, your own implementation</li>
 </ol>
-</div>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Development version from GitHub</span></span>
-<span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"joshuamarie/statim"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
