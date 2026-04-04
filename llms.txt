@@ -97,6 +97,14 @@ allowed.
 - [`pairwise()`](https://joshuamarie.github.io/statim/reference/pairwise.md)
   : 'Pairs between variables' model mapping
 
+### Multiple Inline Codes
+
+Analogue to [`I()`](https://rdrr.io/r/base/AsIs.html), but only captures
+the expression, not evaluated, and accepts multiple inline codes.
+
+- [`inlines()`](https://joshuamarie.github.io/statim/reference/inlines.md)
+  : Inline multiple expressions in a model ID
+
 ### H-test configuration
 
 Verbs that define the test you want to execute

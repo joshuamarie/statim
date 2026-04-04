@@ -60,6 +60,6 @@ sleep |>
     prepare_test(TTEST) |>
     via("boot", n = 2000) |>
     conclude()
-#> Bootstrap CI : [-3.07, 0.02]
+#> Bootstrap CI : [-3.16, -0.05]
 #> Replicates : 2000
 ```
