@@ -7,16 +7,57 @@
 inlines(...)
 }
 \arguments{
-\item{...}{Named or unnamed expressions. Unnamed elements are auto-named
-based on their role and position (e.g. \code{xv1}, \code{xv2} under role \code{"x"}).}
+\item{...}{Named or unnamed expressions. If named, the supplied name becomes
+the variable name in the processed output. Unnamed elements are
+auto-named by their role and position: \code{xv1}, \code{xv2}, ... under role
+\code{"x"}; \code{grpv1}, \code{grpv2}, ... under role \code{"group"}; \code{pv1}, \code{pv2}, ...
+inside \code{\link[=pairwise]{pairwise()}}. Names can be mixed freely — unnamed elements
+take an auto-name based on their position regardless of whether other
+elements are named.}
+}
+\value{
+A named list of quosures. Intended for use inside model ID
+functions such as \code{\link[=x_by]{x_by()}} and \code{\link[=rel]{rel()}}; not typically called on its own.
 }
 \description{
 \code{inlines()} is the multi-expression analogue of \code{c()} for inline data.
-Where \code{c(x1, x2)} selects multiple columns by name, \code{inlines()} holds
-multiple inline expressions evaluated immediately.
+Where \code{c(x1, x2)} selects multiple variables or columns by name from a
+data frame or the calling environment, \code{inlines()} accepts raw expressions
+— vectors, function calls, or any R expression — and evaluates them
+immediately at model definition time.
+}
+\details{
+Use \code{inlines()} when your data does not live in a data frame. For a single
+inline expression, use \code{\link[=I]{I()}} instead. Take note that \code{inlines()} does not
+return an evaluated value, only a naked and unevaluated expression.
 }
 \examples{
-x_by(inlines(rnorm(30), rnorm(30)), I(rep(c("a", "b"), each = 15)))
-x_by(inlines(x1 = rnorm(30), rnorm(30)), group)
+# Named inline expressions — names appear in output
+x_by(
+    inlines(x1 = rnorm(30), x2 = rnorm(30)),
+    I(grp = rep(c("a", "b"), each = 15))
+)
 
+# Unnamed — auto-named as xv1, xv2 under role "x"
+x_by(
+    inlines(rnorm(30), rnorm(30)),
+    I(rep(c("a", "b"), each = 15))
+)
+
+# Mixed — named elements keep their name, unnamed get auto-names
+x_by(
+    inlines(x1 = rnorm(30), rnorm(30)),
+    I(rep(c("a", "b"), each = 15))
+)
+
+# Contrast with c() — selects existing variables by name
+x1 = rnorm(30)
+x2 = rnorm(30)
+grp = rep(c("a", "b"), each = 15)
+x_by(c(x1, x2), grp)
+
+}
+\seealso{
+\code{\link[=I]{I()}} for a single inline expression, \code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}},
+\code{\link[=pairwise]{pairwise()}}
 }

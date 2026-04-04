@@ -54,6 +54,11 @@ reference:
     - rel
     - pairwise
 
+  - subtitle: Multiple Inline Codes
+    desc: Analogue to `I()`, but only captures the expression, not evaluated, and accepts multiple inline codes.
+    contents:
+    - inline
+
   - subtitle: H-test configuration
     desc: Verbs that define the test you want to execute
     contents:
