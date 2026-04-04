@@ -29,12 +29,12 @@ rel(speed, dist)
 #> $x
 #> <quosure>
 #> expr: ^speed
-#> env:  0x557819452710
+#> env:  0x557bfad0ca38
 #> 
 #> $resp
 #> <quosure>
 #> expr: ^dist
-#> env:  0x557819452710
+#> env:  0x557bfad0ca38
 #> 
 #> attr(,"class")
 #> [1] "rel"      "model_id"
