@@ -55,11 +55,11 @@ print.test_lazy = function(x, ...) {
     cat("Method :", method)
 
     if (!is.null(x$recalibrate_spec)) {
-        method_args = x$recalibrate_spec$args
+        method_args = Filter(Negate(is.null), x$recalibrate_spec$args)
         if (length(method_args) > 0L) {
             args_str = paste(
                 names(method_args),
-                unlist(method_args),
+                vapply(method_args, as.character, character(1)),
                 sep = " = ",
                 collapse = ", "
             )
