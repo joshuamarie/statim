@@ -80,6 +80,16 @@ test_that("I() shows as <inline> in args string", {
     expect_equal(extra_inline$args, "<inline> | group")
 })
 
+test_that("resolve_quo resolves unnamed inlines() with auto-names", {
+    set.seed(1)
+    quo = rlang::quo(inlines(rnorm(10), rnorm(10)))
+    extra_inlines = resolve_quo(quo, data = NULL, role = "x")
+    expect_s3_class(extra_inlines, "data.frame")
+    expect_named(extra_inlines, c("xv1", "xv2"))
+    expect_length(extra_inlines[[1]], 10)
+    expect_length(extra_inlines[[2]], 10)
+})
+
 test_that("inlines() shows as <inlines> in args string", {
     extra_inlines = model_id_info(x_by(inlines(rnorm(30), rnorm(30)), group))
     expect_equal(extra_inlines$args, "<inlines> | group")
