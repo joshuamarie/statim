@@ -28,7 +28,8 @@ Imports:
     stats,
     utils,
     S7,
-    tabstats
+    tabstats,
+    pillar
 Suggests:
     testthat (>= 3.0.0),
     magrittr,
