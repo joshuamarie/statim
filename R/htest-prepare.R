@@ -41,6 +41,40 @@ prepare_test.def_model = function(.x, .test, ...) {
     out
 }
 
+#' @keywords internal
+#' @export
+print.test_lazy = function(x, ...) {
+    cat("\n")
+    print(x$model_id)
+
+    cat("\n")
+    cat(cli::rule(left = "Test Specification", line = "-"), "\n\n")
+    cat("Test :", x$test_spec$name, "\n")
+
+    method = x$recalibrate_spec$method_name %||% "default"
+    cat("Method :", method)
+
+    if (!is.null(x$recalibrate_spec)) {
+        method_args = x$recalibrate_spec$args
+        if (length(method_args) > 0L) {
+            args_str = paste(
+                names(method_args),
+                unlist(method_args),
+                sep = " = ",
+                collapse = ", "
+            )
+            cat(" (", args_str, ")", sep = "")
+        }
+    }
+    cat("\n")
+
+    engine = x$recalibrate_spec$engine %||% x$engine %||% "default"
+    cat("Engine :", engine, "\n")
+
+    cat("\n")
+    invisible(x)
+}
+
 #' Recalibrate arguments from the main pipeline
 #'
 #' This function is ideal to transmute and modify the parameters being used in the test

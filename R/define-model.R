@@ -38,7 +38,7 @@ define_model.model_id = function(.x, data = parent.frame(), ...) {
 
     model_id = if (inherits(.x, "formula")) {
         out = list(formula = metad$formula)
-        class(out) = "formula"
+        class(out) = c("formula", "model_id")
         out
     } else {
         .x
@@ -60,7 +60,7 @@ define_model.data.frame = function(.x, to_analyze, ...) {
 
     model_id = if (inherits(to_analyze, "formula")) {
         out = list(formula = metad$formula)
-        class(out) = "formula"
+        class(out) = c("formula", "model_id")
         out
     } else {
         to_analyze
@@ -73,4 +73,28 @@ define_model.data.frame = function(.x, to_analyze, ...) {
     )
     class(out) = "def_model"
     out
+}
+
+#' @keywords internal
+#' @export
+print.def_model = function(x, ...) {
+    info = model_id_info(x$model_id, x$processed)
+
+    cat("\n")
+    cat(cli::rule(left = "Model Definition", line = "-"), "\n\n")
+    cat("Model ID :", info$model_type, "\n")
+    cat("Args :", info$args, "\n")
+
+    cat("Other info:\n")
+    for (nm in names(info$other_info)) {
+        cat("   ", nm, ":", info$other_info[[nm]], "\n")
+    }
+
+    cat("Variables :\n")
+    for (v in info$vars) {
+        cat("   ", v$name, ":", v$preview, "\n")
+    }
+
+    cat("\n")
+    invisible(x)
 }
