@@ -75,6 +75,24 @@ test_that("c() args are stripped of wrapper in args string", {
     expect_equal(extra_c$args, "x1, x2 | group")
 })
 
+test_that("resolve_quo errors with check_missing_data for missing symbol in c() call", {
+    q = rlang::quo(c(doesnotexist1, doesnotexist2))
+    expect_error(
+        resolve_quo(q, data = NULL, role = "x"),
+        class = "check_missing_data"
+    )
+})
+
+test_that("resolve_quo resolves c() of names from the environment", {
+    x1 = 1:10
+    x2 = 11:20
+    q = rlang::quo(c(x1, x2))
+    result = resolve_quo(q, data = NULL, role = "x")
+    expect_named(result, c("x1", "x2"))
+    expect_equal(result$x1, 1:10)
+    expect_equal(result$x2, 11:20)
+})
+
 test_that("I() shows as <inline> in args string", {
     extra_inline = model_id_info(x_by(I(rnorm(30)), group))
     expect_equal(extra_inline$args, "<inline> | group")
