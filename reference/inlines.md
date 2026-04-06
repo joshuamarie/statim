@@ -56,70 +56,38 @@ x_by(
     inlines(x1 = rnorm(30), x2 = rnorm(30)),
     I(grp = rep(c("a", "b"), each = 15))
 )
-#> [[1]]
-#> <quosure>
-#> expr: ^inlines(x1 = rnorm(30), x2 = rnorm(30))
-#> env:  0x55ee15fa2548
+#> -- Model Definition ------------------------------------------------------------ 
 #> 
-#> [[2]]
-#> <quosure>
-#> expr: ^I(grp = rep(c("a", "b"), each = 15))
-#> env:  0x55ee15fa2548
-#> 
-#> attr(,"class")
-#> [1] "x_by"     "model_id"
+#> Model ID : x_by 
+#> Args : <inlines> | <inline> 
 
 # Unnamed — auto-named as xv1, xv2 under role "x"
 x_by(
     inlines(rnorm(30), rnorm(30)),
     I(rep(c("a", "b"), each = 15))
 )
-#> [[1]]
-#> <quosure>
-#> expr: ^inlines(rnorm(30), rnorm(30))
-#> env:  0x55ee15fa2548
+#> -- Model Definition ------------------------------------------------------------ 
 #> 
-#> [[2]]
-#> <quosure>
-#> expr: ^I(rep(c("a", "b"), each = 15))
-#> env:  0x55ee15fa2548
-#> 
-#> attr(,"class")
-#> [1] "x_by"     "model_id"
+#> Model ID : x_by 
+#> Args : <inlines> | <inline> 
 
 # Mixed — named elements keep their name, unnamed get auto-names
 x_by(
     inlines(x1 = rnorm(30), rnorm(30)),
     I(rep(c("a", "b"), each = 15))
 )
-#> [[1]]
-#> <quosure>
-#> expr: ^inlines(x1 = rnorm(30), rnorm(30))
-#> env:  0x55ee15fa2548
+#> -- Model Definition ------------------------------------------------------------ 
 #> 
-#> [[2]]
-#> <quosure>
-#> expr: ^I(rep(c("a", "b"), each = 15))
-#> env:  0x55ee15fa2548
-#> 
-#> attr(,"class")
-#> [1] "x_by"     "model_id"
+#> Model ID : x_by 
+#> Args : <inlines> | <inline> 
 
 # Contrast with c() — selects existing variables by name
 x1 = rnorm(30)
 x2 = rnorm(30)
 grp = rep(c("a", "b"), each = 15)
 x_by(c(x1, x2), grp)
-#> [[1]]
-#> <quosure>
-#> expr: ^c(x1, x2)
-#> env:  0x55ee15fa2548
+#> -- Model Definition ------------------------------------------------------------ 
 #> 
-#> [[2]]
-#> <quosure>
-#> expr: ^grp
-#> env:  0x55ee15fa2548
-#> 
-#> attr(,"class")
-#> [1] "x_by"     "model_id"
+#> Model ID : x_by 
+#> Args : x1, x2 | grp 
 ```

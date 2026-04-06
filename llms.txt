@@ -232,6 +232,8 @@ You can make new mappers with these functions
   : Attach a model-ID class to an object
 - [`model_processor()`](https://joshuamarie.github.io/statim/reference/model-processor.md)
   : Model evaluator
+- [`model_id_info()`](https://joshuamarie.github.io/statim/reference/model_id_info.md)
+  : Extract metadata from a model ID
 
 ### Inference context interactors
 

@@ -56,13 +56,14 @@ variables.</p>
 
 
 <dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Bare variable names to pair up.</p></dd>
+<dd><p>Bare variable names, tidyselect helpers (requires <code>data</code>), or
+<code>I(expr)</code> for inline data.</p></dd>
 
 
 <dt id="arg-direction">direction<a class="anchor" aria-label="anchor" href="#arg-direction"></a></dt>
 <dd><p>A string controlling which pairs are kept. One of
-<code>"lt"</code> (default, strict lower-triangle), <code>"lteq"</code>, <code>"gt"</code>, <code>"gteq"</code>,
-<code>"eq"</code>, <code>"neq"</code>, or <code>"all"</code>.</p></dd>
+<code>"lt"</code> (default), <code>"lteq"</code>, <code>"gt"</code>, <code>"gteq"</code>, <code>"eq"</code>, <code>"neq"</code>,
+or <code>"all"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -73,65 +74,15 @@ variables.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">pairwise</span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span>, <span class="va">c</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $args</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $args$dots</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> c(~a, ~b, ~c)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -- Model Definition ------------------------------------------------------------ </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $args$dots_quos</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;list_of&lt;quosure&gt;&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model ID : pairwise </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Args : a, b, c </span>
+<span class="r-in"><span><span class="fu">pairwise</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -- Model Definition ------------------------------------------------------------ </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^a</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee0cf70520</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^b</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee0cf70520</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^c</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee0cf70520</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $direction</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "lt"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "pairwise" "model_id"</span>
-<span class="r-in"><span><span class="fu">pairwise</span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span>, <span class="va">c</span>, direction <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $args</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $args$dots</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> c(~a, ~b, ~c)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $args$dots_quos</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;list_of&lt;quosure&gt;&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^a</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee0cf70520</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^b</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee0cf70520</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^c</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee0cf70520</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $direction</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "all"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "pairwise" "model_id"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model ID : pairwise </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Args : &lt;inline&gt;, &lt;inline&gt;, &lt;inline&gt; </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

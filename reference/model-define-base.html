@@ -91,137 +91,33 @@ environment. When calling on a data frame, pass the model ID as
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># model-ID first</span></span></span>
 <span class="r-in"><span><span class="fu">define_model</span><span class="op">(</span><span class="fu"><a href="x_by.html">x_by</a></span><span class="op">(</span><span class="va">extra</span>, <span class="va">group</span><span class="op">)</span>, <span class="va">sleep</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $model_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^extra</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee0d0a8f18</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^group</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee0d0a8f18</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -- Model Definition ------------------------------------------------------------ </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "x_by"     "model_id"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model ID : x_by </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Args : extra | group </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Other info:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     x_vars : 1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     by_vars : 1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables :</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     extra : &lt;dbl [20]&gt; </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     group : &lt;fct [20]&gt; </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $processed</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $processed$x_data</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    extra</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    0.7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   -1.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   -0.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   -1.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   -0.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6    3.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7    3.7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8    0.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9    0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10   2.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11   1.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12   0.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13   1.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14   0.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15  -0.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16   4.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17   5.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18   1.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19   4.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20   3.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $processed$group_data</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    group</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "def_model"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># data-frame first (pipe-friendly)</span></span></span>
 <span class="r-in"><span><span class="va">sleep</span> <span class="op">|&gt;</span> <span class="fu">define_model</span><span class="op">(</span><span class="fu"><a href="x_by.html">x_by</a></span><span class="op">(</span><span class="va">extra</span>, <span class="va">group</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $model_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^extra</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee0d0a8f18</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^group</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee0d0a8f18</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -- Model Definition ------------------------------------------------------------ </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "x_by"     "model_id"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model ID : x_by </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Args : extra | group </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Other info:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     x_vars : 1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     by_vars : 1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables :</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     extra : &lt;dbl [20]&gt; </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     group : &lt;fct [20]&gt; </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $processed</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $processed$x_data</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    extra</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    0.7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   -1.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   -0.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   -1.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   -0.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6    3.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7    3.7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8    0.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9    0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10   2.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11   1.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12   0.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13   1.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14   0.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15  -0.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16   4.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17   5.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18   1.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19   4.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20   3.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $processed$group_data</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    group</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "def_model"</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

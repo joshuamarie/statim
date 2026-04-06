@@ -53,11 +53,12 @@
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>The predictor variable (bare name).</p></dd>
+<dd><p>The predictor variable. A bare name, <code><a href="https://rdrr.io/r/base/c.html" class="external-link">c()</a></code> of bare names, a
+tidyselect helper (requires <code>data</code>), or <code>I(expr)</code> for inline data.</p></dd>
 
 
 <dt id="arg-resp">resp<a class="anchor" aria-label="anchor" href="#arg-resp"></a></dt>
-<dd><p>The response variable (bare name).</p></dd>
+<dd><p>The response variable. Same rules as <code>x</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -68,18 +69,10 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">rel</span><span class="op">(</span><span class="va">speed</span>, <span class="va">dist</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $x</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^speed</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee150e4380</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -- Model Definition ------------------------------------------------------------ </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $resp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^dist</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55ee150e4380</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "rel"      "model_id"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model ID : rel </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Args : speed ; dist </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

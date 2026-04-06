@@ -12,11 +12,13 @@ x_by(x, group)
 
 - x:
 
-  The response variable (bare name).
+  The response variable. A bare name,
+  [`c()`](https://rdrr.io/r/base/c.html) of bare names, a tidyselect
+  helper (requires `data`), or `I(expr)` for inline data.
 
 - group:
 
-  The grouping variable (bare name).
+  The grouping variable. Same rules as `x`.
 
 ## Value
 
@@ -25,17 +27,24 @@ An `x_by` / `model_id` S3 object.
 ## Examples
 
 ``` r
+# bare names (resolved from environment or data)
 x_by(extra, group)
-#> [[1]]
-#> <quosure>
-#> expr: ^extra
-#> env:  0x55ee15d7fb50
+#> -- Model Definition ------------------------------------------------------------ 
 #> 
-#> [[2]]
-#> <quosure>
-#> expr: ^group
-#> env:  0x55ee15d7fb50
+#> Model ID : x_by 
+#> Args : extra | group 
+
+# inline data
+x_by(I(rnorm(30)), I(rep(c("a", "b"), each = 15)))
+#> -- Model Definition ------------------------------------------------------------ 
 #> 
-#> attr(,"class")
-#> [1] "x_by"     "model_id"
+#> Model ID : x_by 
+#> Args : <inline> | <inline> 
+
+# named inline
+x_by(I(score = rnorm(30)), I(grp = rep(c("a", "b"), each = 15)))
+#> -- Model Definition ------------------------------------------------------------ 
+#> 
+#> Model ID : x_by 
+#> Args : <inline> | <inline> 
 ```

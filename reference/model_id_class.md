@@ -1,10 +1,6 @@
 # Attach a model-ID class to an object
 
-Low-level constructor used by
-[`x_by()`](https://joshuamarie.github.io/statim/reference/x_by.md),
-[`rel()`](https://joshuamarie.github.io/statim/reference/rel.md), and
-[`pairwise()`](https://joshuamarie.github.io/statim/reference/pairwise.md).
-Extension authors can use this to register custom model-ID types.
+Attach a model-ID class to an object
 
 ## Usage
 
@@ -20,7 +16,7 @@ model_id_class(obj, clss)
 
 - clss:
 
-  A string giving the primary class name (e.g. `"x_by"`).
+  A string giving the primary class name.
 
 ## Value
 

@@ -12,11 +12,13 @@ rel(x, resp)
 
 - x:
 
-  The predictor variable (bare name).
+  The predictor variable. A bare name,
+  [`c()`](https://rdrr.io/r/base/c.html) of bare names, a tidyselect
+  helper (requires `data`), or `I(expr)` for inline data.
 
 - resp:
 
-  The response variable (bare name).
+  The response variable. Same rules as `x`.
 
 ## Value
 
@@ -26,16 +28,8 @@ A `rel` / `model_id` S3 object.
 
 ``` r
 rel(speed, dist)
-#> $x
-#> <quosure>
-#> expr: ^speed
-#> env:  0x55ee150e4380
+#> -- Model Definition ------------------------------------------------------------ 
 #> 
-#> $resp
-#> <quosure>
-#> expr: ^dist
-#> env:  0x55ee150e4380
-#> 
-#> attr(,"class")
-#> [1] "rel"      "model_id"
+#> Model ID : rel 
+#> Args : speed ; dist 
 ```
