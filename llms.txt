@@ -65,6 +65,9 @@ Here’s an example of a quick H-test pipeline:
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
         conclude()
+    ```
+
+    ``` R
     #> -- Summary ---------------------------------------------------------------------
     #> 
     #> ─────────────────────────────────
@@ -81,12 +84,27 @@ Here’s an example of a quick H-test pipeline:
     #> ──────────────────────────────
     #>   group    -3.365    0.205    
     #> ──────────────────────────────
+    ```
 
+    ``` r
     sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
         via("permute", n = 500L) |> 
         conclude()
+    ```
+
+    ``` R
+    #> ============================== T-test Permutation ==============================
+    #> 
+    #> 
+    #> -- Summary ---------------------------------------------------------------------
+    #> 
+    #> ───────────────────────────────
+    #>   Statistic  p-value  n_perms  
+    #> ───────────────────────────────
+    #>    -1.580     0.082     500    
+    #> ───────────────────────────────
     ```
 
     The bottom part of this code is the part where the “pipeline” is
@@ -97,6 +115,9 @@ Here’s an example of a quick H-test pipeline:
 
     ``` r
     TTEST(x_by(extra, group), sleep)
+    ```
+
+    ``` R
     #> -- Summary ---------------------------------------------------------------------
     #> 
     #> ─────────────────────────────────
