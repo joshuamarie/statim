@@ -47,7 +47,8 @@ TTEST = HTEST_FN(
         ttest_def_boot,
         ttest_def_permute,
         ttest_def_permute_rfast,
-        ttest_def_formula
+        ttest_def_formula,
+        ttest_def_pairwise
     ),
     .name = "T-Test"
 )

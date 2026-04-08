@@ -185,3 +185,112 @@ test_that("TTEST with .extra_defs adds new implementations", {
     expect_s3_class(fn, "test_spec")
     expect_true("x_by::custom_m::default" %in% names(fn$lookup))
 })
+
+# ---- Pairwise T-test ----
+test_that("ttest_def_pairwise basic pipeline works on iris", {
+    result = iris |>
+        define_model(pairwise(Sepal.Length, Sepal.Width, Petal.Length)) |>
+        prepare_test(TTEST) |>
+        conclude()
+
+    expect_s3_class(result, "htest_spec")
+    expect_s3_class(result, "ttest_pairwise")
+    expect_named(result$data, c("a", "b", "ttest"))
+    expect_equal(nrow(result$data), 3L) # C(3,2) pairs
+    expect_s3_class(result$data$ttest[[1]], "htest")
+})
+
+test_that("ttest_def_pairwise produces correct pair labels", {
+    result = iris |>
+        define_model(pairwise(Sepal.Length, Sepal.Width, Petal.Length)) |>
+        prepare_test(TTEST) |>
+        conclude()
+
+    expect_equal(result$data$a, c("Sepal.Length", "Petal.Length", "Petal.Length"))
+    expect_equal(result$data$b, c("Sepal.Width",  "Sepal.Length", "Sepal.Width"))
+})
+
+test_that("ttest_def_pairwise works with tidyselect helpers", {
+    result = iris |>
+        define_model(pairwise(starts_with(c("Se", "Pe")))) |>
+        prepare_test(TTEST) |>
+        conclude()
+
+    expect_s3_class(result, "ttest_pairwise")
+    expect_equal(nrow(result$data), 6L) # C(4,2) pairs
+})
+
+test_that("ttest_def_pairwise scalar .mu is recycled across all pairs", {
+    result = iris |>
+        define_model(pairwise(Sepal.Length, Sepal.Width, Petal.Length)) |>
+        prepare_test(TTEST) |>
+        update(.mu = 1) |>
+        conclude()
+
+    # mu[a] - mu[b] = 1 - 1 = 0 for all pairs, same as default
+    result_default = iris |>
+        define_model(pairwise(Sepal.Length, Sepal.Width, Petal.Length)) |>
+        prepare_test(TTEST) |>
+        conclude()
+
+    expect_equal(result$data$ttest, result_default$data$ttest)
+})
+
+test_that("ttest_def_pairwise per-variable .mu shifts null hypothesis correctly", {
+    result = iris |>
+        define_model(pairwise(Sepal.Length, Sepal.Width)) |>
+        prepare_test(TTEST) |>
+        update(.mu = c(5, 3)) |>
+        conclude()
+
+    # mu diff = 5 - 3 = 2; verify it's passed through to the htest object
+    expect_equal(result$data$ttest[[1]]$null.value[["difference in means"]], 2)
+})
+
+test_that("ttest_def_pairwise .mu of wrong length errors clearly", {
+    expect_error(
+        iris |>
+            define_model(pairwise(Sepal.Length, Sepal.Width, Petal.Length)) |>
+            prepare_test(TTEST) |>
+            update(.mu = c(1, 2)) |>  # 2 != 3 vars
+            conclude(),
+        regexp = "\\.mu.*must be length 1 or length 3"
+    )
+})
+
+test_that("ttest_def_pairwise length-4 .mu works without error", {
+    expect_no_error(
+        iris |>
+            define_model(pairwise(starts_with(c("Se", "Pe")))) |>
+            prepare_test(TTEST) |>
+            update(.mu = c(5, 3, 4, 2)) |>
+            conclude()
+    )
+})
+
+test_that("ttest_def_pairwise respects .alt argument", {
+    result = iris |>
+        define_model(pairwise(Sepal.Length, Sepal.Width)) |>
+        prepare_test(TTEST) |>
+        update(.alt = "greater") |>
+        conclude()
+
+    expect_equal(result$data$ttest[[1]]$alternative, "greater")
+})
+
+test_that("ttest_def_pairwise respects .ci argument", {
+    result = iris |>
+        define_model(pairwise(Sepal.Length, Sepal.Width)) |>
+        prepare_test(TTEST) |>
+        update(.ci = 0.99) |>
+        conclude()
+
+    ci = result$data$ttest[[1]]$conf.int
+    expect_equal(attr(ci, "conf.level"), 0.99)
+})
+
+test_that("ttest_def_pairwise eager path works", {
+    result = TTEST(pairwise(Sepal.Length, Sepal.Width, Petal.Length), iris)
+    expect_s3_class(result, "ttest_pairwise")
+    expect_equal(nrow(result$data), 3L)
+})
