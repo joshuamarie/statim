@@ -116,13 +116,16 @@ reference:
     - HTEST_FN
 
   - title: Battery-ready H-test functions
-    desc: >
-      Functions used for Hypothesis testing. TTEST supports classical two-sample
-      and paired t-tests, as well as method variants available via via(): "boot"
-      (bootstrap confidence interval) and "permute" (permutation test, with a
-      "rfast" engine backed by Rfast2).
+    desc: Functions used for Hypothesis testing
+    # desc: >
+    #   Functions used for Hypothesis testing. TTEST supports classical two-sample
+    #   and paired t-tests, as well as method variants available via via(): "boot"
+    #   (bootstrap confidence interval) and "permute" (permutation test, with a
+    #   "rfast" engine backed by Rfast2).
+
     contents:
     - TTEST
+    - CORTEST
 
 # articles:
 #   - title: Get started
