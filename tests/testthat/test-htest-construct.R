@@ -29,7 +29,7 @@ test_that("build_lookup creates named list with correct keys", {
         run = function(self) NULL
     )
     lookup = build_lookup(list(td1, td2))
-    expect_named(lookup, c("x_by::::default", "x_by::boot::default"))
+    expect_setequal(names(lookup), c("x_by::::default", "x_by::boot::default"))
 })
 
 test_that("find_def returns correct definition by key", {
