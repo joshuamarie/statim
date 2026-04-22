@@ -103,6 +103,10 @@ Acts like a storage room to store the metadata of H-test definitions
   : Define a test implementation
 - [`HTEST_FN()`](https://joshuamarie.github.io/statim/reference/HTEST_FN.md)
   : Build a hypothesis test function
+- [`add_htest_defs()`](https://joshuamarie.github.io/statim/reference/htest-defs-modifiers.md)
+  [`get_htest_defs()`](https://joshuamarie.github.io/statim/reference/htest-defs-modifiers.md)
+  [`clear_htest_defs()`](https://joshuamarie.github.io/statim/reference/htest-defs-modifiers.md)
+  : H-test definition modifiers
 
 ## Battery-ready H-test functions
 
