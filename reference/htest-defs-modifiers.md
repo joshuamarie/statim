@@ -11,7 +11,7 @@ the duration of the session.
 ## Usage
 
 ``` r
-add_htest_defs(defs)
+add_htest_defs(defs, origin = c("user", "package"))
 
 get_htest_defs(cls = NULL)
 
@@ -28,6 +28,14 @@ clear_htest_defs(cls = NULL)
   [test_define](https://joshuamarie.github.io/statim/reference/test_define.md)
   objects to be referenced globally. Each element must be a valid S7
   `test_define` instance — passing anything else raises an error.
+
+- origin:
+
+  Must be one of `"user"` (default) or `"package"`. Controls the origin
+  tag attached to each registered def. Use `"package"` inside
+  `.onLoad()` hook to protect defs from being wiped by
+  `clear_htest_defs()`, which only removes `"user"`-originated defs by
+  default. Passing `"package"` in interactive code is discouraged.
 
 - cls:
 
@@ -63,9 +71,12 @@ clear_htest_defs(cls = NULL)
   but exported for inspection and testing.
 
 - `clear_htest_defs()`: Resets the global H-test store, either fully or
-  scoped to a specific `cls`. Subsequent calls to
+  scoped to a specific `cls`. Only `"user"`-originated defs are removed
+  — defs registered with `"package"` origin via `.onLoad()` are always
+  preserved. Subsequent calls to
   [HTEST_FN](https://joshuamarie.github.io/statim/reference/HTEST_FN.md)-based
-  functions will fall back to their built-in definitions only.
+  functions will fall back to built-in and package-registered
+  definitions only.
 
 ## Precedence
 
