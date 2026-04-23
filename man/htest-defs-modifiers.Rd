@@ -7,7 +7,7 @@
 \alias{clear_htest_defs}
 \title{H-test definition modifiers}
 \usage{
-add_htest_defs(defs)
+add_htest_defs(defs, origin = c("user", "package"))
 
 get_htest_defs(cls = NULL)
 
@@ -17,6 +17,12 @@ clear_htest_defs(cls = NULL)
 \item{defs}{A \link{test_define} object or a list of \link{test_define} objects to be
 referenced globally. Each element must be a valid S7 \code{test_define} instance —
 passing anything else raises an error.}
+
+\item{origin}{Must be one of \code{"user"} (default) or \code{"package"}. Controls
+the origin tag attached to each registered def. Use \code{"package"} inside
+\code{.onLoad()} hook to protect defs from being wiped by \code{\link[=clear_htest_defs]{clear_htest_defs()}},
+which only removes \code{"user"}-originated defs by default. Passing
+\code{"package"} in interactive code is discouraged.}
 
 \item{cls}{A string naming the test class to clear (e.g. \code{"ttest"}). When
 \code{NULL} (default), all globally registered definitions are cleared.}
@@ -46,8 +52,10 @@ currently registered under the given \code{cls} key. Primarily used internally
 by \code{\link[=HTEST_FN]{HTEST_FN()}} but exported for inspection and testing.
 
 \item \code{clear_htest_defs()}: Resets the global H-test store, either
-fully or scoped to a specific \code{cls}. Subsequent calls to \link{HTEST_FN}-based
-functions will fall back to their built-in definitions only.
+fully or scoped to a specific \code{cls}. Only \code{"user"}-originated defs are
+removed — defs registered with \code{"package"} origin via \code{.onLoad()} are
+always preserved. Subsequent calls to \link{HTEST_FN}-based functions will
+fall back to built-in and package-registered definitions only.
 
 }}
 \section{Precedence}{
