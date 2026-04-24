@@ -16,8 +16,9 @@ A verb that describes the model you want to analyze
 Basically mappers to shape the model you want to describe. Formula also
 allowed.
 
-- [`x_by()`](https://joshuamarie.github.io/statim/reference/x_by.md) :
-  'Variable compared by groups' model mapping
+- [`x_by()`](https://joshuamarie.github.io/statim/reference/x_by.md)
+  [`` `%by%` ``](https://joshuamarie.github.io/statim/reference/x_by.md)
+  : 'Variable compared by groups' model mapping
 - [`rel()`](https://joshuamarie.github.io/statim/reference/rel.md) :
   'Relationship between two variables' model mapping
 - [`pairwise()`](https://joshuamarie.github.io/statim/reference/pairwise.md)

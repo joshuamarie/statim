@@ -6,6 +6,8 @@ Use this when you want to compare `x` by `group`.
 
 ``` r
 x_by(x, group)
+
+x %by% group
 ```
 
 ## Arguments
