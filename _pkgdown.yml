@@ -67,8 +67,18 @@ reference:
     - TTEST
     - CORTEST
 
+  # - title: Low Level API
+  #   desc: Functions to interact with the statim internals
+
   - title: Low-level/Implementation API
     desc: Functions for building and extending test implementations
+
+  - subtitle: Model ID helpers
+    desc: Build new model ID mappers
+    contents:
+    - model_id_class
+    - model-processor
+    - model_id_info
 
   - subtitle: Implementation containers
     desc: Declare how a test runs
@@ -87,16 +97,6 @@ reference:
     desc: Add or replace variants on existing test functions
     contents:
     - htest-defs-modifiers
-
-  - title: Low Level API
-    desc: Functions to interact with the statim internals
-
-  - subtitle: Model ID helpers
-    desc: Build new model ID mappers
-    contents:
-    - model_id_class
-    - model-processor
-    - model_id_info
 
 footer:
   structure:
