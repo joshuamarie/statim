@@ -23,7 +23,7 @@
 #' sleep |>
 #'     define_model(x_by(extra, group)) |>
 #'     prepare_test(TTEST) |>
-#'     via("permute_rfast", B = 999) |>
+#'     via("permute", n = 999L) |>
 #'     conclude()
 #'
 #' @export
