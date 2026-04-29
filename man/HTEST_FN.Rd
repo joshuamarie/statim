@@ -14,24 +14,13 @@ HTEST_FN(cls, defs, .name)
 \item{.name}{A string used as the test title in output.}
 }
 \value{
-A function with signature
-\verb{function(.model, .data, ..., .extra_defs)}.
+A function with signature \verb{function(.model, .data, ...)}.
 }
 \description{
-\code{HTEST_FN()} is a developer-interface function, a constructor for user-facing
-test functions like \code{\link[=TTEST]{TTEST()}}. It returns a function with a consistent
-signature that routes to the correct implementation based on the model ID
-and method variant.
-}
-\examples{
-\dontrun{
-MY_TEST = HTEST_FN(
-    cls = "mytest",
-    defs = list(my_def_two),
-    .name = "My Test"
-)
-}
-
+\code{HTEST_FN()} is a developer-interface function, a constructor for
+user-facing test functions like \code{\link[=TTEST]{TTEST()}}. It returns a function with
+a consistent signature that routes to the correct implementation based
+on the model ID and method variant.
 }
 \seealso{
 \code{\link[=test_define]{test_define()}}, \code{\link[=prepare_test]{prepare_test()}}, \code{\link[=via]{via()}}, \code{\link[=conclude]{conclude()}}
