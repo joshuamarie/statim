@@ -97,7 +97,6 @@
       
       Test : T-Test 
       Method : default
-      Engine : default 
       
 
 # print.test_lazy snapshot — via boot
@@ -115,6 +114,5 @@
       
       Test : T-Test 
       Method : boot (n = 2000)
-      Engine : default 
       
 
