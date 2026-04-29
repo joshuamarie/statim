@@ -23,8 +23,8 @@ A \code{test_lazy} S3 object.
 }
 \description{
 \code{prepare_test()} attaches a test specification to a \code{def_model} object,
-producing a \code{test_lazy} ready for optional recalibration with \code{\link[=via]{via()}} or
-\code{\link[=through]{through()}} before being executed with \code{\link[=conclude]{conclude()}}.
+producing a \code{test_lazy} ready for optional recalibration with \code{\link[=via]{via()}}
+before being executed with \code{\link[=conclude]{conclude()}}.
 }
 \examples{
 sleep |>
@@ -34,5 +34,5 @@ sleep |>
 
 }
 \seealso{
-\code{\link[=define_model]{define_model()}}, \code{\link[=via]{via()}}, \code{\link[=through]{through()}}, \code{\link[=conclude]{conclude()}}
+\code{\link[=define_model]{define_model()}}, \code{\link[=via]{via()}}, \code{\link[=conclude]{conclude()}}
 }

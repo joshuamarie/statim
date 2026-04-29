@@ -1,8 +1,8 @@
 #' Lazily prepare a single test
 #'
 #' `prepare_test()` attaches a test specification to a `def_model` object,
-#' producing a `test_lazy` ready for optional recalibration with [via()] or
-#' [through()] before being executed with [conclude()].
+#' producing a `test_lazy` ready for optional recalibration with [via()]
+#' before being executed with [conclude()].
 #'
 #' @param .x A `def_model` object from [define_model()].
 #' @param .test A test function such as [TTEST], or a `test_spec` object
@@ -11,7 +11,7 @@
 #'
 #' @return A `test_lazy` S3 object.
 #'
-#' @seealso [define_model()], [via()], [through()], [conclude()]
+#' @seealso [define_model()], [via()], [conclude()]
 #'
 #' @examples
 #' sleep |>
