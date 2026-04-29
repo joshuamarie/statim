@@ -104,10 +104,20 @@ E.g. <code>"boot"</code>, <code>"permute"</code>, <code>"permute_rfast"</code>.<
 <span class="r-in"><span><span class="va">sleep</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="model-define-base.html">define_model</a></span><span class="op">(</span><span class="fu"><a href="x_by.html">x_by</a></span><span class="op">(</span><span class="va">extra</span>, <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="prepare-test.html">prepare_test</a></span><span class="op">(</span><span class="va">TTEST</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu">via</span><span class="op">(</span><span class="st">"permute_rfast"</span>, B <span class="op">=</span> <span class="fl">999</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu">via</span><span class="op">(</span><span class="st">"permute"</span>, n <span class="op">=</span> <span class="fl">999L</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="conclude.html">conclude</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in via(prepare_test(define_model(sleep, x_by(extra, group)), TTEST),     "permute_rfast", B = 999):</span> No variant <span style="color: #0000BB;">"permute_rfast"</span> registered for model type <span style="color: #0000BB;">"x_by"</span>.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Available variants: <span style="color: #0000BB;">"boot"</span> and <span style="color: #0000BB;">"permute"</span>.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ============================== T-test Permutation ==============================</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -- Summary ---------------------------------------------------------------------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ───────────────────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Statistic  p-value  n_perms  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ───────────────────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    -1.580    <span style="font-style: italic;"> 0.074</span>     999    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ───────────────────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

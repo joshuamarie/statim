@@ -57,6 +57,17 @@ Eager execution of a prepared test
 
 Functions for building and extending test implementations
 
+### Model ID helpers
+
+Build new model ID mappers
+
+- [`model_id_class()`](https://joshuamarie.github.io/statim/reference/model_id_class.md)
+  : Attach a model-ID class to an object
+- [`model_processor()`](https://joshuamarie.github.io/statim/reference/model-processor.md)
+  : Model evaluator
+- [`model_id_info()`](https://joshuamarie.github.io/statim/reference/model_id_info.md)
+  : Extract metadata from a model ID
+
 ### Implementation containers
 
 Declare how a test runs
@@ -85,18 +96,3 @@ Add or replace variants on existing test functions
   [`swap_variant()`](https://joshuamarie.github.io/statim/reference/htest-defs-modifiers.md)
   [`clear_htest_defs()`](https://joshuamarie.github.io/statim/reference/htest-defs-modifiers.md)
   : Add or replace variants on a test function
-
-## Low Level API
-
-Functions to interact with the statim internals
-
-### Model ID helpers
-
-Build new model ID mappers
-
-- [`model_id_class()`](https://joshuamarie.github.io/statim/reference/model_id_class.md)
-  : Attach a model-ID class to an object
-- [`model_processor()`](https://joshuamarie.github.io/statim/reference/model-processor.md)
-  : Model evaluator
-- [`model_id_info()`](https://joshuamarie.github.io/statim/reference/model_id_info.md)
-  : Extract metadata from a model ID

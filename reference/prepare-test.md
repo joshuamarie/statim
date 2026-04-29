@@ -2,8 +2,8 @@
 
 `prepare_test()` attaches a test specification to a `def_model` object,
 producing a `test_lazy` ready for optional recalibration with
-[`via()`](https://joshuamarie.github.io/statim/reference/via.md) or
-`through()` before being executed with
+[`via()`](https://joshuamarie.github.io/statim/reference/via.md) before
+being executed with
 [`conclude()`](https://joshuamarie.github.io/statim/reference/conclude.md).
 
 ## Usage
@@ -41,7 +41,6 @@ A `test_lazy` S3 object.
 
 [`define_model()`](https://joshuamarie.github.io/statim/reference/model-define-base.md),
 [`via()`](https://joshuamarie.github.io/statim/reference/via.md),
-`through()`,
 [`conclude()`](https://joshuamarie.github.io/statim/reference/conclude.md)
 
 ## Examples

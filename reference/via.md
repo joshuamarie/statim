@@ -65,8 +65,18 @@ sleep |>
 sleep |>
     define_model(x_by(extra, group)) |>
     prepare_test(TTEST) |>
-    via("permute_rfast", B = 999) |>
+    via("permute", n = 999L) |>
     conclude()
-#> Error in via(prepare_test(define_model(sleep, x_by(extra, group)), TTEST),     "permute_rfast", B = 999): No variant "permute_rfast" registered for model type "x_by".
-#> ℹ Available variants: "boot" and "permute".
+#> ============================== T-test Permutation ==============================
+#> 
+#> 
+#> -- Summary ---------------------------------------------------------------------
+#> 
+#> ───────────────────────────────
+#>   Statistic  p-value  n_perms  
+#> ───────────────────────────────
+#>    -1.580     0.074     999    
+#> ───────────────────────────────
+#> 
+#> 
 ```
