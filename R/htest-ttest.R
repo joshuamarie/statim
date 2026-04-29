@@ -9,23 +9,25 @@
 #' @param .data A data frame. Only used on the standalone path.
 #' @param ... Additional arguments passed to the implementation:
 #'   `.paired`, `.mu`, `.alt`, `.ci` for the classical path.
-#' @param .extra_defs A list of additional `test_define` objects supplied
-#'   by the user. These extend the available implementations and engines.
 #'
 #' @return An `htest_spec` object (standalone or eager), or a `test_spec`
 #'   object (pipeline).
 #'
 #' @section Supported model IDs:
 #' - `x_by()` — two-sample or paired t-test
+#' - `pairwise()` — pairwise t-tests across variables
+#' - formula — one-sample or two-sample t-test
 #'
-#' @section Method variants:
-#' - `"boot"` — bootstrap confidence interval via [via()]
+#' @section Method variants (via [via()]):
+#' - `"boot"` — bootstrap confidence interval
+#' - `"permute"` — permutation test
+#' - `"permute_rfast"` — permutation test backed by Rfast2
 #'
 #' @examples
-#' # standalone
+#' # eager
 #' TTEST(x_by(extra, group), sleep)
 #'
-#' # Main pipeline
+#' # pipeline
 #' sleep |>
 #'     define_model(x_by(extra, group)) |>
 #'     prepare_test(TTEST) |>
@@ -38,15 +40,18 @@
 #'     via("boot", n = 2000) |>
 #'     conclude()
 #'
+#' # permutation
+#' sleep |>
+#'     define_model(x_by(extra, group)) |>
+#'     prepare_test(TTEST) |>
+#'     via("permute", n = 2000) |>
+#'     conclude()
+#'
 #' @export
 TTEST = HTEST_FN(
-    # ---- t-test API ----
     cls = "ttest",
     defs = list(
         ttest_def_two,
-        ttest_def_boot,
-        ttest_def_permute,
-        # ttest_def_permute_rfast,
         ttest_def_formula,
         ttest_def_pairwise
     ),

@@ -4,7 +4,7 @@
 \alias{TTEST}
 \title{T-Test}
 \usage{
-TTEST(.model = NULL, .data = NULL, ..., .extra_defs = list())
+TTEST(.model = NULL, .data = NULL, ...)
 }
 \arguments{
 \item{.model}{A model ID from \code{x_by()}, \code{pairwise()}, or a formula.
@@ -15,9 +15,6 @@ returns a \code{test_spec} for use in the pipeline via \code{\link[=prepare_test
 
 \item{...}{Additional arguments passed to the implementation:
 \code{.paired}, \code{.mu}, \code{.alt}, \code{.ci} for the classical path.}
-
-\item{.extra_defs}{A list of additional \code{test_define} objects supplied
-by the user. These extend the available implementations and engines.}
 }
 \value{
 An \code{htest_spec} object (standalone or eager), or a \code{test_spec}
@@ -31,21 +28,25 @@ or formula-based comparisons.
 
 \itemize{
 \item \code{x_by()} — two-sample or paired t-test
+\item \code{pairwise()} — pairwise t-tests across variables
+\item formula — one-sample or two-sample t-test
 }
 }
 
-\section{Method variants}{
+\section{Method variants (via \code{\link[=via]{via()}})}{
 
 \itemize{
-\item \code{"boot"} — bootstrap confidence interval via \code{\link[=via]{via()}}
+\item \code{"boot"} — bootstrap confidence interval
+\item \code{"permute"} — permutation test
+\item \code{"permute_rfast"} — permutation test backed by Rfast2
 }
 }
 
 \examples{
-# standalone
+# eager
 TTEST(x_by(extra, group), sleep)
 
-# Main pipeline
+# pipeline
 sleep |>
     define_model(x_by(extra, group)) |>
     prepare_test(TTEST) |>
@@ -56,6 +57,13 @@ sleep |>
     define_model(x_by(extra, group)) |>
     prepare_test(TTEST) |>
     via("boot", n = 2000) |>
+    conclude()
+
+# permutation
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    via("permute", n = 2000) |>
     conclude()
 
 }

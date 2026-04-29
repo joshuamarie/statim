@@ -43,7 +43,6 @@ test_that("ttest_def_two respects .paired argument", {
 
     expect_s3_class(result, "htest_spec")
     ttest_obj = result$data$ttest[[1]]
-    # Paired t-test has 1 df less
     expect_true(ttest_obj$parameter["df"] < 18)
 })
 
@@ -59,7 +58,6 @@ test_that("ttest_def_two respects .alt argument", {
 })
 
 test_that("ttest_def_two errors when group has != 2 levels", {
-    # iris has 3 species
     expect_error(
         iris |>
             define_model(x_by(Sepal.Length, Species)) |>
@@ -68,20 +66,21 @@ test_that("ttest_def_two errors when group has != 2 levels", {
     )
 })
 
-test_that("ttest_def_boot pipeline works", {
+test_that("ttest boot variant pipeline works", {
     result = sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
         via("boot", n = 100, seed = 42) |>
         conclude()
 
-    expect_s3_class(result, "ttest_boot")
+    expect_s3_class(result, "htest_spec")
+    expect_s3_class(result, "ttest_two")
     expect_equal(result$data$n, 100)
     expect_length(result$data$boot_dist, 100)
     expect_named(result$data$ci, c("2.5%", "97.5%"))
 })
 
-test_that("ttest_def_boot seed makes results reproducible", {
+test_that("ttest boot variant seed makes results reproducible", {
     run = function() {
         sleep |>
             define_model(x_by(extra, group)) |>
@@ -94,14 +93,15 @@ test_that("ttest_def_boot seed makes results reproducible", {
     expect_equal(r1$data$boot_dist, r2$data$boot_dist)
 })
 
-test_that("ttest_def_permute pipeline works", {
+test_that("ttest permute variant pipeline works", {
     result = sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
         via("permute", n = 100, seed = 1) |>
         conclude()
 
-    expect_s3_class(result, "ttest_permute")
+    expect_s3_class(result, "htest_spec")
+    expect_s3_class(result, "ttest_two")
     expect_equal(result$data$n, 100)
     expect_true(is.numeric(result$data$observed))
     expect_true(is.numeric(result$data$p.value))
@@ -110,7 +110,7 @@ test_that("ttest_def_permute pipeline works", {
     expect_length(result$data$null_dist, 100)
 })
 
-test_that("ttest_def_permute seed makes results reproducible", {
+test_that("ttest permute variant seed makes results reproducible", {
     run = function() {
         sleep |>
             define_model(x_by(extra, group)) |>
@@ -122,6 +122,57 @@ test_that("ttest_def_permute seed makes results reproducible", {
     r2 = run()
     expect_equal(r1$data$observed, r2$data$observed)
     expect_equal(r1$data$null_dist, r2$data$null_dist)
+})
+
+test_that("ttest permute_rfast variant works when plugged externally", {
+    skip_if_not_installed("Rfast2")
+    on.exit(clear_htest_defs("ttest"), add = TRUE)
+
+    plug_variant(
+        TTEST, "permute_rfast",
+        variant(
+            fn = function(x, group_data, B = 999L) {
+                rlang::check_installed("Rfast2", reason = "to run the Rfast2-backed permutation t-test")
+                grp = as.character(group_data[[1]])
+                lvls = unique(grp)
+                if (length(lvls) != 2L) {
+                    cli::cli_abort(c(
+                        "Permutation t-test requires exactly 2 groups.",
+                        "i" = "Found {length(lvls)} group{{?s}}."
+                    ))
+                }
+                res = Rfast2::perm.ttest(
+                    x = x[grp == lvls[[1]]],
+                    y = x[grp == lvls[[2]]],
+                    B = B
+                )
+                list(stat = res[["stat"]], p.value = res[["permutation p-value"]], B = B)
+            },
+            print = function(x, ...) {
+                summary_data = tibble::tibble(
+                    Statistic = round(x$data$stat, 4),
+                    `p-value` = round(x$data$p.value, 4),
+                    n_perms = x$data$B
+                )
+                cli::cat_line(cli::rule(center = "T-test Permutation", line = "="), "\n\n")
+                tabstats::table_default(summary_data)
+                cat("\n\n")
+                invisible(x)
+            }
+        )
+    )
+
+    result = sleep |>
+        define_model(x_by(extra, group)) |>
+        prepare_test(TTEST) |>
+        via("permute_rfast", B = 199) |>
+        conclude()
+
+    expect_s3_class(result, "htest_spec")
+    expect_s3_class(result, "ttest_two")
+    expect_true(is.numeric(result$data$stat))
+    expect_true(is.numeric(result$data$p.value))
+    expect_equal(result$data$B, 199)
 })
 
 test_that("ttest_def_formula two-sample pipeline works", {
@@ -141,7 +192,6 @@ test_that("ttest_def_formula eager path works", {
 })
 
 test_that("ttest_def_formula one-sample detection works", {
-    # one-sample formula: extra ~ 1
     result = TTEST(extra ~ 1, sleep)
     expect_s3_class(result, "ttest_formula")
     expect_equal(result$data$type[[1]], "one sample")
@@ -156,23 +206,79 @@ test_that("ttest_def_formula errors when group has != 2 levels", {
     )
 })
 
-test_that("TTEST with .extra_defs adds new implementations", {
-    my_def = test_define(
-        model_type = "x_by",
-        impl_class = "custom_impl",
-        method = method_spec("custom_m", "custom"),
-        vars = list(
-            x = function(p) p$x_data[[1]],
-            group = function(p) p$group_data[[1]]
-        ),
-        run = function(self) list(result = "custom")
+# ---- plug_variant / swap_variant ----
+
+test_that("plug_variant adds new variant to TTEST", {
+    on.exit(clear_htest_defs("ttest"), add = TRUE)
+
+    plug_variant(
+        TTEST, "custom_boot",
+        variant(
+            fn = function(x, group_data, n = 50L) {
+                list(n = n, result = "custom")
+            }
+        )
     )
-    fn = TTEST(.extra_defs = list(my_def))
-    expect_s3_class(fn, "test_spec")
-    expect_true("x_by::custom_m::default" %in% names(fn$lookup))
+
+    result = sleep |>
+        define_model(x_by(extra, group)) |>
+        prepare_test(TTEST) |>
+        via("custom_boot") |>
+        conclude()
+
+    expect_s3_class(result, "htest_spec")
+    expect_equal(result$data$result, "custom")
+})
+
+test_that("plug_variant errors if name already exists", {
+    on.exit(clear_htest_defs("ttest"), add = TRUE)
+
+    plug_variant(TTEST, "custom_v", variant(fn = function(x) x))
+    expect_error(
+        plug_variant(TTEST, "custom_v", variant(fn = function(x) x)),
+        regexp = "already exists"
+    )
+})
+
+test_that("swap_variant replaces existing variant", {
+    on.exit(clear_htest_defs("ttest"), add = TRUE)
+
+    plug_variant(TTEST, "swap_me", variant(fn = function(x, group_data) list(v = 1L)))
+    swap_variant(TTEST, "swap_me", variant(fn = function(x, group_data) list(v = 2L)))
+
+    result = sleep |>
+        define_model(x_by(extra, group)) |>
+        prepare_test(TTEST) |>
+        via("swap_me") |>
+        conclude()
+
+    expect_equal(result$data$v, 2L)
+})
+
+test_that("plug_variant and swap_variant error on default", {
+    expect_error(
+        plug_variant(TTEST, "default", variant(fn = function(x) x)),
+        regexp = "frozen"
+    )
+    expect_error(
+        swap_variant(TTEST, "default", variant(fn = function(x) x)),
+        regexp = "frozen"
+    )
+})
+
+test_that("clear_htest_defs removes user variants", {
+    plug_variant(TTEST, "temp_v", variant(fn = function(x) x))
+    clear_htest_defs("ttest")
+
+    lazy = sleep |>
+        define_model(x_by(extra, group)) |>
+        prepare_test(TTEST)
+
+    expect_error(via(lazy, "temp_v"))
 })
 
 # ---- Pairwise T-test ----
+
 test_that("ttest_def_pairwise basic pipeline works on iris", {
     result = iris |>
         define_model(pairwise(Sepal.Length, Sepal.Width, Petal.Length)) |>
@@ -182,7 +288,7 @@ test_that("ttest_def_pairwise basic pipeline works on iris", {
     expect_s3_class(result, "htest_spec")
     expect_s3_class(result, "ttest_pairwise")
     expect_named(result$data, c("a", "b", "ttest"))
-    expect_equal(nrow(result$data), 3L) # C(3,2) pairs
+    expect_equal(nrow(result$data), 3L)
     expect_s3_class(result$data$ttest[[1]], "htest")
 })
 
@@ -193,7 +299,7 @@ test_that("ttest_def_pairwise produces correct pair labels", {
         conclude()
 
     expect_equal(result$data$a, c("Sepal.Length", "Petal.Length", "Petal.Length"))
-    expect_equal(result$data$b, c("Sepal.Width",  "Sepal.Length", "Sepal.Width"))
+    expect_equal(result$data$b, c("Sepal.Width", "Sepal.Length", "Sepal.Width"))
 })
 
 test_that("ttest_def_pairwise works with tidyselect helpers", {
@@ -203,7 +309,7 @@ test_that("ttest_def_pairwise works with tidyselect helpers", {
         conclude()
 
     expect_s3_class(result, "ttest_pairwise")
-    expect_equal(nrow(result$data), 6L) # C(4,2) pairs
+    expect_equal(nrow(result$data), 6L)
 })
 
 test_that("ttest_def_pairwise scalar .mu is recycled across all pairs", {
@@ -213,7 +319,6 @@ test_that("ttest_def_pairwise scalar .mu is recycled across all pairs", {
         update(.mu = 1) |>
         conclude()
 
-    # mu[a] - mu[b] = 1 - 1 = 0 for all pairs, same as default
     result_default = iris |>
         define_model(pairwise(Sepal.Length, Sepal.Width, Petal.Length)) |>
         prepare_test(TTEST) |>
@@ -229,7 +334,6 @@ test_that("ttest_def_pairwise per-variable .mu shifts null hypothesis correctly"
         update(.mu = c(5, 3)) |>
         conclude()
 
-    # mu diff = 5 - 3 = 2; verify it's passed through to the htest object
     expect_equal(result$data$ttest[[1]]$null.value[["difference in means"]], 2)
 })
 
@@ -238,7 +342,7 @@ test_that("ttest_def_pairwise .mu of wrong length errors clearly", {
         iris |>
             define_model(pairwise(Sepal.Length, Sepal.Width, Petal.Length)) |>
             prepare_test(TTEST) |>
-            update(.mu = c(1, 2)) |>  # 2 != 3 vars
+            update(.mu = c(1, 2)) |>
             conclude(),
         regexp = "\\.mu.*must be length 1 or length 3"
     )
@@ -279,89 +383,4 @@ test_that("ttest_def_pairwise eager path works", {
     result = TTEST(pairwise(Sepal.Length, Sepal.Width, Petal.Length), iris)
     expect_s3_class(result, "ttest_pairwise")
     expect_equal(nrow(result$data), 3L)
-})
-
-# ---- External implementation ----
-rfast_ttest_permute = test_define(
-    model_type = "x_by",
-    impl_class = "ttest_permute_rfast",
-    engine = "rfast",
-    method = method_spec(
-        "permute",
-        method_type = "replicate",
-        defaults = list(B = 999L)
-    ),
-    vars = list(
-        x = function(p) p$x_data[[1]],
-        group = function(p) p$group_data[[1]]
-    ),
-    run = function(self) {
-        B = ic_method_arg(self, "B")
-        grp = as.character(ic_pull(self, "group"))
-        resp = ic_pull(self, "x")
-        lvls = unique(grp)
-
-        if (length(lvls) != 2L) {
-            cli::cli_abort(c(
-                "Permutation t-test requires exactly 2 groups.",
-                "i" = "Found {length(lvls)} group{{?s}}."
-            ))
-        }
-
-        x = resp[grp == lvls[[1]]]
-        y = resp[grp == lvls[[2]]]
-
-        res = Rfast2::perm.ttest(x = x, y = y, B = B)
-
-        list(
-            stat = res[["stat"]],
-            p.value = res[["permutation p-value"]],
-            B = B
-        )
-    },
-    print = function(x, ...) {
-        summary_data = tibble::tibble(
-            Statistic = round(x$data$stat, 4),
-            `p-value` = round(x$data$p.value, 4),
-            n_perms = x$data$B
-        )
-
-        pval_styler = function(x) {
-            x_num = suppressWarnings(as.numeric(x$value))
-            if (is.na(x_num) || x_num > 0.05) {
-                cli::style_italic(x$value)
-            } else if (x_num > 0.01) {
-                cli::col_red(x$value)
-            } else {
-                cli::style_bold("<0.001")
-            }
-        }
-
-        cli::cat_line(cli::rule(center = "T-test Permutation", line = "="), "\n\n")
-        cli::cat_line(cli::rule(left = "Summary", line = "-"), "\n")
-        tabstats::table_default(
-            summary_data,
-            style_columns = tabstats::td_style(`p-value` = pval_styler)
-        )
-        cat("\n\n")
-        invisible(x)
-    }
-)
-
-test_that("External implementation of t-test", {
-    skip_if_not_installed("Rfast2")
-
-    add_htest_defs(rfast_ttest_permute)
-    on.exit(clear_htest_defs("ttest"), add = TRUE)
-
-    result = sleep |>
-        define_model(x_by(extra, group)) |>
-        prepare_test(TTEST) |>
-        via("permute", engine = "rfast", B = 199) |>
-        conclude()
-
-    expect_s3_class(result, "ttest_permute_rfast")
-    expect_true(is.numeric(result$data$stat))
-    expect_true(is.numeric(result$data$p.value))
-    expect_equal(result$data$B, 199)
 })
