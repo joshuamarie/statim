@@ -1,7 +1,7 @@
 # Recalibrate arguments from the main pipeline
 
-This function is ideal to transmute and modify the parameters being used
-in the test under the pipeline.
+[`update()`](https://rdrr.io/r/stats/update.html) modifies the arguments
+of a lazy test pipeline without changing the method variant or engine.
 
 ## Usage
 
@@ -9,6 +9,20 @@ in the test under the pipeline.
 # S3 method for class 'test_lazy'
 update(object, ...)
 ```
+
+## Arguments
+
+- object:
+
+  A `test_lazy` object.
+
+- ...:
+
+  Named arguments to update.
+
+## Value
+
+The modified `test_lazy` object.
 
 ## Examples
 
@@ -36,5 +50,4 @@ sleep |>
 #> ──────────────────────────────────────────
 #> 
 #> 
-
 ```

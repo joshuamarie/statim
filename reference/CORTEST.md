@@ -1,12 +1,12 @@
-# Correlation test
+# Correlation Test
 
-`CORTEST()` performs a t-test for one-sample, two-sample, paired,
-pairwise, or formula-based comparisons.
+`CORTEST()` performs a correlation test for one-to-one or many-to-one
+variable relationships.
 
 ## Usage
 
 ``` r
-CORTEST(.model = NULL, .data = NULL, ..., .extra_defs = list())
+CORTEST(.model = NULL, .data = NULL, ...)
 ```
 
 ## Arguments
@@ -14,10 +14,9 @@ CORTEST(.model = NULL, .data = NULL, ..., .extra_defs = list())
 - .model:
 
   A model ID from
-  [`rel()`](https://joshuamarie.github.io/statim/reference/rel.md),
-  [`pairwise()`](https://joshuamarie.github.io/statim/reference/pairwise.md),
-  or a formula. When supplied, the test executes immediately. When
-  `NULL` (default), returns a `test_spec` for use in the pipeline via
+  [`rel()`](https://joshuamarie.github.io/statim/reference/rel.md). When
+  supplied, the test executes immediately. When `NULL` (default),
+  returns a `test_spec` for use in the pipeline via
   [`prepare_test()`](https://joshuamarie.github.io/statim/reference/prepare-test.md).
 
 - .data:
@@ -26,13 +25,8 @@ CORTEST(.model = NULL, .data = NULL, ..., .extra_defs = list())
 
 - ...:
 
-  Additional arguments passed to the implementation: `.method`, `.ci`
-  for the classical path.
-
-- .extra_defs:
-
-  A list of additional `test_define` objects supplied by the user. These
-  extend the available implementations and engines.
+  Additional arguments passed to the implementation: `.cor_type`,
+  `.alt`, `.ci` for the classical path.
 
 ## Value
 
@@ -41,16 +35,13 @@ An `htest_spec` object (standalone or eager), or a `test_spec` object
 
 ## Supported model IDs
 
-- [`rel()`](https://joshuamarie.github.io/statim/reference/rel.md):
-  Many-to-one correlation test
-
-- [`pairwise()`](https://joshuamarie.github.io/statim/reference/pairwise.md):
-  Pairwise correlation test
+- [`rel()`](https://joshuamarie.github.io/statim/reference/rel.md) —
+  many-to-one correlation test
 
 ## Examples
 
 ``` r
-# standalone
+# eager
 CORTEST(rel(speed, dist), cars)
 #> -- Summary ---------------------------------------------------------------------
 #> 
@@ -71,7 +62,7 @@ CORTEST(rel(speed, dist), cars)
 #> 
 #> 
 
-# Main pipeline
+# pipeline
 cars |>
     define_model(rel(speed, dist)) |>
     prepare_test(CORTEST) |>

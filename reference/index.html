@@ -40,12 +40,12 @@
     <div class="section level2">
       <h2 id="high-level-api">High Level API<a class="anchor" aria-label="anchor" href="#high-level-api"></a></h2>
 
-      <div class="section-desc"><p>Main functions for interactive uses</p></div>
+      <div class="section-desc"><p>Main functions for interactive use</p></div>
 
       <dl></dl></div><div class="section level2">
 
-      <h3 id="model-definition-construction-verb">Model definition construction verb<a class="anchor" aria-label="anchor" href="#model-definition-construction-verb"></a></h3>
-      <div class="section-desc"><p>A verb that describes the model you want to analyze</p></div>
+      <h3 id="model-definition">Model definition<a class="anchor" aria-label="anchor" href="#model-definition"></a></h3>
+      <div class="section-desc"><p>Verbs that describe the model you want to analyze</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -61,7 +61,7 @@
       </dl></div><div class="section level2">
 
       <h3 id="model-ids">Model IDs<a class="anchor" aria-label="anchor" href="#model-ids"></a></h3>
-      <div class="section-desc"><p>Basically mappers to shape the model you want to describe. Formula also allowed.</p></div>
+      <div class="section-desc"><p>Mappers to shape the model you want to describe. Formula also allowed.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -91,7 +91,7 @@
       </dl></div><div class="section level2">
 
       <h3 id="multiple-inline-codes">Multiple Inline Codes<a class="anchor" aria-label="anchor" href="#multiple-inline-codes"></a></h3>
-      <div class="section-desc"><p>Analogue to <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code>, but only captures the expression, not evaluated, and accepts multiple inline codes.</p></div>
+      <div class="section-desc"><p>Analogue to <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code>, but only captures the expression and accepts multiple inline codes.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -106,59 +106,8 @@
         <dd>Inline multiple expressions in a model ID</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="h-test-configuration">H-test configuration<a class="anchor" aria-label="anchor" href="#h-test-configuration"></a></h3>
-      <div class="section-desc"><p>Verbs that define the test you want to execute</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="via.html">via()</a></code>
-
-        </dt>
-        <dd>Recalibrate the test method variant</dd>
-
-        <dt>
-
-          <code><a href="through.html">through()</a></code>
-
-        </dt>
-        <dd>Set the computational engine for a test pipeline</dd>
-
-        <dt>
-
-          <code><a href="update.test_lazy.html">update(<i>&lt;test_lazy&gt;</i>)</a></code>
-
-        </dt>
-        <dd>Recalibrate arguments from the main pipeline</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="h-test-executioner">H-test executioner<a class="anchor" aria-label="anchor" href="#h-test-executioner"></a></h3>
-      <div class="section-desc"><p>Execute the prepared test pipeline</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="conclude.html">conclude()</a></code>
-
-        </dt>
-        <dd>Execute a lazy test pipeline</dd>
-      </dl></div><div class="section level2">
-      <h2 id="grammatical-verbs">Grammatical verbs<a class="anchor" aria-label="anchor" href="#grammatical-verbs"></a></h2>
-
-      <div class="section-desc"><p>Functions that signifies “grammar of statistical inference”</p></div>
-
-      <dl></dl></div><div class="section level2">
-
       <h3 id="h-test-pipeline">H-test pipeline<a class="anchor" aria-label="anchor" href="#h-test-pipeline"></a></h3>
-      <div class="section-desc"><p>Functions to express the grammar for H-test pipeline</p></div>
+      <div class="section-desc"><p>Verbs that build and execute the test pipeline</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -171,15 +120,133 @@
 
         </dt>
         <dd>Lazily prepare a single test</dd>
+
+        <dt>
+
+          <code><a href="via.html">via()</a></code>
+
+        </dt>
+        <dd>Recalibrate the test method variant</dd>
+
+        <dt>
+
+          <code><a href="update.test_lazy.html">update(<i>&lt;test_lazy&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Recalibrate arguments from the main pipeline</dd>
+
+        <dt>
+
+          <code><a href="conclude.html">conclude()</a></code>
+
+        </dt>
+        <dd>Execute a lazy test pipeline</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="h-test-executioner">H-test executioner<a class="anchor" aria-label="anchor" href="#h-test-executioner"></a></h3>
+      <div class="section-desc"><p>Eager execution of a prepared test</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="TTEST.html">TTEST()</a></code>
+
+        </dt>
+        <dd>T-Test</dd>
+
+        <dt>
+
+          <code><a href="CORTEST.html">CORTEST()</a></code>
+
+        </dt>
+        <dd>Correlation Test</dd>
+      </dl></div><div class="section level2">
+      <h2 id="low-level-implementation-api">Low-level/Implementation API<a class="anchor" aria-label="anchor" href="#low-level-implementation-api"></a></h2>
+
+      <div class="section-desc"><p>Functions for building and extending test implementations</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+      <h3 id="implementation-containers">Implementation containers<a class="anchor" aria-label="anchor" href="#implementation-containers"></a></h3>
+      <div class="section-desc"><p>Declare how a test runs</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="agendas.html">agendas()</a></code>
+
+        </dt>
+        <dd>Collect implementations for a test definition</dd>
+
+        <dt>
+
+          <code><a href="baseline.html">baseline()</a></code>
+
+        </dt>
+        <dd>Declare the canonical implementation of a test</dd>
+
+        <dt>
+
+          <code><a href="variant.html">variant()</a></code>
+
+        </dt>
+        <dd>Declare an alternative implementation of a test</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="test-definition">Test definition<a class="anchor" aria-label="anchor" href="#test-definition"></a></h3>
+      <div class="section-desc"><p>Register a new test implementation</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="test_define.html">test_define()</a></code>
+
+        </dt>
+        <dd>Define a test implementation</dd>
+
+        <dt>
+
+          <code><a href="HTEST_FN.html">HTEST_FN()</a></code>
+
+        </dt>
+        <dd>Build a hypothesis test function</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="session-scoped-variant-management">Session-scoped variant management<a class="anchor" aria-label="anchor" href="#session-scoped-variant-management"></a></h3>
+      <div class="section-desc"><p>Add or replace variants on existing test functions</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="htest-defs-modifiers.html">plug_variant()</a></code> <code><a href="htest-defs-modifiers.html">swap_variant()</a></code> <code><a href="htest-defs-modifiers.html">clear_htest_defs()</a></code>
+
+        </dt>
+        <dd>Add or replace variants on a test function</dd>
       </dl></div><div class="section level2">
       <h2 id="low-level-api">Low Level API<a class="anchor" aria-label="anchor" href="#low-level-api"></a></h2>
 
-      <div class="section-desc"><p>Main functions to interact with ‘statim’ API</p></div>
+      <div class="section-desc"><p>Functions to interact with the statim internals</p></div>
 
       <dl></dl></div><div class="section level2">
 
       <h3 id="model-id-helpers">Model ID helpers<a class="anchor" aria-label="anchor" href="#model-id-helpers"></a></h3>
-      <div class="section-desc"><p>You can make new mappers with these functions</p></div>
+      <div class="section-desc"><p>Build new model ID mappers</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -206,98 +273,6 @@
 
         </dt>
         <dd>Extract metadata from a model ID</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="inference-context-interactors">Inference context interactors<a class="anchor" aria-label="anchor" href="#inference-context-interactors"></a></h3>
-      <div class="section-desc"><p>Functions to interact objects from the pipeline</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="infer-context-accessors.html">ic_pull()</a></code> <code><a href="infer-context-accessors.html">ic_name()</a></code> <code><a href="infer-context-accessors.html">ic_arg()</a></code> <code><a href="infer-context-accessors.html">ic_method_arg()</a></code> <code><a href="infer-context-accessors.html">ic_claim()</a></code>
-
-        </dt>
-        <dd>Access data and arguments inside a test implementation</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="parameter-definers">Parameter definers<a class="anchor" aria-label="anchor" href="#parameter-definers"></a></h3>
-      <div class="section-desc"><p>Functions to define function for inference’s parameters</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="fun_args.html">fun_args()</a></code>
-
-        </dt>
-        <dd>Declare arguments for a test implementation</dd>
-
-        <dt>
-
-          <code><a href="method_spec.html">method_spec()</a></code>
-
-        </dt>
-        <dd>Declare a method variant for a test implementation</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="h-test-storage">H-test storage<a class="anchor" aria-label="anchor" href="#h-test-storage"></a></h3>
-      <div class="section-desc"><p>Acts like a storage room to store the metadata of H-test definitions</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="test_define.html">test_define()</a></code>
-
-        </dt>
-        <dd>Define a test implementation</dd>
-
-        <dt>
-
-          <code><a href="HTEST_FN.html">HTEST_FN()</a></code>
-
-        </dt>
-        <dd>Build a hypothesis test function</dd>
-
-        <dt>
-
-          <code><a href="htest-defs-modifiers.html">add_htest_defs()</a></code> <code><a href="htest-defs-modifiers.html">get_htest_defs()</a></code> <code><a href="htest-defs-modifiers.html">clear_htest_defs()</a></code>
-
-        </dt>
-        <dd>H-test definition modifiers</dd>
-      </dl></div><div class="section level2">
-      <h2 id="battery-ready-h-test-functions">Battery-ready H-test functions<a class="anchor" aria-label="anchor" href="#battery-ready-h-test-functions"></a></h2>
-
-      <div class="section-desc"><p>Functions used for Hypothesis testing</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="TTEST.html">TTEST()</a></code>
-
-        </dt>
-        <dd>T-Test</dd>
-
-        <dt>
-
-          <code><a href="CORTEST.html">CORTEST()</a></code>
-
-        </dt>
-        <dd>Correlation test</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

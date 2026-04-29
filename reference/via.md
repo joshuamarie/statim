@@ -1,8 +1,7 @@
 # Recalibrate the test method variant
 
-`via()` switches a lazy pipeline to an alternative method variant (e.g.
-bootstrap, permutation) and merges user-supplied arguments with the
-variant's declared defaults.
+`via()` switches a lazy pipeline to an alternative method variant and
+merges user-supplied arguments with the variant's declared defaults.
 
 ## Usage
 
@@ -10,36 +9,28 @@ variant's declared defaults.
 via(.x, .method, ...)
 
 # S3 method for class 'test_lazy'
-via(.x, .method, ..., engine = NULL)
-
-# S3 method for class 'engine_set'
-via(.x, .method, ..., engine = NULL)
+via(.x, .method, ...)
 ```
 
 ## Arguments
 
 - .x:
 
-  A `test_lazy` or `engine_set` object.
+  A `test_lazy` object.
 
 - .method:
 
-  A string naming the method variant. Must match the `name` passed to
-  [`method_spec()`](https://joshuamarie.github.io/statim/reference/method_spec.md)
-  in one of the registered
-  [`test_define()`](https://joshuamarie.github.io/statim/reference/test_define.md)
-  objects. E.g. `"boot"`, `"permute"`.
+  A string naming the method variant. Must match a named
+  [`variant()`](https://joshuamarie.github.io/statim/reference/variant.md)
+  in the
+  [`agendas()`](https://joshuamarie.github.io/statim/reference/agendas.md)
+  of the matched
+  [`test_define()`](https://joshuamarie.github.io/statim/reference/test_define.md).
+  E.g. `"boot"`, `"permute"`, `"permute_rfast"`.
 
 - ...:
 
-  Named arguments forwarded to the method (override defaults).
-
-- engine:
-
-  A string naming the engine to use. Defaults to the engine already set
-  by
-  [`through()`](https://joshuamarie.github.io/statim/reference/through.md),
-  or `"default"` if none was set.
+  Named arguments forwarded to the variant.
 
 ## Value
 
@@ -47,9 +38,7 @@ The modified `test_lazy` object with `recalibrate_spec` populated.
 
 ## See also
 
-[`through()`](https://joshuamarie.github.io/statim/reference/through.md),
 [`conclude()`](https://joshuamarie.github.io/statim/reference/conclude.md),
-[`method_spec()`](https://joshuamarie.github.io/statim/reference/method_spec.md),
 [`test_define()`](https://joshuamarie.github.io/statim/reference/test_define.md)
 
 ## Examples
@@ -66,10 +55,18 @@ sleep |>
 #> -- Summary ---------------------------------------------------------------------
 #> 
 #> Warning: running command 'tput cols' had status 2
-#> -----------------------------
-#>   CI     :   [-3.16, -0.05]
-#>   n_reps :             2000
-#> -----------------------------
+#> -------------------------------
+#>   CI     :   [-3.11, -0.0798]
+#>   n_reps :               2000
+#> -------------------------------
 #> 
 #> 
+
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    via("permute_rfast", B = 999) |>
+    conclude()
+#> Error in via(prepare_test(define_model(sleep, x_by(extra, group)), TTEST),     "permute_rfast", B = 999): No variant "permute_rfast" registered for model type "x_by".
+#> ℹ Available variants: "boot" and "permute".
 ```

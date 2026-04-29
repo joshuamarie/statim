@@ -6,7 +6,7 @@ pairwise, or formula-based comparisons.
 ## Usage
 
 ``` r
-TTEST(.model = NULL, .data = NULL, ..., .extra_defs = list())
+TTEST(.model = NULL, .data = NULL, ...)
 ```
 
 ## Arguments
@@ -29,11 +29,6 @@ TTEST(.model = NULL, .data = NULL, ..., .extra_defs = list())
   Additional arguments passed to the implementation: `.paired`, `.mu`,
   `.alt`, `.ci` for the classical path.
 
-- .extra_defs:
-
-  A list of additional `test_define` objects supplied by the user. These
-  extend the available implementations and engines.
-
 ## Value
 
 An `htest_spec` object (standalone or eager), or a `test_spec` object
@@ -44,15 +39,23 @@ An `htest_spec` object (standalone or eager), or a `test_spec` object
 - [`x_by()`](https://joshuamarie.github.io/statim/reference/x_by.md) —
   two-sample or paired t-test
 
-## Method variants
+- [`pairwise()`](https://joshuamarie.github.io/statim/reference/pairwise.md)
+  — pairwise t-tests across variables
 
-- `"boot"` — bootstrap confidence interval via
-  [`via()`](https://joshuamarie.github.io/statim/reference/via.md)
+- formula — one-sample or two-sample t-test
+
+## Method variants (via [`via()`](https://joshuamarie.github.io/statim/reference/via.md))
+
+- `"boot"` — bootstrap confidence interval
+
+- `"permute"` — permutation test
+
+- `"permute_rfast"` — permutation test backed by Rfast2
 
 ## Examples
 
 ``` r
-# standalone
+# eager
 TTEST(x_by(extra, group), sleep)
 #> -- Summary ---------------------------------------------------------------------
 #> 
@@ -73,7 +76,7 @@ TTEST(x_by(extra, group), sleep)
 #> 
 #> 
 
-# Main pipeline
+# pipeline
 sleep |>
     define_model(x_by(extra, group)) |>
     prepare_test(TTEST) |>
@@ -113,6 +116,25 @@ sleep |>
 #>   CI     :   [-3.21, 0.0702]
 #>   n_reps :              2000
 #> ------------------------------
+#> 
+#> 
+
+# permutation
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    via("permute", n = 2000) |>
+    conclude()
+#> ============================== T-test Permutation ==============================
+#> 
+#> 
+#> -- Summary ---------------------------------------------------------------------
+#> 
+#> ───────────────────────────────
+#>   Statistic  p-value  n_perms  
+#> ───────────────────────────────
+#>    -1.580     0.092    2000    
+#> ───────────────────────────────
 #> 
 #> 
 ```

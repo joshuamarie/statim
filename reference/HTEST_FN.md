@@ -28,7 +28,7 @@ HTEST_FN(cls, defs, .name)
 
 ## Value
 
-A function with signature `function(.model, .data, ..., .extra_defs)`.
+A function with signature `function(.model, .data, ...)`.
 
 ## See also
 
@@ -36,15 +36,3 @@ A function with signature `function(.model, .data, ..., .extra_defs)`.
 [`prepare_test()`](https://joshuamarie.github.io/statim/reference/prepare-test.md),
 [`via()`](https://joshuamarie.github.io/statim/reference/via.md),
 [`conclude()`](https://joshuamarie.github.io/statim/reference/conclude.md)
-
-## Examples
-
-``` r
-if (FALSE) { # \dontrun{
-MY_TEST = HTEST_FN(
-    cls = "mytest",
-    defs = list(my_def_two),
-    .name = "My Test"
-)
-} # }
-```
