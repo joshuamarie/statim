@@ -2,105 +2,66 @@
 % Please edit documentation in R/htest-add-option.R
 \name{htest-defs-modifiers}
 \alias{htest-defs-modifiers}
-\alias{add_htest_defs}
-\alias{get_htest_defs}
+\alias{plug_variant}
+\alias{swap_variant}
 \alias{clear_htest_defs}
-\title{H-test definition modifiers}
+\title{Add or replace variants on a test function}
 \usage{
-add_htest_defs(defs, origin = c("user", "package"))
+plug_variant(test, name, impl, origin = c("user", "package"))
 
-get_htest_defs(cls = NULL)
+swap_variant(test, name, impl, origin = c("user", "package"))
 
 clear_htest_defs(cls = NULL)
 }
 \arguments{
-\item{defs}{A \link{test_define} object or a list of \link{test_define} objects to be
-referenced globally. Each element must be a valid S7 \code{test_define} instance —
-passing anything else raises an error.}
+\item{test}{A test function built with \code{\link[=HTEST_FN]{HTEST_FN()}}, e.g. \link{TTEST}.}
 
-\item{origin}{Must be one of \code{"user"} (default) or \code{"package"}. Controls
-the origin tag attached to each registered def. Use \code{"package"} inside
-\code{.onLoad()} hook to protect defs from being wiped by \code{\link[=clear_htest_defs]{clear_htest_defs()}},
-which only removes \code{"user"}-originated defs by default. Passing
-\code{"package"} in interactive code is discouraged.}
+\item{name}{A string naming the variant to add or replace.}
 
-\item{cls}{A string naming the test class to clear (e.g. \code{"ttest"}). When
-\code{NULL} (default), all globally registered definitions are cleared.}
+\item{impl}{A \code{\link[=variant]{variant()}} object.}
+
+\item{origin}{One of \code{"user"} (default, session-scoped) or \code{"package"}
+(permanent, intended for \code{.onLoad()}).}
+
+\item{cls}{A string naming the test class to clear (e.g. \code{"ttest"}).
+When \code{NULL} (default), all globally registered variants are cleared.}
 }
 \value{
-\itemize{
-\item \code{add_htest_defs()} and \code{clear_htest_defs()} return \code{NULL} invisibly,
-called for their side effects on \code{htest_opts_global$defs}.
-\item \code{get_htest_defs()} returns a list of \link{test_define} objects, or an empty
-list if none have been registered for the given \code{cls}.
-}
+\code{plug_variant()}, \code{swap_variant()}, and \code{clear_htest_defs()} return
+\code{NULL} invisibly, called for their side effects.
+\code{get_htest_defs()} returns a list of \code{\link[=test_define]{test_define()}} objects, or an
+empty list if none have been registered for the given \code{cls}.
 }
 \description{
-A family of functions for managing globally registered \link{test_define} objects
-across all \link{HTEST_FN}-based functions (e.g. \link{TTEST}) for the duration of
-the session.
+A family of functions for managing globally registered \code{\link[=variant]{variant()}} objects
+across all \link{HTEST_FN}-based functions for the duration of the session.
 }
 \section{Functions}{
 \itemize{
-\item \code{add_htest_defs()}: Registers one or more \link{test_define} objects
-into the global H-test store. The \code{cls} key is derived automatically from
-each def's \code{impl_class} prefix (e.g. \code{"ttest_permute_rfast"} routes into
-\code{"ttest"}), scoping it to the correct \link{HTEST_FN}-based function.
+\item \code{plug_variant()}: Adds a new named \code{\link[=variant]{variant()}} to an
+existing test function. Hard-errors if the name already exists or
+if name is \code{"default"}.
 
-\item \code{get_htest_defs()}: Returns the list of \link{test_define} objects
-currently registered under the given \code{cls} key. Primarily used internally
-by \code{\link[=HTEST_FN]{HTEST_FN()}} but exported for inspection and testing.
+\item \code{swap_variant()}: Replaces an existing named \code{\link[=variant]{variant()}}.
+Hard-errors if the name does not exist or if name is \code{"default"}.
 
-\item \code{clear_htest_defs()}: Resets the global H-test store, either
-fully or scoped to a specific \code{cls}. Only \code{"user"}-originated defs are
-removed — defs registered with \code{"package"} origin via \code{.onLoad()} are
-always preserved. Subsequent calls to \link{HTEST_FN}-based functions will
-fall back to built-in and package-registered definitions only.
+\item \code{clear_htest_defs()}: Resets globally registered variants,
+either fully or scoped to a specific \code{cls}. Only \code{"user"}-originated
+entries are removed — \code{"package"} entries are always preserved.
 
 }}
 \section{Precedence}{
 
-Globally registered defs sit between built-in definitions and per-call
-overrides. The full priority order, from lowest to highest, is:
+Globally registered variants sit between built-in definitions and the
+pipeline. The full priority order, from lowest to highest, is:
 
 \enumerate{
-\item Built-in defs (declared inside \link{HTEST_FN})
-\item Global defs registered via \code{add_htest_defs()}
-\item Per-call defs passed via \code{.extra_defs}
-}
-
-When two defs share the same key (\verb{model_type::method::engine}), the
-higher-priority entry wins at lookup time.
-}
-
-\examples{
-\donttest{
-\dontrun{
-my_def = test_define(
-    model_type = "x_by",
-    engine = "custom",
-    # ...
-)
-
-add_htest_defs(my_def)
-
-# my_def is now available in a current environment
-# no `.extra_defs` needed
-TTEST(x_by(extra, group), sleep)
-
-# Inspect what is registered under "ttest"
-get_htest_defs("ttest")
-
-# Clear only ttest-scoped defs
-clear_htest_defs("ttest")
-
-# Clear everything
-clear_htest_defs()
+\item Built-in variants (declared inside \link{HTEST_FN})
+\item Global variants registered via \code{plug_variant()} or \code{swap_variant()}
 }
 }
 
-}
 \seealso{
-\code{\link[=HTEST_FN]{HTEST_FN()}}, \code{\link[=test_define]{test_define()}}
+\code{\link[=HTEST_FN]{HTEST_FN()}}, \code{\link[=test_define]{test_define()}}, \code{\link[=variant]{variant()}}
 }
 \keyword{internal}

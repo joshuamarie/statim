@@ -68,17 +68,19 @@ print.test_lazy = function(x, ...) {
     }
     cat("\n")
 
-    engine = x$recalibrate_spec$engine %||% x$engine %||% "default"
-    cat("Engine :", engine, "\n")
-
     cat("\n")
     invisible(x)
 }
 
 #' Recalibrate arguments from the main pipeline
 #'
-#' This function is ideal to transmute and modify the parameters being used in the test
-#' under the pipeline.
+#' `update()` modifies the arguments of a lazy test pipeline without
+#' changing the method variant or engine.
+#'
+#' @param object A `test_lazy` object.
+#' @param ... Named arguments to update.
+#'
+#' @return The modified `test_lazy` object.
 #'
 #' @examples
 #' sleep |>
@@ -87,19 +89,19 @@ print.test_lazy = function(x, ...) {
 #'     update(.paired = TRUE) |>
 #'     conclude()
 #'
-#'
 #' @importFrom stats update
-#' @keywords internal
 #' @export
 update.test_lazy = function(object, ...) {
     dots = list(...)
     if (!is.null(object$recalibrate_spec)) {
         object$recalibrate_spec$args = utils::modifyList(
-            object$recalibrate_spec$args, dots
+            object$recalibrate_spec$args,
+            dots
         )
     } else {
         object$test_spec$args = utils::modifyList(
-            object$test_spec$args, dots
+            object$test_spec$args,
+            dots
         )
     }
     object
@@ -117,4 +119,3 @@ as_test_spec = function(.test) {
 
     cli::cli_abort("{.arg .test} must be a function or {.cls test_spec}.")
 }
-

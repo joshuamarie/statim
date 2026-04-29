@@ -3,34 +3,27 @@
 \name{via}
 \alias{via}
 \alias{via.test_lazy}
-\alias{via.engine_set}
 \title{Recalibrate the test method variant}
 \usage{
 via(.x, .method, ...)
 
-\method{via}{test_lazy}(.x, .method, ..., engine = NULL)
-
-\method{via}{engine_set}(.x, .method, ..., engine = NULL)
+\method{via}{test_lazy}(.x, .method, ...)
 }
 \arguments{
-\item{.x}{A \code{test_lazy} or \code{engine_set} object.}
+\item{.x}{A \code{test_lazy} object.}
 
-\item{.method}{A string naming the method variant. Must match the
-\code{name} passed to \code{\link[=method_spec]{method_spec()}} in one of the registered
-\code{\link[=test_define]{test_define()}} objects. E.g. \code{"boot"}, \code{"permute"}.}
+\item{.method}{A string naming the method variant. Must match a named
+\code{\link[=variant]{variant()}} in the \code{\link[=agendas]{agendas()}} of the matched \code{\link[=test_define]{test_define()}}.
+E.g. \code{"boot"}, \code{"permute"}, \code{"permute_rfast"}.}
 
-\item{...}{Named arguments forwarded to the method (override defaults).}
-
-\item{engine}{A string naming the engine to use. Defaults to the engine
-already set by \code{\link[=through]{through()}}, or \code{"default"} if none was set.}
+\item{...}{Named arguments forwarded to the variant.}
 }
 \value{
 The modified \code{test_lazy} object with \code{recalibrate_spec} populated.
 }
 \description{
-\code{via()} switches a lazy pipeline to an alternative method variant (e.g.
-bootstrap, permutation) and merges user-supplied arguments with the
-variant's declared defaults.
+\code{via()} switches a lazy pipeline to an alternative method variant and
+merges user-supplied arguments with the variant's declared defaults.
 }
 \examples{
 sleep |>
@@ -39,7 +32,13 @@ sleep |>
     via("boot", n = 2000) |>
     conclude()
 
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    via("permute_rfast", B = 999) |>
+    conclude()
+
 }
 \seealso{
-\code{\link[=through]{through()}}, \code{\link[=conclude]{conclude()}}, \code{\link[=method_spec]{method_spec()}}, \code{\link[=test_define]{test_define()}}
+\code{\link[=conclude]{conclude()}}, \code{\link[=test_define]{test_define()}}
 }

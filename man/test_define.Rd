@@ -7,14 +7,9 @@
 test_define(
   model_type = character(0),
   impl_class = character(0),
-  engine = "default",
-  method = NULL,
-  fun_args = NULL,
+  impl = NULL,
   compatible_params = character(0),
-  vars = list(),
-  run = function() NULL,
-  eval_claim = NULL,
-  print = NULL
+  eval_claim = NULL
 )
 }
 \arguments{
@@ -24,64 +19,23 @@ this implementation handles. E.g. \code{"x_by"}, \code{"pairwise"}.}
 \item{impl_class}{A string naming the implementation class.
 E.g. \code{"ttest_two"}. Used in the S3 class vector of the result.}
 
-\item{engine}{A string naming the engine. Defaults to \code{"default"}.
-Use a different string to register an alternative engine, e.g. \code{"cpp"}.}
-
-\item{method}{A \code{method_spec} object declaring the method variant and
-its default arguments. \code{NULL} for classical implementations.}
-
-\item{fun_args}{A \code{fun_args} object from \code{\link[=fun_args]{fun_args()}} declaring the default
-values and required status of each test argument. \code{NULL} if the
-implementation does not use \code{\link[=ic_arg]{ic_arg()}}.}
+\item{impl}{An \code{\link[=agendas]{agendas()}} object declaring all implementations.}
 
 \item{compatible_params}{A character vector of \code{ParamDef} types this
 implementation can interpret via \code{write_claim()}. E.g. \code{c("MU")}.}
 
-\item{vars}{A named list of extractor functions. Each function takes
-\code{processed} and returns the variable for that role. E.g.:
-\code{list(x = function(p) p$x_data[[1]])}.}
-
-\item{run}{A function with signature \verb{function(self)} where \code{self} is
-an \code{infer_context} object. Contains the full implementation logic.
-Use \code{\link[=ic_pull]{ic_pull()}}, \code{\link[=ic_arg]{ic_arg()}}, \code{\link[=ic_method_arg]{ic_method_arg()}} to access data and args.}
-
 \item{eval_claim}{A function with signature \verb{function(self, claim)}
 that interprets a \code{ClaimDef} for this implementation. \code{NULL} if
 \code{write_claim()} is not supported.}
-
-\item{print}{A function with signature \verb{function(x, ...)} that formats
-the result for printing. \code{NULL} falls back to \code{print(x$data)}.}
 }
 \value{
 A \code{test_define} S7 object.
 }
 \description{
 \code{test_define()} declares a single implementation of a hypothesis test.
-Multiple \code{test_define} objects are passed to \code{\link[=HTEST_FN]{HTEST_FN()}} via \code{default_defs}.
+Multiple \code{test_define} objects are passed to \code{\link[=HTEST_FN]{HTEST_FN()}} via \code{defs}.
 This is the main extension point for adding new tests or engines.
 }
-\examples{
-\dontrun{
-new_htest_fn = test_define(
-    model_type = "x_by",
-    impl_class = "mytest_two",
-    engine = "default",
-    vars = list(
-        x = function(p) p$x_data[[1]],
-        group = function(p) p$group_data[[1]]
-    ),
-    run = function(self) {
-        grp = as.character(ic_pull(self, "group"))
-        resp = ic_pull(self, "x")
-        # implementation logic
-    },
-    print = function(x, ...) {
-        print(x$data)
-        invisible(x)
-    }
-)
-}
-}
 \seealso{
-\code{HTEST_FN()}, \code{method_spec()}, \code{\link[=via]{via()}}, \code{\link[=conclude]{conclude()}}
+\code{\link[=agendas]{agendas()}}, \code{\link[=baseline]{baseline()}}, \code{\link[=variant]{variant()}}, \code{\link[=HTEST_FN]{HTEST_FN()}}
 }

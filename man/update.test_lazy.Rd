@@ -6,9 +6,17 @@
 \usage{
 \method{update}{test_lazy}(object, ...)
 }
+\arguments{
+\item{object}{A \code{test_lazy} object.}
+
+\item{...}{Named arguments to update.}
+}
+\value{
+The modified \code{test_lazy} object.
+}
 \description{
-This function is ideal to transmute and modify the parameters being used in the test
-under the pipeline.
+\code{update()} modifies the arguments of a lazy test pipeline without
+changing the method variant or engine.
 }
 \examples{
 sleep |>
@@ -17,6 +25,4 @@ sleep |>
     update(.paired = TRUE) |>
     conclude()
 
-
 }
-\keyword{internal}
