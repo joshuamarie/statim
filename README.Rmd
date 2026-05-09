@@ -102,7 +102,7 @@ sleep |>
 sleep |>
     define_model(x_by(extra, group)) |>
     prepare_test(TTEST) |>
-    via("permute", n = 500L) |>
+    via("permute", n = 500L, seed = 123L) |>
     conclude()
 ```
 
