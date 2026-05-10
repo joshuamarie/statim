@@ -7,7 +7,7 @@ test_that("conclude.test_lazy runs classical TTEST pipeline", {
     expect_s3_class(result, "htest_spec")
     expect_s3_class(result, "ttest_two")
     expect_s3_class(result, "ttest")
-    expect_equal(result$name, "T-Test")
+    expect_equal(attr(result, "cld_meta")$test_name, "T-Test")
 })
 
 test_that("conclude.test_lazy result data is a tibble with group and ttest columns", {
