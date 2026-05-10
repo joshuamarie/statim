@@ -70,6 +70,47 @@ conclude.test_lazy = function(.x, ...) {
         test_cls = .x$test_spec$cls,
         print_fn = impl@print
     )
-    out$name = .x$test_spec$name
+    class(out) = c("cld_exec", class(out))
+    attr(out, "cld_meta") = list(
+        model_id  = .x$model_id,
+        processed = .x$processed,
+        test_name = .x$test_spec$name,
+        method = method_name %||% "default",
+        data_name = .x$data_name %||% ""
+    )
+
     out
 }
+
+#' @keywords internal
+#' @export
+print.cld_exec = function(x, ...) {
+    meta = attr(x, "cld_meta")
+    info = model_id_info(meta$model_id, meta$processed)
+
+    cat("\n")
+    cat(cli::rule(left = "Model", line = "="), "\n\n")
+    cat("Model ID :", info$model_type, "\n")
+    cat("Args :", info$args, "\n")
+    if (length(info$other_info) > 0L) {
+        for (nm in names(info$other_info)) {
+            cat("   ", nm, ":", info$other_info[[nm]], "\n")
+        }
+    }
+    if (!is.null(meta$data_name) && nzchar(meta$data_name)) {
+        cat("Data     :", meta$data_name, "\n")
+    }
+
+    test_label = if (identical(meta$method, "default")) {
+        meta$test_name
+    } else {
+        paste0(meta$test_name, " \u00b7 ", meta$method)
+    }
+    cat("\n")
+    cat(cli::rule(left = test_label, line = "="), "\n\n")
+
+    NextMethod()
+
+    invisible(x)
+}
+
