@@ -25,6 +25,7 @@ immediately delivers *how*.
 The package is yet to be submitted into CRAN.
 
 ``` r
+
 # Stable version (not yet released)
 install.packages("statim")
 ```
@@ -33,6 +34,7 @@ For the time being, you can install the current implementation on
 GitHub:
 
 ``` r
+
 # Development version from GitHub
 # install.packages("pak")
 pak::pak("joshuamarie/statim")
@@ -53,6 +55,7 @@ R. It embodies almost the same paradigm as
 actual pipes, not `+`.
 
 ``` r
+
 library(statim)
 ```
 
@@ -61,6 +64,7 @@ Here’s an example of a quick H-test pipeline:
 1.  tidyverse-like grammar semantics
 
     ``` r
+
     sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
@@ -87,6 +91,7 @@ Here’s an example of a quick H-test pipeline:
     ```
 
     ``` r
+
     sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
@@ -114,6 +119,7 @@ Here’s an example of a quick H-test pipeline:
 2.  1-liner syntax
 
     ``` r
+
     TTEST(x_by(extra, group), sleep)
     ```
 

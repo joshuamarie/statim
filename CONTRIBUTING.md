@@ -21,12 +21,14 @@ By participating in this project, you agree to follow the rules in
 2.  Install development dependencies in R:
 
 ``` r
+
 install.packages(c("devtools", "roxygen2", "testthat"))
 ```
 
 3.  Load the package for development:
 
 ``` r
+
 devtools::load_all()
 ```
 
@@ -38,6 +40,7 @@ devtools::load_all()
 - Run checks before submitting:
 
 ``` r
+
 devtools::check()
 ```
 
