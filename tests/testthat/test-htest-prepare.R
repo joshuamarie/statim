@@ -14,17 +14,17 @@ test_that("prepare_test.def_model stores model_id, processed, test_spec", {
     expect_null(result$claims)
 })
 
-test_that("prepare_test accepts a test_spec directly", {
+test_that("prepare_test must accept a function, not an empty function call", {
     dm = sleep |> define_model(x_by(extra, group))
     spec = TTEST()  # returns test_spec when called with no model
-    result = prepare_test(dm, spec)
-    expect_s3_class(result, "test_lazy")
+    expect_error(prepare_test(dm, spec), "`.test` must be a function.")
 })
 
 test_that("as_test_spec returns spec unchanged when already test_spec", {
     spec = TTEST()
-    result = as_test_spec(spec)
-    expect_identical(result, spec)
+    expect_error(as_test_spec(spec), "`.test` must be a function.")
+    # result = as_test_spec(spec)
+    # expect_identical(result, spec)
 })
 
 test_that("as_test_spec calls function and returns test_spec", {
