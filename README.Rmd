@@ -53,8 +53,8 @@ t.test(extra ~ group, data = sleep)
 cor.test(cars$speed, cars$dist)
 
 # statim: same pipeline shape regardless of the test
-sleep |> define_model(x_by(extra, group)) |> prepare_test(TTEST)   |> conclude()
-cars  |> define_model(rel(speed, dist))   |> prepare_test(CORTEST) |> conclude()
+sleep |> define_model(x_by(extra, group)) |> prepare_test(TTEST) |> conclude()
+cars |> define_model(rel(speed, dist)) |> prepare_test(CORTEST) |> conclude()
 
 # Switching to permutation is one word; nothing else in the pipeline moves
 sleep |> define_model(x_by(extra, group)) |> prepare_test(TTEST) |> via("permute", n = 1000L) |> conclude()
