@@ -41,8 +41,8 @@ prepare_model = S7::new_generic("prepare_model", dispatch_args = c(".x", ".model
 #     UseMethod("prepare_model")
 # }
 
-S7::method(prepare_model, list(def_model, S7::class_function)) = function(.x, .test, ...) {
-    spec = as_test_spec(.test)
+S7::method(prepare_model, list(def_model, S7::class_function)) = function(.x, .model_fn, ...) {
+    spec = as_model_spec(.model_fn)
     model_lazy(
         model_id = .x@model_id,
         processed = .x@processed,
@@ -78,7 +78,6 @@ S7::method(print, model_lazy) = function(x, ...) {
     invisible(x)
 }
 
-#' @rdname update.test_lazy
 S7::method(update, model_lazy) = function(object, ...) {
     dots = list(...)
     if (!is.null(object@recalibrate_spec)) {

@@ -94,8 +94,10 @@ S7::method(print, test_lazy) = function(x, ...) {
 #'     update(.paired = TRUE) |>
 #'     conclude()
 #'
-#' @name update.test_lazy
+#' @name update-test-lazy
 #' @keywords internal
+NULL
+
 S7::method(update, test_lazy) = function(object, ...) {
     dots = list(...)
     if (!is.null(object@recalibrate_spec)) {
