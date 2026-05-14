@@ -39,6 +39,35 @@ Suggests:
     pander,
     Rfast2,
     purrr
+Collate:
+    'statim-package.R'
+    'define-model-ids.R'
+    'define-model-ids-info.R'
+    'define-model-process.R'
+    'define-model.R'
+    'define-model-helpers.R'
+    'generate-pairs.R'
+    'inject-and-run.R'
+    'construct-stats.R'
+    'baseline-variant.R'
+    'stat-spec.R'
+    'htest-prepare.R'
+    'model-prepare.R'
+    'recalibrator-via.R'
+    'stat-exec.R'
+    'model-impl-container.R'
+    'htest-spec.R'
+    'htest-impl-container.R'
+    'htest-ttest-defs-xby.R'
+    'htest-ttest-defs-formula.R'
+    'htest-ttest-defs-pairwise.R'
+    'htest-ttest.R'
+    'htest-testcor-defs-rel.R'
+    'htest-testcor.R'
+    'global_variables.R'
+    'utils.R'
+    'add-option.R'
+    'zzz.R'
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 Depends: 
