@@ -3,7 +3,7 @@
 #'
 #' @param impl A `baseline` or `variant` S7 object.
 #' @param processed Output of `model_processor()`.
-#' @param args A named list of user-supplied arguments.
+#' @param args A named list of user-supplied arguments. They are the extra arguments.
 #' @param claims A named list of resolved `ClaimDef` objects. `NULL` if none.
 #'
 #' @return The raw output of the `fn` call.
@@ -39,7 +39,8 @@ inject_and_run = function(impl, processed, args, claims = NULL) {
         ))
     }
 
-    do.call(fn, injected)
+    # do.call(fn, injected)
+    rlang::exec(fn, !!!injected)
 }
 
 #' Map a single fn argument name to processed model output.
