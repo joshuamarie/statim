@@ -3,21 +3,9 @@
 \name{model-processor}
 \alias{model-processor}
 \alias{model_processor}
-\alias{model_processor.formula}
-\alias{model_processor.x_by}
-\alias{model_processor.rel}
-\alias{model_processor.pairwise}
 \title{Model evaluator}
 \usage{
 model_processor(x, ...)
-
-\method{model_processor}{formula}(x, data = NULL, ...)
-
-\method{model_processor}{x_by}(x, data = NULL, ...)
-
-\method{model_processor}{rel}(x, data = NULL, ...)
-
-\method{model_processor}{pairwise}(x, data = NULL, ...)
 }
 \arguments{
 \item{x}{The model IDs to be extracted.}

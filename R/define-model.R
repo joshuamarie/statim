@@ -24,61 +24,39 @@
 #'
 #' @name model-define-base
 #' @export
-define_model = function(.x, ...) {
-    if (inherits(.x, "formula")) {
-        class(.x) = c(class(.x), "model_id")
-    }
-    UseMethod("define_model")
-}
+define_model = S7::new_generic("define_model", ".x")
 
-#' @rdname model-define-base
-#' @export
-define_model.model_id = function(.x, data = parent.frame(), ...) {
-    metad = model_processor(.x, data)
-
-    model_id = if (inherits(.x, "formula")) {
-        out = list(formula = metad$formula)
-        class(out) = c("formula", "model_id")
-        out
-    } else {
-        .x
-    }
-
-    out = list(
-        model_id = model_id,
-        # options = vctrs::vec_c(...),
-        processed = metad
+S7::method(define_model, S7::class_formula) = function(.x, data = parent.frame(), ...) {
+    def_model(
+        model_id = .x,
+        processed = model_processor(.x, data)
     )
-    class(out) = "def_model"
-    out
 }
 
-#' @rdname model-define-base
-#' @export
-define_model.data.frame = function(.x, to_analyze, ...) {
-    metad = model_processor(to_analyze, .x)
-
-    model_id = if (inherits(to_analyze, "formula")) {
-        out = list(formula = metad$formula)
-        class(out) = c("formula", "model_id")
-        out
-    } else {
-        to_analyze
-    }
-
-    out = list(
-        model_id = model_id,
-        # options = vctrs::vec_c(...),
-        processed = metad
+S7::method(define_model, model_id) = function(.x, data = parent.frame(), ...) {
+    def_model(
+        model_id = .x,
+        processed = model_processor(.x, data)
     )
-    class(out) = "def_model"
-    out
 }
 
-#' @keywords internal
-#' @export
-print.def_model = function(x, ...) {
-    info = model_id_info(x$model_id, x$processed)
+S7::method(define_model, S7::class_data.frame) = function(.x, to_analyze, ...) {
+    def_model(
+        model_id = to_analyze,
+        processed = model_processor(to_analyze, .x)
+    )
+}
+
+def_model = S7::new_class(
+    "def_model",
+    properties = list(
+        model_id = S7::class_any,
+        processed = S7::class_list
+    )
+)
+
+S7::method(print, def_model) = function(x, ...) {
+    info = model_id_info(x@model_id, x@processed)
 
     cat("\n")
     cat(cli::rule(left = "Model Definition", line = "-"), "\n\n")

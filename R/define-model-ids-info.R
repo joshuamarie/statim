@@ -27,16 +27,16 @@
 #' model_id_info(dm$model_id, dm$processed)
 #'
 #' @export
-model_id_info = function(model_id, processed = NULL) {
-    UseMethod("model_id_info")
-}
+model_id_info = S7::new_generic("model_id_info", ".model_id")
+# model_id_info = function(model_id, processed = NULL) {
+#     UseMethod("model_id_info")
+# }
 
-#' @rdname model_id_info
-#' @export
-model_id_info.x_by = function(model_id, processed = NULL) {
-    quos = unclass(model_id)
-    x_lbl = format_quo_label(quos$x)
-    g_lbl = format_quo_label(quos$group)
+# #' @rdname model_id_info
+# #' @export
+S7::method(model_id_info, x_by) = function(.model_id, processed = NULL) {
+    x_lbl = format_quo_label(.model_id@x)
+    g_lbl = format_quo_label(.model_id@group)
 
     out = list(
         model_type = "x_by",
@@ -57,12 +57,11 @@ model_id_info.x_by = function(model_id, processed = NULL) {
     out
 }
 
-#' @rdname model_id_info
-#' @export
-model_id_info.rel = function(model_id, processed = NULL) {
-    quos = unclass(model_id)
-    x_lbl = format_quo_label(quos$x)
-    r_lbl = format_quo_label(quos$resp)
+# #' @rdname model_id_info
+# #' @export
+S7::method(model_id_info, rel) = function(.model_id, processed = NULL) {
+    x_lbl = format_quo_label(.model_id@x)
+    r_lbl = format_quo_label(.model_id@resp)
 
     out = list(
         model_type = "rel",
@@ -83,17 +82,16 @@ model_id_info.rel = function(model_id, processed = NULL) {
     out
 }
 
-#' @rdname model_id_info
-#' @export
-model_id_info.pairwise = function(model_id, processed = NULL) {
-    dots_quos = model_id$args$dots_quos
-    lbls = vapply(dots_quos, format_quo_label, character(1))
+# #' @rdname model_id_info
+# #' @export
+S7::method(model_id_info, pairwise) = function(.model_id, processed = NULL) {
+    lbls = vapply(.model_id@dots_quos, format_quo_label, character(1))
 
     out = list(
         model_type = "pairwise",
         args = paste(lbls, collapse = ", "),
         other_info = list(
-            direction = model_id$direction
+            direction = .model_id@direction
         )
     )
 
@@ -105,10 +103,10 @@ model_id_info.pairwise = function(model_id, processed = NULL) {
     out
 }
 
-#' @rdname model_id_info
-#' @export
-model_id_info.formula = function(model_id, processed = NULL) {
-    f = model_id$formula
+# #' @rdname model_id_info
+# #' @export
+S7::method(model_id_info, S7::class_formula) = function(.model_id, processed = NULL) {
+    f = .model_id
     trms = stats::terms(f)
     lhs_vars = all.vars(rlang::f_lhs(f))
     rhs_vars = attr(trms, "term.labels")

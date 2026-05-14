@@ -2,21 +2,9 @@
 % Please edit documentation in R/define-model-ids-info.R
 \name{model_id_info}
 \alias{model_id_info}
-\alias{model_id_info.x_by}
-\alias{model_id_info.rel}
-\alias{model_id_info.pairwise}
-\alias{model_id_info.formula}
 \title{Extract metadata from a model ID}
 \usage{
-model_id_info(model_id, processed = NULL)
-
-\method{model_id_info}{x_by}(model_id, processed = NULL)
-
-\method{model_id_info}{rel}(model_id, processed = NULL)
-
-\method{model_id_info}{pairwise}(model_id, processed = NULL)
-
-\method{model_id_info}{formula}(model_id, processed = NULL)
+model_id_info(.model_id, ...)
 }
 \arguments{
 \item{model_id}{A model ID object from \code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, \code{\link[=pairwise]{pairwise()}}, or

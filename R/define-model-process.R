@@ -8,59 +8,61 @@
 #'
 #' @name model-processor
 #' @export
-model_processor = function(x, ...) {
-    UseMethod("model_processor")
-}
+model_processor = S7::new_generic("model_processor", "x")
+# model_processor = function(x, ...) {
+#     UseMethod("model_processor")
+# }
 
-#' @rdname model-processor
-#' @export
-model_processor.formula = function(x, data = NULL, ...) {
-    vars = all.vars(x)
-    data = if (rlang::is_null(data)) {
-        vctrs::new_data_frame(
-            rlang::set_names(
-                lapply(
-                    vars,
-                    \(v) rlang::eval_tidy(
-                        rlang::sym(v), env = rlang::f_env(x)
-                    )
-                ),
-                vars
+# #' @rdname model-processor
+# #' @export
+S7::method(model_processor, S7::class_formula) =
+    function(x, data = NULL, ...) {
+        vars = all.vars(x)
+        data = if (rlang::is_null(data)) {
+            vctrs::new_data_frame(
+                rlang::set_names(
+                    lapply(
+                        vars,
+                        \(v) rlang::eval_tidy(
+                            rlang::sym(v), env = rlang::f_env(x)
+                        )
+                    ),
+                    vars
+                )
             )
+        } else {
+            data
+        }
+
+        list(
+            data = data,
+            vars = all.vars(x),
+            formula = x
         )
-    } else {
-        data
     }
 
-    list(
-        data = data,
-        vars = all.vars(x),
-        formula = x
-    )
-}
-
-#' @rdname model-processor
-#' @export
-model_processor.x_by = function(x, data = NULL, ...) {
-    proc = two_vars_extract(x, data)
+# #' @rdname model-processor
+# #' @export
+S7::method(model_processor, x_by) = function(x, data = NULL, ...) {
+    proc = two_vars_extract(x@x, x@group, data = data, role2 = "group")
     list(
         x_data = proc$x1_data,
         group_data = proc$x2_data
     )
 }
 
-#' @rdname model-processor
-#' @export
-model_processor.rel = function(x, data = NULL, ...) {
-    proc = two_vars_extract(x, data)
+# #' @rdname model-processor
+# #' @export
+S7::method(model_processor, rel) = function(x, data = NULL, ...) {
+    proc = two_vars_extract(x@x, x@resp, data = data, role2 = "resp")
     list(
         x_data = proc$x1_data,
         resp_data = proc$x2_data
     )
 }
 
-#' @rdname model-processor
-#' @export
-model_processor.pairwise = function(x, data = NULL, ...) {
+# #' @rdname model-processor
+# #' @export
+S7::method(model_processor, pairwise) = function(x, data = NULL, ...) {
     pairwise_data_extract(x, data)
 }

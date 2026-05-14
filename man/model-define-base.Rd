@@ -3,15 +3,9 @@
 \name{model-define-base}
 \alias{model-define-base}
 \alias{define_model}
-\alias{define_model.model_id}
-\alias{define_model.data.frame}
 \title{Model define constructor}
 \usage{
 define_model(.x, ...)
-
-\method{define_model}{model_id}(.x, data = parent.frame(), ...)
-
-\method{define_model}{data.frame}(.x, to_analyze, ...)
 }
 \arguments{
 \item{.x}{A model ID object from \code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, \code{\link[=pairwise]{pairwise()}}, or a

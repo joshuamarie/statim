@@ -230,22 +230,29 @@ auto_name = function(role, idx) {
     paste0(role, "v", idx)
 }
 
-two_vars_extract = function(args, data = NULL) {
-    if (length(args) != 2L) {
-        cli::cli_abort("This model ID requires exactly 2 arguments.")
-    }
-
-    roles = names(args)
-
-    x1_df = resolve_quo(args[[1]], data = data, role = roles[[1]], idx = 1L)
-    x2_df = resolve_quo(args[[2]], data = data, role = roles[[2]], idx = 1L)
+two_vars_extract = function(x_quo, x2_quo, data = NULL, role1 = "x", role2) {
+    x1_df = resolve_quo(x_quo, data = data, role = role1, idx = 1L)
+    x2_df = resolve_quo(x2_quo, data = data, role = role2, idx = 1L)
 
     list(x1_data = x1_df, x2_data = x2_df)
 }
 
+# two_vars_extract = function(args, data = NULL) {
+#     if (length(args) != 2L) {
+#         cli::cli_abort("This model ID requires exactly 2 arguments.")
+#     }
+#
+#     roles = names(args)
+#
+#     x1_df = resolve_quo(args[[1]], data = data, role = roles[[1]], idx = 1L)
+#     x2_df = resolve_quo(args[[2]], data = data, role = roles[[2]], idx = 1L)
+#
+#     list(x1_data = x1_df, x2_data = x2_df)
+# }
+
 pairwise_data_extract = function(args, data = NULL) {
-    direction = args$direction
-    dots_quos = args$args$dots_quos
+    direction = args@direction
+    dots_quos = args@dots_quos
 
     resolved = lapply(seq_along(dots_quos), function(i) {
         resolve_quo(dots_quos[[i]], data = data, role = "p", idx = i)
