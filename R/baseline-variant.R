@@ -1,17 +1,17 @@
-#' Declare the canonical implementation of a test
+#' Declare the canonical implementation of a test or model
 #'
-#' `baseline()` declares the default implementation of a test, which is
-#' the only implementation reachable on the eager path. It is frozen —
+#' `baseline()` declares the default implementation of a statistical procedure,
+#' which is the only implementation reachable on the eager path. It is frozen —
 #' no user or package can swap it out via [swap_variant()].
 #'
 #' @param fn A function with named arguments. The framework injects
 #'   data and arguments by matching formals to the processed model output.
 #' @param print A function with signature `function(x, ...)` for formatting
-#'   the result. `NULL` falls back to `print(x$data)`.
+#'   the result. `NULL` falls back to `print(x@data)`.
 #'
 #' @return A `baseline` S7 object.
 #'
-#' @seealso [variant()], [agendas()], [test_define()]
+#' @seealso [variant()], [agendas()], [stat_define()]
 #'
 #' @export
 baseline = S7::new_class(
@@ -35,7 +35,7 @@ baseline = S7::new_class(
     }
 )
 
-#' Declare an alternative implementation of a test
+#' Declare an alternative implementation of a test or model
 #'
 #' `variant()` declares a named method variant reachable only via [via()].
 #' Never runs on the eager path.
@@ -43,7 +43,7 @@ baseline = S7::new_class(
 #' @param fn A function with named arguments. The framework injects
 #'   data and arguments by matching formals to the processed model output.
 #' @param print A function with signature `function(x, ...)` for formatting
-#'   the result. `NULL` falls back to `print(x$data)`.
+#'   the result. `NULL` falls back to `print(x@data)`.
 #'
 #' @return A `variant` S7 object.
 #'
@@ -71,9 +71,9 @@ variant = S7::new_class(
     }
 )
 
-#' Collect implementations for a test definition
+#' Collect implementations for a statistical procedure
 #'
-#' `agendas()` is the container for all implementations of a test.
+#' `agendas()` is the container for all implementations of a procedure.
 #' It requires exactly one [baseline()] as its first argument, and accepts
 #' any number of named [variant()] objects.
 #'
@@ -82,7 +82,7 @@ variant = S7::new_class(
 #'
 #' @return An `agendas` S3 object.
 #'
-#' @seealso [baseline()], [variant()], [test_define()]
+#' @seealso [baseline()], [variant()], [stat_define()]
 #'
 #' @export
 agendas = function(base, ...) {
