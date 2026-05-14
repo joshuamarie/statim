@@ -60,7 +60,7 @@ ttest_def_formula = test_define(
                     reason = "to retrieve t-test results and re-store it in a data frame"
                 )
 
-                dat = x$data
+                dat = x@data
 
                 tidy_rows = lapply(seq_len(nrow(dat)), function(i) {
                     td = broom::tidy(dat$ttest[[i]])

@@ -39,7 +39,7 @@ ttest_def_two = test_define(
                     reason = "to retrieve t-test results and re-store it in a data frame"
                 )
 
-                dat = x$data
+                dat = x@data
 
                 tidy_rows = lapply(seq_len(nrow(dat)), function(i) {
                     td = broom::tidy(dat$ttest[[i]])
@@ -117,10 +117,10 @@ ttest_def_two = test_define(
                 list(boot_dist = boot_dist, ci = ci, n = n)
             },
             print = function(x, ...) {
-                ci = round(x$data$ci, 4)
+                ci = round(x@data$ci, 4)
                 summary_data = tibble::tibble(
                     names = c("CI", "n_reps"),
-                    vals = c(paste0("[", ci[[1]], ", ", ci[[2]], "]"), x$data$n)
+                    vals = c(paste0("[", ci[[1]], ", ", ci[[2]], "]"), x@data$n)
                 )
 
                 cli::cat_line(cli::rule(center = "Bootstrapped T-test", line = "="), "\n\n")
@@ -161,9 +161,9 @@ ttest_def_two = test_define(
             },
             print = function(x, ...) {
                 summary_data = tibble::tibble(
-                    Statistic = round(x$data$observed, 4),
-                    `p-value` = round(x$data$p.value, 4),
-                    n_perms = x$data$n
+                    Statistic = round(x@data$observed, 4),
+                    `p-value` = round(x@data$p.value, 4),
+                    n_perms = x@data$n
                 )
 
                 pval_styler = function(x) {
