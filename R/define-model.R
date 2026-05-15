@@ -26,14 +26,7 @@
 #' @export
 define_model = S7::new_generic("define_model", ".x")
 
-S7::method(define_model, S7::class_formula) = function(.x, data = parent.frame(), ...) {
-    def_model(
-        model_id = .x,
-        processed = model_processor(.x, data)
-    )
-}
-
-S7::method(define_model, model_id) = function(.x, data = parent.frame(), ...) {
+S7::method(define_model, S7::new_union(S7::class_formula, model_id)) = function(.x, data = parent.frame(), ...) {
     def_model(
         model_id = .x,
         processed = model_processor(.x, data)
