@@ -56,12 +56,12 @@ run_stat = function(defs, args, cls, model_id, .data, .name) {
         args = args
     )
 
-    new_stat_infer(
+    stat_infer_spec(
         out_raw,
         impl_cls = def@impl_class,
         stat_cls = cls,
         print_fn = def@impl$base@print,
-        .name = .name
+        name = .name
     )
 }
 
@@ -75,8 +75,14 @@ defer_stat = function(lookup, args, cls, defs, .name, spec_class) {
     )
 }
 
+model_type_name = function(model_type) {
+    if (inherits(model_type, "S7_class")) return(model_type@name)
+    if (inherits(model_type, "S7_S3_class")) return(model_type$class[[1]])
+    cli::cli_abort("Cannot extract a name from {.arg model_type}.")
+}
+
 build_lookup = function(defs) {
-    keys = vapply(defs, function(d) d@model_type, character(1))
+    keys = vapply(defs, function(d) model_type_name(d@model_type), character(1))
     defs_rev = rev(defs)
     keys_rev = rev(keys)
     lookup = rlang::set_names(defs_rev, keys_rev)
@@ -89,15 +95,15 @@ find_def = function(lookup, model_type) {
     )
 }
 
-new_stat_infer = function(res, impl_cls, stat_cls, print_fn, .name) {
-    stat_infer_spec(
-        data = res,
-        impl_cls = impl_cls,
-        stat_cls = stat_cls,
-        print_fn = print_fn,
-        name = .name
-    )
-}
+# new_stat_infer = function(res, impl_cls, stat_cls, print_fn, .name) {
+#     stat_infer_spec(
+#         data = res,
+#         impl_cls = impl_cls,
+#         stat_cls = stat_cls,
+#         print_fn = print_fn,
+#         name = .name
+#     )
+# }
 
 stat_infer_spec = S7::new_class(
     "stat_infer_spec",
