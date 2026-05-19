@@ -56,7 +56,6 @@ Collate:
     'recalibrator-via.R'
     'stat-exec.R'
     'model-impl-container.R'
-    'htest-spec.R'
     'htest-impl-container.R'
     'htest-ttest-defs-xby.R'
     'htest-ttest-defs-formula.R'
