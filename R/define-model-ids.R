@@ -1,9 +1,11 @@
 #' Attach a model-ID class to an object
 #'
+#'
 #' @return `model_id` S7/S3 class.
 #'
 #' @export
-model_id = S7::new_S3_class("model_id")
+model_id = S7::new_class("model_id")
+# model_id = S7::new_S3_class("model_id")
 
 #' 'Variable compared by groups' model mapping
 #'
@@ -152,6 +154,8 @@ pairwise = S7::new_class(
 #     obj
 # }
 
+# #' @keywords internal
+# #' @export
 # print.model_id = function(x, ...) {
 #     info = model_id_info(x)
 #
@@ -162,9 +166,7 @@ pairwise = S7::new_class(
 #     invisible(x)
 # }
 
-#' @keywords internal
-#' @export
-print.model_id = function(x, ...) {
+S7::method(print, model_id) = function(x, ...) {
     info = model_id_info(x)
 
     cat(cli::rule(left = "Model Definition", line = "-"), "\n\n")
