@@ -8,7 +8,7 @@
 \title{Define a statistical procedure implementation}
 \usage{
 stat_define(
-  model_type = character(0),
+  model_type = NULL,
   impl_class = character(0),
   impl = NULL,
   compatible_params = character(0),
@@ -16,7 +16,7 @@ stat_define(
 )
 
 test_define(
-  model_type = character(0),
+  model_type = NULL,
   impl_class = character(0),
   impl = NULL,
   compatible_params = character(0),
@@ -24,7 +24,7 @@ test_define(
 )
 
 model_infer_define(
-  model_type = character(0),
+  model_type = NULL,
   impl_class = character(0),
   impl = NULL,
   compatible_params = character(0),

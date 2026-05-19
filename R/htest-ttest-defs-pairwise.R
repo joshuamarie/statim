@@ -1,5 +1,5 @@
 ttest_def_pairwise = test_define(
-    model_type = "pairwise",
+    model_type = pairwise,
     impl_class = "ttest_pairwise",
     impl = agendas(
         base = baseline(

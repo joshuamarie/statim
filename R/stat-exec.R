@@ -36,7 +36,11 @@ conclude = S7::new_generic("conclude", ".x")
 # }
 
 S7::method(conclude, test_lazy) = function(.x, ...) {
-    model_type = S7::S7_class(.x@model_id)@name
+    model_type = if (inherits(.x@model_id, "formula")) {
+        "formula"
+    } else {
+        S7::S7_class(.x@model_id)@name
+    }
     def = find_def(.x@test_spec@lookup, model_type = model_type)
 
     method_name = .x@recalibrate_spec$method_name
@@ -126,8 +130,10 @@ resolve_impl = function(method_name, def, model_type, cls, global_variants) {
         ))
 }
 
-wrap_exec = function(out_raw, def, impl, stat_cls, stat_name,
-                     method_name, model_id, processed, data_name) {
+wrap_exec = function(
+    out_raw, def, impl, stat_cls, stat_name,
+    method_name, model_id, processed, data_name
+) {
     cld_exec(
         data = out_raw,
         impl_cls = def@impl_class,
@@ -159,7 +165,7 @@ S7::method(print, cld_exec) = function(x, ...) {
     cat("\n")
     cat(cli::rule(left = "Model", line = "="), "\n\n")
     cat("Model ID :", info$model_type, "\n")
-    cat("Args     :", info$args, "\n")
+    cat("Args :", info$args, "\n")
     if (length(info$other_info) > 0L) {
         for (nm in names(info$other_info)) {
             cat("   ", nm, ":", info$other_info[[nm]], "\n")

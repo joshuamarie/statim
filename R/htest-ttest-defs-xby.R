@@ -1,5 +1,5 @@
 ttest_def_two = test_define(
-    model_type = "x_by",
+    model_type = x_by,
     impl_class = "ttest_two",
     impl = agendas(
         base = baseline(

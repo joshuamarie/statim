@@ -1,5 +1,5 @@
 cor_test_rel = test_define(
-    model_type = "rel",
+    model_type = rel,
     impl_class = "cortest_rel",
     impl = agendas(
         base = baseline(
@@ -40,7 +40,7 @@ cor_test_rel = test_define(
                     reason = "to retrieve correlation test results and re-store in a data frame"
                 )
 
-                dat = x$data$res
+                dat = x@data$res
 
                 tidy_rows = lapply(seq_len(nrow(dat)), function(i) {
                     td = broom::tidy(dat$cortest[[i]])
@@ -49,7 +49,7 @@ cor_test_rel = test_define(
                     pair_lbl = paste0(dat$resp[[i]], " ~ ", dat$x[[i]])
 
                     has_ci = !is.null(ci)
-                    ci_level = if (has_ci) attr(ci, "conf.level") else x$data$ci_level
+                    ci_level = if (has_ci) attr(ci, "conf.level") else x@data$ci_level
                     lo_name = paste0("lower_", ci_level * 100)
                     up_name = paste0("upper_", ci_level * 100)
 

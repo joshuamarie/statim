@@ -1,5 +1,5 @@
 ttest_def_formula = test_define(
-    model_type = "formula",
+    model_type = S7::class_formula,
     impl_class = "ttest_formula",
     impl = agendas(
         base = baseline(

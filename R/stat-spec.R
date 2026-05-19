@@ -25,7 +25,15 @@
 stat_define = S7::new_class(
     "stat_define",
     properties = list(
-        model_type = S7::class_character,
+        model_type = S7::new_property(
+            class = S7::class_any,
+            validator = function(value) {
+                is_model_id_class = inherits(value, "S7_class") && identical(value@parent, model_id)
+                is_formula_class = identical(value, S7::class_formula)
+                if (!is_model_id_class && !is_formula_class)
+                    "must be a class that inherits from `model_id`, or `S7::class_formula`"
+            }
+        ),
         impl_class = S7::class_character,
         impl = S7::new_property(
             class = S7::class_any,
