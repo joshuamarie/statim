@@ -126,7 +126,8 @@ resolve_quo = function(quo, data = NULL, role = "x", idx = 1L) {
                 )
                 vctrs::new_data_frame(rlang::set_names(list(val), nm))
             } else {
-                dplyr::select(data, dplyr::all_of(nm))
+                data[, nm, drop = FALSE]
+                # dplyr::select(data, dplyr::all_of(nm))
             }
         },
 
@@ -152,7 +153,8 @@ resolve_quo = function(quo, data = NULL, role = "x", idx = 1L) {
                 })
                 vctrs::new_data_frame(rlang::set_names(vals, nms))
             } else {
-                dplyr::select(data, dplyr::all_of(nms))
+                data[, nms, drop = FALSE]
+                # dplyr::select(data, dplyr::all_of(nms))
             }
         },
 
