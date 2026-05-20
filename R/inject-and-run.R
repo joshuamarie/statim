@@ -14,6 +14,7 @@ inject_and_run = function(impl, processed, args, claims = NULL) {
     fn = impl@fn
     fn_formals = formals(fn)
     fn_args = names(fn_formals)
+    fn_args = fn_args[fn_args != "..."]
 
     injected = lapply(
         fn_args,
@@ -39,8 +40,8 @@ inject_and_run = function(impl, processed, args, claims = NULL) {
         ))
     }
 
-    # do.call(fn, injected)
-    rlang::exec(fn, !!!injected)
+    extra = args[!names(args) %in% fn_args]
+    rlang::exec(fn, !!!injected, !!!extra)
 }
 
 #' Map a single fn argument name to processed model output.

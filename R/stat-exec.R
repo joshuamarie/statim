@@ -79,7 +79,11 @@ S7::method(conclude, test_lazy) = function(.x, ...) {
 }
 
 S7::method(conclude, model_lazy) = function(.x, ...) {
-    model_type = S7::S7_class(.x@model_id)@name
+    model_type = if (inherits(.x@model_id, "formula")) {
+        "formula"
+    } else {
+        S7::S7_class(.x@model_id)@name
+    }
     def = find_def(.x@model_spec@lookup, model_type = model_type)
 
     method_name = .x@recalibrate_spec$method_name

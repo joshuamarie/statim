@@ -2,10 +2,7 @@ model_lazy = S7::new_class(
     "model_lazy",
     properties = list(
         model_id = S7::new_property(
-            validator = function(value) {
-                if (!inherits(value, "model_id"))
-                    "must be a `model_id` object"
-            }
+            class = S7::new_union(model_id, S7::class_formula)
         ),
         processed = S7::new_property(class = S7::class_list),
         model_spec = S7::new_property(class = model_spec),
@@ -46,7 +43,7 @@ S7::method(prepare_model, list(def_model, S7::class_function)) = function(.x, .m
     model_lazy(
         model_id = .x@model_id,
         processed = .x@processed,
-        test_spec = spec
+        model_spec = spec
     )
 }
 
@@ -86,8 +83,8 @@ S7::method(update, model_lazy) = function(object, ...) {
             dots
         )
     } else {
-        object@test_spec@args = utils::modifyList(
-            object@test_spec@args,
+        object@model_spec@args = utils::modifyList(
+            object@model_spec@args,
             dots
         )
     }
