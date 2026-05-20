@@ -105,9 +105,11 @@ S7::method(model_id_info, pairwise) = function(.model_id, processed = NULL) {
 
 # #' @rdname model_id_info
 # #' @export
+
 S7::method(model_id_info, S7::class_formula) = function(.model_id, processed = NULL) {
     f = .model_id
-    trms = stats::terms(f)
+    data = processed$data %||% NULL
+    trms = stats::terms(f, data = data)
     lhs_vars = all.vars(rlang::f_lhs(f))
     rhs_vars = attr(trms, "term.labels")
 
@@ -121,9 +123,9 @@ S7::method(model_id_info, S7::class_formula) = function(.model_id, processed = N
     )
 
     if (!is.null(processed)) {
-        out$vars = vars_preview(
-            as.list(processed$data[, processed$vars, drop = FALSE])
-        )
+        all_vars = c(lhs_vars, rhs_vars)
+        avail = all_vars[all_vars %in% names(processed$data)]
+        out$vars = vars_preview(as.list(processed$data[, avail, drop = FALSE]))
     }
 
     out
