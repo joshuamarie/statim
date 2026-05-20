@@ -22,8 +22,6 @@ Imports:
     cli,
     vctrs,
     tibble,
-    tidyr,
-    dplyr,
     tidyselect,
     stats,
     utils,
@@ -38,7 +36,9 @@ Suggests:
     broom,
     pander,
     Rfast2,
-    purrr
+    purrr,
+    tidyr, 
+    dplyr
 Collate:
     'statim-package.R'
     'define-model-ids.R'
