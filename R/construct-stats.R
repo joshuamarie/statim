@@ -22,8 +22,10 @@ STAT_CONSTRUCTOR = function(cls, defs, .name, spec_class) {
     force(spec_class)
 
     fn = function(.model = NULL, .data = NULL, ...) {
+        # dots = list(...)
         build_stat(
             cls = cls,
+            # args = dots,
             args = list(...),
             defs = defs,
             model_id = .model,
