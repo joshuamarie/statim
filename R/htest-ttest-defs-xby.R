@@ -35,7 +35,7 @@ ttest_def_two = test_define(
             },
             print = function(x, ...) {
                 rlang::check_installed(
-                    c("broom", "purrr"),
+                    c("broom", "purrr", "dplyr"),
                     reason = "to retrieve t-test results and re-store it in a data frame"
                 )
 

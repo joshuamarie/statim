@@ -36,7 +36,7 @@ cor_test_rel = test_define(
             },
             print = function(x, ...) {
                 rlang::check_installed(
-                    c("broom", "purrr"),
+                    c("broom", "purrr", "dplyr"),
                     reason = "to retrieve correlation test results and re-store in a data frame"
                 )
 
