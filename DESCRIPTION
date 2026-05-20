@@ -63,7 +63,7 @@ Collate:
     'htest-testcor-defs-rel.R'
     'htest-testcor.R'
     'model-impl-container.R'
-    'model-compare.R'
+    'model-anova-mod.R'
     'model-expand.R'
     'model-linear-reg-defs.R'
     'model-linear-reg.R'
