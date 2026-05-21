@@ -48,7 +48,7 @@ Collate:
     'define-model-helpers.R'
     'generate-pairs.R'
     'inject-and-run.R'
-    'construct-stats.R'
+    'stat-construct.R'
     'baseline-variant.R'
     'stat-spec.R'
     'htest-prepare.R'
