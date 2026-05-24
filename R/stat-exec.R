@@ -58,11 +58,34 @@ S7::method(conclude, test_lazy) = function(.x, ...) {
         .x@recalibrate_spec$args %||% list()
     )
 
+    if (!is.null(def@claim_translator) && !is.null(.x@claims)) {
+        translator = def@claim_translator
+        variant_nm = method_name %||% "default"
+
+        fn = if (inherits(translator, "claim_translate")) {
+            translator[[variant_nm]] %||% cli::cli_abort(c(
+                "No claim translator defined for variant {.val {variant_nm}}.",
+                "i" = "Remove {.fn state_null} or use a supported variant."
+            ))
+        } else {
+            translator
+        }
+
+        translated = fn(.x@claims, .x@processed)
+
+        if (!inherits(translated, "claim_args")) {
+            cli::cli_abort(
+                "claim_translator must return a {.fn claim_args} object."
+            )
+        }
+
+        all_args = utils::modifyList(all_args, unclass(translated))
+    }
+
     out_raw = inject_and_run(
         impl = impl,
         processed = .x@processed,
-        args = all_args,
-        claims = .x@claims
+        args = all_args
     )
 
     wrap_exec(
@@ -135,8 +158,8 @@ resolve_impl = function(method_name, def, model_type, cls, global_variants) {
 }
 
 wrap_exec = function(
-    out_raw, def, impl, stat_cls, stat_name,
-    method_name, model_id, processed, data_name
+        out_raw, def, impl, stat_cls, stat_name,
+        method_name, model_id, processed, data_name
 ) {
     cld_exec(
         data = out_raw,

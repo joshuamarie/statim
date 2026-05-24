@@ -41,7 +41,13 @@ inject_and_run = function(impl, processed, args, claims = NULL) {
     }
 
     extra = args[!names(args) %in% fn_args]
-    rlang::exec(fn, !!!injected, !!!extra)
+    has_dots = "..." %in% names(formals(fn))
+    if (has_dots) {
+        rlang::exec(fn, !!!injected, !!!extra)
+    } else {
+        rlang::exec(fn, !!!injected)
+    }
+    # rlang::exec(fn, !!!injected, !!!extra)
 }
 
 #' Map a single fn argument name to processed model output.

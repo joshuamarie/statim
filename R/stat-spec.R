@@ -10,8 +10,11 @@
 #'   E.g. `"ttest_two"`, `"linear_reg_rel"`. Used in the S3 class vector
 #'   of the result.
 #' @param impl An [agendas()] object declaring all implementations.
-#' @param compatible_params A character vector of `ParamDef` types this
-#'   implementation can interpret via `write_claim()`. E.g. `c("MU")`.
+#' @param compatible_params A list of S7 param classes (e.g. `list(MU, PI)`)
+#'   this implementation accepts in hypothesis claims. An empty list (the
+#'   default) disables the check entirely — all param types pass through
+#'   unchecked. Useful when a test is param-agnostic or the restriction has
+#'   not yet been declared.
 #' @param eval_claim A function with signature `function(self, claim)`
 #'   that interprets a `ClaimDef` for this implementation. `NULL` if
 #'   `write_claim()` is not supported.
@@ -43,10 +46,26 @@ stat_define = S7::new_class(
             }
         ),
         compatible_params = S7::new_property(
-            class = S7::class_character,
-            default = character(0)
+            class = S7::class_list,
+            default = list(),
+            validator = function(value) {
+                if (length(value) == 0L) return(NULL)
+                bad = !vapply(value, function(cl) {
+                    inherits(cl, "S7_class") && is_param_class(cl)
+                }, logical(1))
+                if (any(bad)) {
+                    nms = vapply(value[bad], function(cl) {
+                        if (inherits(cl, "S7_class")) cl@name else class(cl)[[1]]
+                    }, character(1))
+                    paste0(
+                        "compatible_params must be a list of param_obj subclasses ",
+                        "(e.g. list(MU, PI)). Invalid: ",
+                        paste(nms, collapse = ", ")
+                    )
+                }
+            }
         ),
-        eval_claim = S7::new_property(default = NULL)
+        claim_translator = S7::new_property(default = NULL)
     )
 )
 
