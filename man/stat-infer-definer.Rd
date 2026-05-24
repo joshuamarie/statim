@@ -11,24 +11,24 @@ stat_define(
   model_type = NULL,
   impl_class = character(0),
   impl = NULL,
-  compatible_params = character(0),
-  eval_claim = NULL
+  compatible_params = list(),
+  claim_translator = NULL
 )
 
 test_define(
   model_type = NULL,
   impl_class = character(0),
   impl = NULL,
-  compatible_params = character(0),
-  eval_claim = NULL
+  compatible_params = list(),
+  claim_translator = NULL
 )
 
 model_infer_define(
   model_type = NULL,
   impl_class = character(0),
   impl = NULL,
-  compatible_params = character(0),
-  eval_claim = NULL
+  compatible_params = list(),
+  claim_translator = NULL
 )
 }
 \arguments{
@@ -41,8 +41,11 @@ of the result.}
 
 \item{impl}{An \code{\link[=agendas]{agendas()}} object declaring all implementations.}
 
-\item{compatible_params}{A character vector of \code{ParamDef} types this
-implementation can interpret via \code{write_claim()}. E.g. \code{c("MU")}.}
+\item{compatible_params}{A list of S7 param classes (e.g. \code{list(MU, PI)})
+this implementation accepts in hypothesis claims. An empty list (the
+default) disables the check entirely — all param types pass through
+unchecked. Useful when a test is param-agnostic or the restriction has
+not yet been declared.}
 
 \item{eval_claim}{A function with signature \verb{function(self, claim)}
 that interprets a \code{ClaimDef} for this implementation. \code{NULL} if
