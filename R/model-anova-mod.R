@@ -89,6 +89,7 @@ S7::method(print, cld_anova) = function(x, ...) {
 #' anova(mod1, mod2)
 #' anova(mod1, mod2, test = "LRT")
 #'
+#' @name anova-mod
 #' @export
 anova = S7::new_external_generic("stats", "anova", "object")
 
