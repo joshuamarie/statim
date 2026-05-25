@@ -24,7 +24,13 @@ anova_def_xby = test_define(
                     }
                 }
 
-                fit = stats::aov(f, data = df, contrasts = .contrasts)
+                # Do NOT pass .contrasts to stats::aov — the claim-derived matrix
+                # only contains rows for levels explicitly named in the hypothesis,
+                # which would cause aov() to silently drop unmentioned levels from
+                # the fit. Fit unconditionally on the full data; contrasts are
+                # applied post-fit in compute_aov_contrasts() where all levels are
+                # available from fit$model.
+                fit = stats::aov(f, data = df)
 
                 contrast_stats = if (!is.null(.contrasts)) {
                     compute_aov_contrasts(fit, .contrasts)

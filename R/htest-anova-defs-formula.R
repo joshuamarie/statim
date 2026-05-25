@@ -14,7 +14,7 @@ anova_def_formula = test_define(
                     }
                 }
 
-                fit = stats::aov(formula, data = data, contrasts = .contrasts)
+                fit = stats::aov(formula, data = data)
 
                 contrast_stats = if (!is.null(.contrasts)) {
                     compute_aov_contrasts(fit, .contrasts)
