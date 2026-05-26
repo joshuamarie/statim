@@ -45,9 +45,9 @@ S7::method(via, list(test_lazy, S7::class_character)) = function(.x, .method, ..
     )
     available = c(names(def@impl$variants), global_names)
 
-    if (!.method %in% available) {
+    if (.method %notin% available) {
         cli::cli_abort(c(
-            "No variant {.val {.method}} registered for model type {.val {model_type}}.",
+            "No variant {.val {(.method)}} registered for model type {.val {model_type}}.",
             "i" = "Available variant{?s}: {.val {available}}."
         ))
     }
