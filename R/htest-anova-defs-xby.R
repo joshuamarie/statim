@@ -47,7 +47,7 @@ anova_def_xby = test_define(
             },
             print = function(x, ...) {
                 rlang::check_installed(
-                    "broom",
+                    c("broom", "dplyr"),
                     reason = "to tidy ANOVA results"
                 )
 
@@ -68,9 +68,9 @@ anova_def_xby = test_define(
                 }
 
                 # ---- Omnibus table (Residuals merged as last row) ----
-                tidy = broom::tidy(fit)
-                tidy_terms = tidy[tidy$term != "Residuals", ]
-                resid_row = tidy[tidy$term == "Residuals", ]
+                new_tidy = broom::tidy(fit)
+                tidy_terms = new_tidy[new_tidy$term != "Residuals", ]
+                resid_row = new_tidy[new_tidy$term == "Residuals", ]
 
                 stat_out = tibble::tibble(
                     term = c(tidy_terms$term, "Residuals"),
