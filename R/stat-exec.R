@@ -163,7 +163,8 @@ wrap_exec = function(
 ) {
     cld_exec(
         data = out_raw,
-        impl_cls = def@impl_class,
+        # impl_cls = def@impl_class,
+        impl_cls = impl_cls_from_model(stat_cls, model_id),
         stat_cls = stat_cls,
         print_fn = impl@print,
         name = stat_name,
@@ -181,6 +182,7 @@ cld_exec = S7::new_class(
     "cld_exec",
     parent = stat_infer_spec,
     properties = list(
+        impl_cls = S7::new_property(class = S7::class_character),
         cld_meta = S7::new_property(class = S7::class_list)
     )
 )
