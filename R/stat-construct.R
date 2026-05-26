@@ -60,7 +60,7 @@ run_stat = function(defs, args, cls, model_id, .data, .name) {
 
     stat_infer_spec(
         out_raw,
-        impl_cls = def@impl_class,
+        impl_cls = impl_cls_from_model(cls, model_id),
         stat_cls = cls,
         print_fn = def@impl$base@print,
         name = .name
@@ -75,6 +75,11 @@ defer_stat = function(lookup, args, cls, defs, .name, spec_class) {
         name = .name,
         lookup = lookup
     )
+}
+
+impl_cls_from_model = function(cls, model_id) {
+    model_nm = if (inherits(model_id, "formula")) "formula" else S7::S7_class(model_id)@name
+    paste0(cls, "_", model_nm)
 }
 
 model_type_name = function(model_type) {

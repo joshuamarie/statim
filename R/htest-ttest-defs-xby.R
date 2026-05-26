@@ -1,6 +1,6 @@
 ttest_def_two = test_define(
     model_type = x_by,
-    impl_class = "ttest_two",
+    # impl_class = "ttest_two",
     impl = agendas(
         base = baseline(
             # ---- Default implementation ----

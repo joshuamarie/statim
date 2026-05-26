@@ -1,6 +1,6 @@
 anova_def_formula = test_define(
     model_type = S7::class_formula,
-    impl_class = "anova_formula",
+    # impl_class = "anova_formula",
     impl = agendas(
         base = baseline(
             fn = function(data, formula, .contrasts = NULL) {

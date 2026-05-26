@@ -1,6 +1,6 @@
 ttest_def_pairwise = test_define(
     model_type = pairwise,
-    impl_class = "ttest_pairwise",
+    # impl_class = "ttest_pairwise",
     impl = agendas(
         base = baseline(
             fn = function(var_names, pairs, data, .paired = FALSE, .mu = 0, .alt = "two.sided", .ci = 0.95) {

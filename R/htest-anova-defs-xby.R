@@ -1,6 +1,6 @@
 anova_def_xby = test_define(
     model_type = x_by,
-    impl_class = "anova_xby",
+    # impl_class = "anova_xby",
     impl = agendas(
         base = baseline(
             fn = function(x, group_data, .contrasts = NULL) {

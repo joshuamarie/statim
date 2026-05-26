@@ -1,6 +1,6 @@
 ttest_def_formula = test_define(
     model_type = S7::class_formula,
-    impl_class = "ttest_formula",
+    # impl_class = "ttest_formula",
     impl = agendas(
         base = baseline(
             fn = function(data, formula, .mu = 0, .alt = "two.sided", .ci = 0.95) {

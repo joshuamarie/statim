@@ -1,6 +1,6 @@
 linear_reg_def_rel = model_infer_define(
     model_type = rel,
-    impl_class = "linear_reg_rel",
+    # impl_class = "linear_reg_rel",
     impl = agendas(
         base = baseline(
             fn = function(x_data, resp_data, ...) {
@@ -16,7 +16,7 @@ linear_reg_def_rel = model_infer_define(
 
 linear_reg_def_formula = model_infer_define(
     model_type = S7::class_formula,
-    impl_class = "linear_reg_formula",
+    # impl_class = "linear_reg_formula",
     impl = agendas(
         base = baseline(
             fn = function(formula, data, ...) {
