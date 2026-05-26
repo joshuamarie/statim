@@ -34,7 +34,11 @@ via = S7::new_generic("via", dispatch_args = c(".x", ".method"))
 # }
 
 S7::method(via, list(test_lazy, S7::class_character)) = function(.x, .method, ...) {
-    model_type = S7::S7_class(.x@model_id)@name
+    model_type = if (inherits(.x@model_id, "formula")) {
+        "formula"
+    } else {
+        S7::S7_class(.x@model_id)@name
+    }
     def = find_def(.x@test_spec@lookup, model_type = model_type)
 
     cls = .x@test_spec@cls
@@ -57,14 +61,18 @@ S7::method(via, list(test_lazy, S7::class_character)) = function(.x, .method, ..
 }
 
 S7::method(via, list(model_lazy, S7::class_character)) = function(.x, .method, ...) {
-    model_type = S7::S7_class(.x@model_id)@name
+    model_type = if (inherits(.x@model_id, "formula")) {
+        "formula"
+    } else {
+        S7::S7_class(.x@model_id)@name
+    }
     def = find_def(.x@model_spec@lookup, model_type = model_type)
 
     available = names(def@impl$variants)
 
-    if (!.method %in% available) {
+    if (.method %notin% available) {
         cli::cli_abort(c(
-            "No variant {.val {.method}} registered for model type {.val {model_type}}.",
+            "No variant {.val {(.method)}} registered for model type {.val {model_type}}.",
             "i" = "Available variant{?s}: {.val {available}}."
         ))
     }
