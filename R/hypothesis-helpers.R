@@ -1,94 +1,3 @@
-contains_param = function(node) {
-    if (S7::S7_inherits(node, param_obj)) return(TRUE)
-    if (inherits(node, "arith_node")) {
-        return(any(vapply(node$operands, contains_param, logical(1))))
-    }
-    FALSE
-}
-
-assert_linear = function(node, call_nm) {
-    if (!inherits(node, "arith_node")) return(invisible(NULL))
-
-    op = node$op
-    ops = node$operands
-
-    if (op == "*") {
-        if (contains_param(ops[[1]]) && contains_param(ops[[2]])) {
-            cli::cli_abort(c(
-                "Non-linear hypothesis detected: parameter multiplied by parameter.",
-                "i" = "{.fn {call_nm}} only handles linear combinations of parameters.",
-                "x" = "Found: {.code {deparse(node$expr)}}."
-            ))
-        }
-    }
-
-    if (op == "/") {
-        if (contains_param(ops[[2]])) {
-            cli::cli_abort(c(
-                "Non-linear hypothesis detected: parameter in denominator.",
-                "i" = "{.fn {call_nm}} only handles linear combinations of parameters.",
-                "x" = "Found: {.code {deparse(node$expr)}}."
-            ))
-        }
-    }
-
-    if (op == "^") {
-        if (contains_param(ops[[1]])) {
-            cli::cli_abort(c(
-                "Non-linear hypothesis detected: parameter raised to a power.",
-                "i" = "{.fn {call_nm}} only handles linear combinations of parameters.",
-                "x" = "Found: {.code {deparse(node$expr)}}."
-            ))
-        }
-    }
-
-    lapply(ops, assert_linear, call_nm = call_nm)
-    invisible(NULL)
-}
-
-collect_terms = function(node, sign = 1L, coef = 1) {
-    if (is.numeric(node)) {
-        return(list(list(kind = "scalar", value = sign * coef * node, node = node)))
-    }
-
-    if (S7::S7_inherits(node, param_obj)) {
-        return(list(list(kind = "param", coef = sign * coef, node = node)))
-    }
-
-    if (inherits(node, "arith_node")) {
-        op = node$op
-        ops = node$operands
-
-        if (op == "+") {
-            return(c(
-                collect_terms(ops[[1]], sign, coef),
-                collect_terms(ops[[2]], sign, coef)
-            ))
-        }
-
-        if (op == "-") {
-            if (length(ops) == 1L) return(collect_terms(ops[[1]], -sign, coef))
-            return(c(
-                collect_terms(ops[[1]], sign, coef),
-                collect_terms(ops[[2]], -sign, coef)
-            ))
-        }
-
-        if (op == "*") {
-            if (is.numeric(ops[[1]])) return(collect_terms(ops[[2]], sign, coef * ops[[1]]))
-            return(collect_terms(ops[[1]], sign, coef * ops[[2]]))
-        }
-
-        if (op == "/") {
-            return(collect_terms(ops[[1]], sign, coef / ops[[2]]))
-        }
-    }
-
-    cli::cli_abort(
-        "Cannot reduce term to a linear combination: {.code {deparse(node$expr %||% node)}}."
-    )
-}
-
 #' Extract the hypothesized scalar value from a null claim
 #'
 #' Rearranges the hypothesis by moving all `param_obj` terms to the left
@@ -187,24 +96,6 @@ claim_contrast_coefs = function(claim) {
     list(coefs = coefs, scalar = scalar_val, op = op)
 }
 
-extract_param_name = function(node) {
-    if (!S7::S7_inherits(node, param_obj)) {
-        cli::cli_abort("Expected a param_obj node.")
-    }
-
-    given = node@given
-
-    if (!is.null(given)) {
-        given_expr = rlang::quo_get_expr(given)
-        if (rlang::is_call(given_expr, "==") && length(given_expr) == 3L) {
-            return(as.character(given_expr[[3]]))
-        }
-        return(deparse(given_expr))
-    }
-
-    rlang::as_label(node@x)
-}
-
 #' Package resolved claim arguments for injection
 #'
 #' Used inside a `claim_translator` to declare argument names and values
@@ -223,4 +114,113 @@ claim_args = function(...) {
         cli::cli_abort("All arguments to {.fn claim_args} must be named.")
     }
     structure(args, class = "claim_args")
+}
+
+contains_param = function(node) {
+    if (S7::S7_inherits(node, param_obj)) return(TRUE)
+    if (inherits(node, "arith_node")) {
+        return(any(vapply(node$operands, contains_param, logical(1))))
+    }
+    FALSE
+}
+
+assert_linear = function(node, call_nm) {
+    if (!inherits(node, "arith_node")) return(invisible(NULL))
+
+    op = node$op
+    ops = node$operands
+
+    if (op == "*") {
+        if (contains_param(ops[[1]]) && contains_param(ops[[2]])) {
+            cli::cli_abort(c(
+                "Non-linear hypothesis detected: parameter multiplied by parameter.",
+                "i" = "{.fn {call_nm}} only handles linear combinations of parameters.",
+                "x" = "Found: {.code {deparse(node$expr)}}."
+            ))
+        }
+    }
+
+    if (op == "/") {
+        if (contains_param(ops[[2]])) {
+            cli::cli_abort(c(
+                "Non-linear hypothesis detected: parameter in denominator.",
+                "i" = "{.fn {call_nm}} only handles linear combinations of parameters.",
+                "x" = "Found: {.code {deparse(node$expr)}}."
+            ))
+        }
+    }
+
+    if (op == "^") {
+        if (contains_param(ops[[1]])) {
+            cli::cli_abort(c(
+                "Non-linear hypothesis detected: parameter raised to a power.",
+                "i" = "{.fn {call_nm}} only handles linear combinations of parameters.",
+                "x" = "Found: {.code {deparse(node$expr)}}."
+            ))
+        }
+    }
+
+    lapply(ops, assert_linear, call_nm = call_nm)
+    invisible(NULL)
+}
+
+collect_terms = function(node, sign = 1L, coef = 1) {
+    if (is.numeric(node)) {
+        return(list(list(kind = "scalar", value = sign * coef * node, node = node)))
+    }
+
+    if (S7::S7_inherits(node, param_obj)) {
+        return(list(list(kind = "param", coef = sign * coef, node = node)))
+    }
+
+    if (inherits(node, "arith_node")) {
+        op = node$op
+        ops = node$operands
+
+        if (op == "+") {
+            return(c(
+                collect_terms(ops[[1]], sign, coef),
+                collect_terms(ops[[2]], sign, coef)
+            ))
+        }
+
+        if (op == "-") {
+            if (length(ops) == 1L) return(collect_terms(ops[[1]], -sign, coef))
+            return(c(
+                collect_terms(ops[[1]], sign, coef),
+                collect_terms(ops[[2]], -sign, coef)
+            ))
+        }
+
+        if (op == "*") {
+            if (is.numeric(ops[[1]])) return(collect_terms(ops[[2]], sign, coef * ops[[1]]))
+            return(collect_terms(ops[[1]], sign, coef * ops[[2]]))
+        }
+
+        if (op == "/") {
+            return(collect_terms(ops[[1]], sign, coef / ops[[2]]))
+        }
+    }
+
+    cli::cli_abort(
+        "Cannot reduce term to a linear combination: {.code {deparse(node$expr %||% node)}}."
+    )
+}
+
+extract_param_name = function(node) {
+    if (!S7::S7_inherits(node, param_obj)) {
+        cli::cli_abort("Expected a param_obj node.")
+    }
+
+    given = node@given
+
+    if (!is.null(given)) {
+        given_expr = rlang::quo_get_expr(given)
+        if (rlang::is_call(given_expr, "==") && length(given_expr) == 3L) {
+            return(as.character(given_expr[[3]]))
+        }
+        return(deparse(given_expr))
+    }
+
+    rlang::as_label(node@x)
 }
