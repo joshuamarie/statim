@@ -34,9 +34,10 @@ inject_and_run = function(impl, processed, args, claims = NULL) {
     }, logical(1))
 
     if (any(missing_args)) {
+        n_missing = sum(missing_args)
         cli::cli_abort(c(
-            "Required argument{?s} not supplied: {.arg {fn_args[missing_args]}}.",
-            "i" = "Supply {?it/them} via {.code ...} in the test call."
+            "{n_missing} required argument{?s} not supplied: {.arg {fn_args[missing_args]}}.",
+            "i" = "Supply via {.code ...} in the test call."
         ))
     }
 
