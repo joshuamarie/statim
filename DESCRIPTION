@@ -41,6 +41,10 @@ Suggests:
     dplyr
 Collate:
     'statim-package.R'
+    'ops.R'
+    'utils.R'
+    'add-option.R'
+    'zzz.R'
     'define-model-ids.R'
     'define-model-ids-info.R'
     'define-model-process.R'
@@ -78,9 +82,6 @@ Collate:
     'model-linear-reg-defs.R'
     'model-linear-reg.R'
     'global_variables.R'
-    'utils.R'
-    'add-option.R'
-    'zzz.R'
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 Depends: 
