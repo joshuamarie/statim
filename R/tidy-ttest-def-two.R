@@ -1,4 +1,4 @@
-making_tidy(ttest_def_two, TTEST) = method_tidy(
+making_tidy(TTEST, x_by) %<-% method_tidy(
     default = function(.x, ...) {
         dat = .x@data
         dplyr::bind_rows(lapply(seq_len(nrow(dat)), function(i) {
