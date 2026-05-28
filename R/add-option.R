@@ -1,148 +1,150 @@
-#' Add or replace variants on a test function
+#' Add or remove variant implementations on a test or model function
 #'
-#' A family of functions for managing globally registered [variant()] objects
-#' across all [HTEST_FN]-based functions for the duration of the session.
+#' @description
+#' These are **developer-interface** functions intended for package authors
+#' extending the `statim` framework with new method variants.
 #'
-#' @param test A test function built with [HTEST_FN()], e.g. [TTEST].
-#' @param name A string naming the variant to add or replace.
-#' @param impl A [variant()] object.
+#' `add_variant()` is used as the left-hand side of the `%<-%` operator
+#' to register a [variant()] for a stat function and model type.
+#' `"default"` is frozen and cannot be added.
+#'
+#' `remove_variant()` removes a previously registered `"user"`-originated
+#' variant. `"package"`-level entries are self-cleaning: they exist for the
+#' duration the registering package is loaded and vanish when it is unloaded.
+#'
+#' @param obj A test or model function built with [HTEST_FN()] or [MODEL_FN()]
+#'   (e.g. `TTEST`). Used to scope the registry key.
+#' @param model_type An S7 model ID class (e.g. `x_by`, `S7::class_formula`).
+#' @param name A string naming the variant to add.
 #' @param origin One of `"user"` (default, session-scoped) or `"package"`
-#'   (permanent, intended for `.onLoad()`).
-#' @param cls A string naming the test class to clear (e.g. `"ttest"`).
-#'   When `NULL` (default), all globally registered variants are cleared.
+#'   (load-scoped, intended for `.onLoad()`).
 #'
-#' @section Precedence:
-#' Globally registered variants sit between built-in definitions and the
-#' pipeline. The full priority order, from lowest to highest, is:
+#' @return An `add_variant_call` object, consumed by `%<-%`.
 #'
-#' \enumerate{
-#'   \item Built-in variants (declared inside [HTEST_FN])
-#'   \item Global variants registered via `plug_variant()` or `swap_variant()`
-#' }
+#' @seealso [stat_define()], [variant()], [agendas()]
 #'
-#' @return
-#' `plug_variant()`, `swap_variant()`, and `clear_htest_defs()` return
-#' `NULL` invisibly, called for their side effects.
-#' `get_htest_defs()` returns a list of [test_define()] objects, or an
-#' empty list if none have been registered for the given `cls`.
+#' @examples
+#' # Add a bootstrap variant for x_by (user level)
+#' add_variant(TTEST, x_by, "another_boot") %<-% variant(
+#'     fn = function(x, group_data, .n = 1000L) {
+#'         grp = as.character(group_data[[1]])
+#'         lvls = unique(grp)
+#'         x1 = x[grp == lvls[[1]]]
+#'         x2 = x[grp == lvls[[2]]]
+#'         boot_fn = function(d, i) mean(d[i, 1]) - mean(d[i, 2])
+#'         b = boot::boot(data.frame(x1, x2), boot_fn, R = .n)
+#'         boot::boot.ci(b, type = "perc")
+#'     }
+#' )
 #'
-#' @seealso [HTEST_FN()], [test_define()], [variant()]
+#' # Remove it, returning to the original slate
+#' remove_variant(TTEST, x_by, "another_boot")
 #'
-#' @name htest-defs-modifiers
-NULL
-
-#' @describeIn htest-defs-modifiers Adds a new named [variant()] to an
-#'   existing test function. Hard-errors if the name already exists or
-#'   if name is `"default"`.
+#' # Package level (inside .onLoad())
+#' add_variant(TTEST, x_by, "another_boot", origin = "package") %<-% variant(
+#'     fn = function(x, group_data, .n = 1000L) { ... }
+#' )
+#'
+#' @name add-variant
 #' @export
-plug_variant = function(test, name, impl, origin = c("user", "package")) {
-    origin = match.arg(origin)
-
-    if (identical(name, "default")) {
-        cli::cli_abort(
-            "{.val default} is frozen and cannot be added via {.fn plug_variant}."
-        )
-    }
-    if (!S7::S7_inherits(impl, variant)) {
-        cli::cli_abort("{.arg impl} must be a {.cls variant} object.")
-    }
-
-    cls = attr(test, "cls") %||% cli::cli_abort(
-        "{.arg test} must be a function built with {.fn HTEST_FN}."
+add_variant = function(obj, model_type, name, origin = c("user", "package")) {
+    structure(
+        list(obj = obj, model_type = model_type, name = name, origin = match.arg(origin)),
+        class = "add_variant_call"
     )
-
-    entries = htest_opts_global$variants[[cls]] %||% list()
-    already_exists = any(vapply(entries, function(e) identical(e$name, name), logical(1)))
-    if (already_exists) {
-        if (origin == "package") {
-            # silent replace: .onLoad() hook re-registration on reload is expected
-            # Once 'statim' is extended with different package
-            # The registered different variation won't simply vanish
-            # (Not yet tested)
-            htest_opts_global$variants[[cls]] = lapply(entries, function(e) {
-                if (identical(e$name, name)) {
-                    list(name = name, impl = impl, origin = origin)
-                } else
-                    e
-            })
-            return(invisible(NULL))
-        }
-
-        cli::cli_abort(c(
-            "Variant {.val {name}} already exists.",
-            "i" = "Use {.fn swap_variant} to replace it."
-        ))
-    }
-
-    entry = list(name = name, impl = impl, origin = origin)
-    htest_opts_global$variants[[cls]] = c(entries, list(entry))
-    invisible(NULL)
 }
 
-#' @describeIn htest-defs-modifiers Replaces an existing named [variant()].
-#'   Hard-errors if the name does not exist or if name is `"default"`.
-#' @export
-swap_variant = function(test, name, impl, origin = c("user", "package")) {
-    origin = match.arg(origin)
-
-    if (identical(name, "default")) {
-        cli::cli_abort(
-            "{.val default} is frozen and cannot be swapped via {.fn swap_variant}."
-        )
-    }
-    if (!S7::S7_inherits(impl, variant)) {
-        cli::cli_abort("{.arg impl} must be a {.cls variant} object.")
-    }
-
-    cls = attr(test, "cls") %||% cli::cli_abort(
-        "{.arg test} must be a function built with {.fn HTEST_FN}."
-    )
-
-    entries = htest_opts_global$variants[[cls]] %||% list()
-    found = any(vapply(entries, function(e) identical(e$name, name), logical(1)))
-    if (!found) {
-        cli::cli_abort(c(
-            "Variant {.val {name}} does not exist.",
-            "i" = "Use {.fn plug_variant} to add it."
-        ))
-    }
-
-    htest_opts_global$variants[[cls]] = lapply(entries, function(e) {
-        if (identical(e$name, name)) list(name = name, impl = impl, origin = origin)
-        else e
-    })
-    invisible(NULL)
-}
-
-#' #' @describeIn htest-defs-modifiers Returns registered [test_define()] objects
-#' #'   for the given `cls`. Used internally by [HTEST_FN()].
-#' #' @keywords internal
-#' #' @export
-#' get_htest_defs = function(cls = NULL) {
-#'     if (is.null(cls)) return(list())
-#'     entries = htest_opts_global$defs[[cls]] %||% list()
-#'     lapply(entries, function(e) e$def)
-#' }
-
-#' @describeIn htest-defs-modifiers Resets globally registered variants,
-#'   either fully or scoped to a specific `cls`. Only `"user"`-originated
-#'   entries are removed — `"package"` entries are always preserved.
 #' @keywords internal
-#' @export
-clear_htest_defs = function(cls = NULL) {
-    keys = if (is.null(cls)) names(htest_opts_global$variants) else cls
-    for (key in keys) {
-        entries = htest_opts_global$variants[[key]] %||% list()
-        htest_opts_global$variants[[key]] = Filter(
-            function(e) e$origin == "package",
-            entries
+add_variant_register = function(lhs, rhs) {
+    obj = lhs$obj
+    model_type = lhs$model_type
+    name = lhs$name
+    origin = lhs$origin
+
+    stat_cls = attr(obj, "cls") %||% cli::cli_abort(
+        "{.arg obj} must be a function built with {.fn HTEST_FN} or {.fn MODEL_FN}."
+    )
+    is_model_id_class = inherits(model_type, "S7_class") && identical(model_type@parent, model_id)
+    is_formula_class = identical(model_type, S7::class_formula)
+    if (!is_model_id_class && !is_formula_class) {
+        cli::cli_abort(
+            "{.arg model_type} must be a class inheriting from {.cls model_id}, or {.code S7::class_formula}."
         )
     }
+    if (identical(name, "default")) {
+        cli::cli_abort(
+            "{.val default} is frozen and cannot be added via {.fn add_variant}."
+        )
+    }
+    if (!S7::S7_inherits(rhs, variant)) {
+        cli::cli_abort("{.arg value} must be a {.cls variant} object.")
+    }
+
+    key = variant_registry_key(stat_cls, model_type_name(model_type))
+    variant_registry[[key]][[name]] = list(impl = rhs, origin = origin)
+    invisible(NULL)
+}
+
+#' @rdname add-variant
+#' @export
+remove_variant = function(obj, model_type, name) {
+    stat_cls = attr(obj, "cls") %||% cli::cli_abort(
+        "{.arg obj} must be a function built with {.fn HTEST_FN} or {.fn MODEL_FN}."
+    )
+    if (!inherits(model_type, "S7_class")) {
+        cli::cli_abort(
+            "{.arg model_type} must be an S7 class (e.g. {.cls x_by}, {.code S7::class_formula})."
+        )
+    }
+    if (identical(name, "default")) {
+        cli::cli_abort(
+            "{.val default} is frozen and cannot be removed via {.fn remove_variant}."
+        )
+    }
+
+    key = variant_registry_key(stat_cls, model_type_name(model_type))
+    entries = variant_registry[[key]] %||% list()
+
+    if (is.null(entries[[name]])) {
+        cli::cli_abort(c(
+            "Variant {.val {name}} is not registered for {.cls {stat_cls}} / {.cls {model_type_name(model_type)}}.",
+            "i" = "Registered variant{?s}: {.val {names(entries)}}."
+        ))
+    }
+    if (!identical(entries[[name]]$origin, "user")) {
+        cli::cli_abort(
+            "Variant {.val {name}} is {.val package}-scoped and cannot be removed manually."
+        )
+    }
+
+    variant_registry[[key]][[name]] = NULL
     invisible(NULL)
 }
 
 #' @keywords internal
 #' @noRd
-htest_opts_global = new.env(parent = emptyenv())
-# htest_opts_global$defs = list()
-htest_opts_global$variants = list()
+variant_registry_key = function(stat_cls, model_type) {
+    paste0(stat_cls, "_", model_type)
+}
+
+#' @keywords internal
+#' @noRd
+variant_registry = new.env(parent = emptyenv())
+
+resolve_impl = function(method_name, def, model_type, cls, global_variants) {
+    if (is.null(method_name)) return(def@impl$base)
+
+    key = variant_registry_key(cls, model_type)
+    registered = variant_registry[[key]][[method_name]]$impl
+
+    global_entries = global_variants[[cls]] %||% list()
+    global_match = Filter(function(e) identical(e$name, method_name), global_entries)
+
+    def@impl$variants[[method_name]] %||%
+        registered %||%
+        global_match[[1]]$impl %||%
+        cli::cli_abort(c(
+            "No variant {.val {method_name}} registered for model type {.val {model_type}}.",
+            "i" = "Available variant{?s}: {.val {names(def@impl$variants)}}."
+        ))
+}
