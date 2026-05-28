@@ -1,8 +1,8 @@
 #' Declare the canonical implementation of a test or model
 #'
 #' `baseline()` declares the default implementation of a statistical procedure,
-#' which is the only implementation reachable on the eager path. It is frozen —
-#' no user or package can swap it out via [swap_variant()].
+#' which is the only implementation reachable on the eager path. It is always the
+#' default.
 #'
 #' @param fn A function with named arguments. The framework injects
 #'   data and arguments by matching formals to the processed model output.

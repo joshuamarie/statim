@@ -18,8 +18,8 @@ A \code{baseline} S7 object.
 }
 \description{
 \code{baseline()} declares the default implementation of a statistical procedure,
-which is the only implementation reachable on the eager path. It is frozen —
-no user or package can swap it out via \code{\link[=swap_variant]{swap_variant()}}.
+which is the only implementation reachable on the eager path. It is always the
+default.
 }
 \seealso{
 \code{\link[=variant]{variant()}}, \code{\link[=agendas]{agendas()}}, \code{\link[=stat_define]{stat_define()}}
