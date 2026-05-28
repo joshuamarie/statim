@@ -59,6 +59,7 @@ inject_and_run = function(impl, processed, args, claims = NULL) {
 resolve_from_processed = function(arg, processed) {
     if (!is.null(processed[[arg]])) return(processed[[arg]])
 
+    # val = processed[[arg]]
     with_suffix = paste0(arg, "_data")
     val = processed[[with_suffix]]
     if (!is.null(val)) {

@@ -29,9 +29,6 @@
 #'
 #' @export
 via = S7::new_generic("via", dispatch_args = c(".x", ".method"))
-# via = function(.x, .method, ...) {
-#     UseMethod("via")
-# }
 
 S7::method(via, list(test_lazy, S7::class_character)) = function(.x, .method, ...) {
     model_type = if (inherits(.x@model_id, "formula")) {
@@ -42,12 +39,9 @@ S7::method(via, list(test_lazy, S7::class_character)) = function(.x, .method, ..
     def = find_def(.x@test_spec@lookup, model_type = model_type)
 
     cls = .x@test_spec@cls
-    global_names = vapply(
-        htest_opts_global$variants[[cls]] %||% list(),
-        function(e) e$name,
-        character(1)
-    )
-    available = c(names(def@impl$variants), global_names)
+    key = variant_registry_key(cls, model_type)
+    registry_names = names(variant_registry[[key]] %||% list())
+    available = c(names(def@impl$variants), registry_names)
 
     if (.method %notin% available) {
         cli::cli_abort(c(

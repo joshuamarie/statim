@@ -45,13 +45,22 @@ S7::method(conclude, test_lazy) = function(.x, ...) {
 
     method_name = .x@recalibrate_spec$method_name
 
-    impl = resolve_impl(
-        method_name = method_name,
-        def = def,
-        model_type = model_type,
-        cls = .x@test_spec@cls,
-        global_variants = htest_opts_global$variants
-    )
+    # impl = resolve_impl(
+    #     method_name = method_name,
+    #     def = def,
+    #     model_type = model_type,
+    #     cls = .x@test_spec@cls,
+    #     global_variants = htest_opts_global$variants
+    # )
+    cls = .x@test_spec@cls
+    key = variant_registry_key(cls, model_type)
+    impl = def@impl$variants[[method_name %||% ""]] %||%
+        variant_registry[[key]][[method_name %||% ""]]$impl %||%
+        def@impl$base %||%
+        cli::cli_abort(c(
+            "No variant {.val {method_name}} registered for model type {.val {model_type}}.",
+            "i" = "Available variant{?s}: {.val {names(def@impl$variants)}}."
+        ))
 
     all_args = utils::modifyList(
         .x@test_spec@args,
@@ -111,13 +120,22 @@ S7::method(conclude, model_lazy) = function(.x, ...) {
 
     method_name = .x@recalibrate_spec$method_name
 
-    impl = resolve_impl(
-        method_name = method_name,
-        def = def,
-        model_type = model_type,
-        cls = .x@model_spec@cls,
-        global_variants = list()
-    )
+    # impl = resolve_impl(
+    #     method_name = method_name,
+    #     def = def,
+    #     model_type = model_type,
+    #     cls = .x@model_spec@cls,
+    #     global_variants = list()
+    # )
+    cls = .x@model_spec@cls
+    key = variant_registry_key(cls, model_type)
+    impl = def@impl$variants[[method_name %||% ""]] %||%
+        variant_registry[[key]][[method_name %||% ""]]$impl %||%
+        def@impl$base %||%
+        cli::cli_abort(c(
+            "No variant {.val {method_name}} registered for model type {.val {model_type}}.",
+            "i" = "Available variant{?s}: {.val {names(def@impl$variants)}}."
+        ))
 
     all_args = utils::modifyList(
         .x@model_spec@args,
