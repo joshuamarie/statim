@@ -2,9 +2,9 @@
 % Please edit documentation in R/tidy-core.R
 \name{method_tidy}
 \alias{method_tidy}
-\title{Declare tidy methods for a stat_define}
+\title{Declare tidy methods for a stat result}
 \usage{
-method_tidy(default, ...)
+method_tidy(default = NULL, ...)
 }
 \arguments{
 \item{default}{A function with signature \verb{function(.x, ...)} for the base
@@ -17,5 +17,7 @@ Names must match the variant names registered in \code{\link[=agendas]{agendas()
 A \code{method_tidy} S7 object.
 }
 \description{
-Declare tidy methods for a stat_define
+\code{method_tidy()} collects tidy functions for the base implementation and any
+named variants. The \code{default} function handles results from the base
+implementation; additional named arguments handle variant results.
 }
