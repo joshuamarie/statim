@@ -222,3 +222,58 @@ test_that("state_null() with unsupported param type errors", {
         class = "rlang_error"
     )
 })
+
+test_that("tidy() on classical pipeline result returns a tibble", {
+    result = sleep |>
+        define_model(x_by(extra, group)) |>
+        prepare_test(TTEST) |>
+        conclude() |>
+        tidy()
+
+    expect_s3_class(result, "tbl_df")
+})
+
+test_that("tidy() on classical pipeline result has correct columns", {
+    result = sleep |>
+        define_model(x_by(extra, group)) |>
+        prepare_test(TTEST) |>
+        conclude() |>
+        tidy()
+
+    expect_true(all(c("group", "estimate", "statistic", "p.value") %in% names(result)))
+})
+
+test_that("tidy() on `boot` variant returns a tibble", {
+    result = sleep |>
+        define_model(x_by(extra, group)) |>
+        prepare_test(TTEST) |>
+        via("boot") |>
+        conclude() |>
+        tidy()
+
+    expect_s3_class(result, "tbl_df")
+})
+
+test_that("tidy() on boot variant returns a tibble with lower and upper", {
+    result = sleep |>
+        define_model(x_by(extra, group)) |>
+        prepare_test(TTEST) |>
+        via("boot", n = 200L, seed = 1L) |>
+        conclude() |>
+        tidy()
+
+    expect_s3_class(result, "tbl_df")
+    expect_true(all(c("lower", "upper") %in% names(result)))
+})
+
+test_that("tidy() on contrast variant returns a tibble with tstat and p_value", {
+    result = sleep |>
+        define_model(x_by(extra, group)) |>
+        prepare_test(TTEST) |>
+        via("contrast") |>
+        conclude() |>
+        tidy()
+
+    expect_s3_class(result, "tbl_df")
+    expect_true(all(c("tstat", "p_value") %in% names(result)))
+})
