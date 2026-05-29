@@ -81,6 +81,8 @@ Collate:
     'model-expand.R'
     'model-linear-reg-defs.R'
     'model-linear-reg.R'
+    'model-glm-defs.R'
+    'model-glm.R'
     'global_variables.R'
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
