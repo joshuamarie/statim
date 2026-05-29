@@ -11,13 +11,13 @@
 #'
 #' @examples
 #' sleep |>
-#'     define_model(extra ~ group) |>
+#'     define_model(extra %by% group) |>
 #'     prepare_test(TTEST) |>
 #'     state_null(MU(extra) == 0) |>
 #'     conclude()
 #'
 #' sleep |>
-#'     define_model(extra ~ group) |>
+#'     define_model(extra %by% group) |>
 #'     prepare_test(TTEST) |>
 #'     state_null(more_h0(
 #'         h01 = MU(extra) == 2,
