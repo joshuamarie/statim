@@ -25,6 +25,7 @@
 #'     )) |>
 #'     conclude()
 #'
+#' @name null-hyp
 #' @export
 state_null = S7::new_generic("state_null", ".x")
 
@@ -99,6 +100,7 @@ write_claims = function(...) {
     )
 }
 
+#' @rdname null-hyp
 #' @export
 more_h0 = function(...) {
     cli::cli_abort(
