@@ -27,6 +27,31 @@
         )
     }
 }
+
+#' Chained equality operator for null hypotheses
+#'
+#' `%=%` declares that all chained population parameters are hypothesized
+#' to be equal. Used inside [state_null()] only — it is a syntactic macro
+#' and will error if called outside that context.
+#'
+#' @examples
+#' sleep |>
+#'     define_model(x_by(extra, group)) |>
+#'     prepare_test(ANOVA) |>
+#'     state_null(
+#'         MU(extra, group == "1") %=%
+#'         MU(extra, group == "2")
+#'     ) |>
+#'     conclude()
+#'
+#' @name equal-op
+#' @export
+`%=%` = function(lhs, rhs) {
+    cli::cli_abort(
+        "{.code %=%} must be used inside {.fn state_null}."
+    )
+}
+
 # `%<-%` = function(lhs, rhs) {
 #     if (!inherits(lhs, "making_tidy_call")) {
 #         cli::cli_abort(

@@ -56,26 +56,3 @@ map_claim = function(...) {
     }
     structure(fn, class = c("map_claim", "function"))
 }
-
-#' Chained equality operator for null hypotheses
-#'
-#' `%=%` declares that all chained population parameters are hypothesized
-#' to be equal. Used inside [state_null()] only — it is a syntactic macro
-#' and will error if called outside that context.
-#'
-#' @examples
-#' sleep |>
-#'     define_model(x_by(extra, group)) |>
-#'     prepare_test(ANOVA) |>
-#'     state_null(
-#'         MU(extra, group == "1") %=%
-#'         MU(extra, group == "2")
-#'     ) |>
-#'     conclude()
-#'
-#' @export
-`%=%` = function(lhs, rhs) {
-    cli::cli_abort(
-        "{.code %=%} must be used inside {.fn state_null}."
-    )
-}
