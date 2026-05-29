@@ -87,18 +87,18 @@ S7::method(print, stated_null) = function(x, ...) {
     invisible(x)
 }
 
-#' @export
-write_claims = function(...) {
-    quos = rlang::enquos(...)
-    if (length(quos) == 0L) {
-        cli::cli_abort("Supply at least one hypothesis expression.")
-    }
-    claims = lapply(quos, parse_null_claim)
-    null_claims(
-        claims = claims,
-        expr = rlang::expr(write_claims(!!!lapply(quos, rlang::quo_get_expr)))
-    )
-}
+# #' @export
+# write_claims = function(...) {
+#     quos = rlang::enquos(...)
+#     if (length(quos) == 0L) {
+#         cli::cli_abort("Supply at least one hypothesis expression.")
+#     }
+#     claims = lapply(quos, parse_null_claim)
+#     null_claims(
+#         claims = claims,
+#         expr = rlang::expr(write_claims(!!!lapply(quos, rlang::quo_get_expr)))
+#     )
+# }
 
 #' @rdname null-hyp
 #' @export
