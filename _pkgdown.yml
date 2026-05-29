@@ -36,47 +36,78 @@ reference:
   - title: High Level API
     desc: Main functions for interactive use
 
-  - subtitle: Model definition
+  - subtitle: Model definition and data preparation
     desc: Verbs that describe the model you want to analyze
     contents:
     - model-define-base
+    - write_models
 
   - subtitle: Model IDs
-    desc: Mappers to shape the model you want to describe. Formula also allowed.
+    desc: Mappers similar to formula in R to shape the model you want to describe. Formula also allowed.
     contents:
     - x_by
     - rel
     - pairwise
+
+  - subtitle: Statistical Inference Parameterization
+    desc: Verbs used for preparing and parameterize the equation of statistical inference
+    contents:
+    - define_model
+    - prepare_test
+    - prepare_model
+    - null-hyp
+    - via
+    - conclude
+
+  - subtitle: \"Population parameter\" definer
+    desc: Functions that emulate the population parameter, close to textbook notations
+    contents:
+    - equal-op
+    - MU
+    - PI
+    - SIGMA
+    - RHO
+
+  - subtitle: ANOVA for Linear Models
+    desc: Verbs used to perform ANOVA for linear models
+    contents:
+    - anova-mod
+    - write_models
+    - prepare_model
+
+  - subtitle: Result retrieval
+    desc: Verbs used to retrieve outputs in standard R's data structure
+    contents:
+    - tidy
+
+  - subtitle: H-test container and executioner
+    desc: Container and an eager executioner of a prepared H-test function
+    contents:
+    - TTEST
+    - CORTEST
+    - ANOVA
+
+  - subtitle: Model-based inference container and executioner
+    desc: Container and an eager executioner of a prepared model-based inference function
+    contents:
+    - LINEAR_REG
+    - GLM
 
   - subtitle: Multiple Inline Codes
     desc: Analogue to `I()`, but only captures the expression and accepts multiple inline codes.
     contents:
     - inlines
 
-  - subtitle: H-test pipeline
-    desc: Verbs that build and execute the test pipeline
-    contents:
-    - prepare_test
-    - via
-    - update.test_lazy
-    - conclude
-
-  - subtitle: H-test executioner
-    desc: Eager execution of a prepared test
-    contents:
-    - TTEST
-    - CORTEST
-
   # - title: Low Level API
   #   desc: Functions to interact with the statim internals
 
-  - title: Low-level/Implementation API
+  - title: Low-level / Developer facing API
     desc: Functions for building and extending test implementations
 
   - subtitle: Model ID helpers
-    desc: Build new model ID mappers
+    desc: Classes and internal functions
     contents:
-    - model_id_class
+    - model_id
     - model-processor
     - model_id_info
 
@@ -90,13 +121,46 @@ reference:
   - subtitle: Test definition
     desc: Register a new test implementation
     contents:
-    - test_define
+    - stat_define
+    - STAT_CONSTRUCTOR
     - HTEST_FN
+    - MODEL_FN
 
   - subtitle: Session-scoped variant management
     desc: Add or replace variants on existing test functions
     contents:
-    - htest-defs-modifiers
+    - add-variant
+    - modifying-assignment
+
+  - subtitle: Modelled hypothesis \"population parameter\" definer
+    desc: Core class of \"population parameter\" definer
+    contents:
+    - param_obj
+
+  - subtitle: Modelled hypothesis management
+    desc: Core helpers to parse the modelled hypotheses, objects from `state_null()`
+    contents:
+    - claim_scalar_diff
+    - claim_contrast_coefs
+
+  - subtitle: Modelled hypothesis translator and container
+    desc: Core function to contain the implementation to translate modelled hypothesis, placed under `claim_translator` from `stat_define`
+    contents:
+    - claim_translate
+    - map_claim
+
+  - subtitle: Tidy implementation container
+    desc: Add or replace `tidy()` method for following `STAT_CONSTRUCTOR` objects
+    contents:
+    - making_tidy
+    - method_tidy
+    - modifying-assignment
+
+  - subtitle: Exclusive for linear models only
+    desc: Containerization of linear model outputs in S7 classes
+    contents:
+    - lm_object
+    - glm_object
 
 footer:
   structure:
