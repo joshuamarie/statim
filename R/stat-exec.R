@@ -1,15 +1,65 @@
+
 #' Execute a lazy pipeline
 #'
 #' `conclude()` is the terminal step of the pipeline. It resolves the
-#' method variant, runs the implementation, and returns a `cld_exec` object.
+#' method variant, runs the implementation, and returns a `cld_exec` S7 object.
 #'
 #' @param .x A `test_lazy` or `model_lazy` object produced by
 #'   [prepare_test()] or [prepare_model()] (optionally followed by [via()]).
 #' @param ... Currently unused.
 #'
-#' @return A `cld_exec` S3 object.
+#' @return A `cld_exec` S7 object with the following slots:
+#'   \describe{
+#'     \item{`@data`}{The raw return value of the `fn` defined in [baseline()]
+#'       or [variant()]. Its structure depends on the implementation — see the
+#'       documentation of the stat function (e.g. `?TTEST`) for what to expect.}
+#'     \item{`@cld_meta`}{A list of pipeline metadata:
+#'       \describe{
+#'         \item{`$model_id`}{The model ID object passed to [define_model()].}
+#'         \item{`$processed`}{The processed model output from [model_processor()].
+#'           The same object received as `.proc` inside the `fn`.}
+#'         \item{`$stat_name`}{The human-readable test or model name.}
+#'         \item{`$method`}{The variant name used. `"default"` when no [via()]
+#'           was called.}
+#'         \item{`$data_name`}{The name of the data frame, if resolvable.}
+#'       }
+#'     }
+#'   }
 #'
-#' @seealso [prepare_test()], [prepare_model()], [via()]
+#' @section Writing print functions:
+#' The `print` argument of [baseline()] and [variant()] receives a `cld_exec`
+#' object as `x`. Read your result from `x@data`:
+#'
+#' ```r
+#' baseline(
+#'     fn = function(.proc, .mu = 0) { ... },
+#'     print = function(x, ...) {
+#'         dat = x@data
+#'         # render dat
+#'         invisible(x)
+#'     }
+#' )
+#' ```
+#'
+#' @section Writing tidy functions:
+#' Functions passed to [method_tidy()] receive a `cld_exec` object as `.x`.
+#' Read your result from `.x@data`. Use `.x@cld_meta$method` if you need to
+#' branch on the variant:
+#'
+#' ```r
+#' making_tidy(TTEST, x_by) %<-% method_tidy(
+#'     default = function(.x, ...) {
+#'         dat = .x@data
+#'         # return a tibble
+#'     },
+#'     boot = function(.x, ...) {
+#'         dat = .x@data
+#'         # return a tibble
+#'     }
+#' )
+#' ```
+#'
+#' @seealso [prepare_test()], [prepare_model()], [via()], [model_processor()]
 #'
 #' @examples
 #' sleep |>

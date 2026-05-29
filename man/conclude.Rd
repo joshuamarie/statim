@@ -13,12 +13,63 @@ conclude(.x, ...)
 \item{...}{Currently unused.}
 }
 \value{
-A \code{cld_exec} S3 object.
+A \code{cld_exec} S7 object with the following slots:
+\describe{
+\item{\verb{@data}}{The raw return value of the \code{fn} defined in \code{\link[=baseline]{baseline()}}
+or \code{\link[=variant]{variant()}}. Its structure depends on the implementation — see the
+documentation of the stat function (e.g. \code{?TTEST}) for what to expect.}
+\item{\verb{@cld_meta}}{A list of pipeline metadata:
+\describe{
+\item{\verb{$model_id}}{The model ID object passed to \code{\link[=define_model]{define_model()}}.}
+\item{\verb{$processed}}{The processed model output from \code{\link[=model_processor]{model_processor()}}.
+The same object received as \code{.proc} inside the \code{fn}.}
+\item{\verb{$stat_name}}{The human-readable test or model name.}
+\item{\verb{$method}}{The variant name used. \code{"default"} when no \code{\link[=via]{via()}}
+was called.}
+\item{\verb{$data_name}}{The name of the data frame, if resolvable.}
+}
+}
+}
 }
 \description{
 \code{conclude()} is the terminal step of the pipeline. It resolves the
-method variant, runs the implementation, and returns a \code{cld_exec} object.
+method variant, runs the implementation, and returns a \code{cld_exec} S7 object.
 }
+\section{Writing print functions}{
+
+The \code{print} argument of \code{\link[=baseline]{baseline()}} and \code{\link[=variant]{variant()}} receives a \code{cld_exec}
+object as \code{x}. Read your result from \code{x@data}:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{baseline(
+    fn = function(.proc, .mu = 0) \{ ... \},
+    print = function(x, ...) \{
+        dat = x@data
+        # render dat
+        invisible(x)
+    \}
+)
+}\if{html}{\out{</div>}}
+}
+
+\section{Writing tidy functions}{
+
+Functions passed to \code{\link[=method_tidy]{method_tidy()}} receive a \code{cld_exec} object as \code{.x}.
+Read your result from \code{.x@data}. Use \code{.x@cld_meta$method} if you need to
+branch on the variant:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{making_tidy(TTEST, x_by) \%<-\% method_tidy(
+    default = function(.x, ...) \{
+        dat = .x@data
+        # return a tibble
+    \},
+    boot = function(.x, ...) \{
+        dat = .x@data
+        # return a tibble
+    \}
+)
+}\if{html}{\out{</div>}}
+}
+
 \examples{
 sleep |>
     define_model(x_by(extra, group)) |>
@@ -38,5 +89,5 @@ mtcars |>
 
 }
 \seealso{
-\code{\link[=prepare_test]{prepare_test()}}, \code{\link[=prepare_model]{prepare_model()}}, \code{\link[=via]{via()}}
+\code{\link[=prepare_test]{prepare_test()}}, \code{\link[=prepare_model]{prepare_model()}}, \code{\link[=via]{via()}}, \code{\link[=model_processor]{model_processor()}}
 }
