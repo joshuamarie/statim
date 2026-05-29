@@ -45,33 +45,9 @@ test_that("impl_cls_from_model() concatenates stat_cls and model name", {
     expect_equal(impl_cls_from_model("ttest", extra ~ group), "ttest_formula")
 })
 
-# resolve_from_processed -------------------------------------------------------
+# inject_and_run ---------------------------------------------------------------
 
-test_that("resolve_from_processed() returns direct match", {
-    processed = list(x = 1:10)
-    expect_equal(resolve_from_processed("x", processed), 1:10)
-})
-
-test_that("resolve_from_processed() strips _data suffix and unwraps single-column df", {
-    processed = list(x_data = data.frame(extra = sleep$extra))
-    result = resolve_from_processed("x", processed)
-
-    expect_equal(result, sleep$extra)
-})
-
-test_that("resolve_from_processed() returns multi-column df as-is", {
-    processed = list(x_data = data.frame(a = 1:5, b = 6:10))
-    result = resolve_from_processed("x", processed)
-
-    expect_equal(ncol(result), 2)
-})
-
-test_that("resolve_from_processed() returns NULL when arg not found", {
-    processed = list(x_data = data.frame(extra = sleep$extra))
-    expect_null(resolve_from_processed("missing_arg", processed))
-})
-
-test_that("inject_and_run() calls fn with injected processed args", {
+test_that("inject_and_run() passes processed as .proc and runs fn", {
     impl = ttest_def_two@impl$base
     processed = model_processor(x_by(extra, group), sleep)
 
@@ -81,22 +57,35 @@ test_that("inject_and_run() calls fn with injected processed args", {
     expect_named(result, c("group", "ttest"))
 })
 
-test_that("inject_and_run() prefers user args over processed values", {
+test_that("inject_and_run() prefers user args over fn defaults", {
     impl = ttest_def_two@impl$base
     processed = model_processor(x_by(extra, group), sleep)
 
-    # just confirm it runs without error, and its `.paired` is FALSE by default
     expect_no_error(
         inject_and_run(impl, processed, args = list(.paired = FALSE))
     )
 })
 
 test_that("inject_and_run() errors when required arg is missing", {
-    bare_impl = baseline(fn = function(x, required_arg) required_arg)
+    impl = baseline(fn = function(.proc, required_arg) required_arg)
     processed = model_processor(x_by(extra, group), sleep)
 
     expect_error(
-        inject_and_run(bare_impl, processed, args = list()),
+        inject_and_run(impl, processed, args = list()),
+        class = "rlang_error"
+    )
+})
+
+test_that("baseline() errors when fn does not start with .proc", {
+    expect_error(
+        baseline(fn = function(x, group_data) x),
+        class = "rlang_error"
+    )
+})
+
+test_that("variant() errors when fn does not start with .proc", {
+    expect_error(
+        variant(fn = function(x, group_data) x),
         class = "rlang_error"
     )
 })
