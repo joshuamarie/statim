@@ -24,6 +24,14 @@ baseline = S7::new_class(
         if (!is.function(fn)) {
             cli::cli_abort("{.arg fn} must be a function.")
         }
+        first_arg = names(formals(fn))[[1]]
+        if (!identical(first_arg, ".proc")) {
+            cli::cli_abort(c(
+                "{.arg fn} must have {.arg .proc} as its first argument.",
+                "i" = "Found {.arg {first_arg}} instead.",
+                "i" = "See {.fn baseline} for the expected signature."
+            ))
+        }
         if (!is.null(print) && !is.function(print)) {
             cli::cli_abort("{.arg print} must be a function or {.val NULL}.")
         }
@@ -59,6 +67,14 @@ variant = S7::new_class(
     constructor = function(fn, print = NULL) {
         if (!is.function(fn)) {
             cli::cli_abort("{.arg fn} must be a function.")
+        }
+        first_arg = names(formals(fn))[[1]]
+        if (!identical(first_arg, ".proc")) {
+            cli::cli_abort(c(
+                "{.arg fn} must have {.arg .proc} as its first argument.",
+                "i" = "Found {.arg {first_arg}} instead.",
+                "i" = "See {.fn baseline} for the expected signature."
+            ))
         }
         if (!is.null(print) && !is.function(print)) {
             cli::cli_abort("{.arg print} must be a function or {.val NULL}.")
