@@ -3,7 +3,10 @@ anova_def_formula = test_define(
     # impl_class = "anova_formula",
     impl = agendas(
         base = baseline(
-            fn = function(data, formula, .contrasts = NULL) {
+            fn = function(.proc, .contrasts = NULL) {
+                formula = .proc$formula
+                data = .proc$data
+
                 # Stamp unnamed contrast columns with h01, h02, ...
                 if (!is.null(.contrasts)) {
                     grp_nm = names(.contrasts)[[1]]

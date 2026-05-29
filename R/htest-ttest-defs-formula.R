@@ -3,7 +3,10 @@ ttest_def_formula = test_define(
     # impl_class = "ttest_formula",
     impl = agendas(
         base = baseline(
-            fn = function(data, formula, .mu = 0, .alt = "two.sided", .ci = 0.95) {
+            fn = function(.proc, .mu = 0, .alt = "two.sided", .ci = 0.95) {
+                formula = .proc$formula
+                data = .proc$data
+
                 trms = terms(formula)
                 response = all.vars(formula)[1]
                 rhs_labels = attr(trms, "term.labels")

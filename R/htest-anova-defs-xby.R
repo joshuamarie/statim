@@ -3,7 +3,10 @@ anova_def_xby = test_define(
     # impl_class = "anova_xby",
     impl = agendas(
         base = baseline(
-            fn = function(x, group_data, .contrasts = NULL) {
+            fn = function(.proc, .contrasts = NULL) {
+                x = .proc$x_data[[1]]
+                group_data = .proc$group_data
+
                 grp_names = names(group_data)
 
                 df = vctrs::new_data_frame(

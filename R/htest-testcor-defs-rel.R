@@ -3,7 +3,10 @@ cor_test_rel = test_define(
     # impl_class = "cortest_rel",
     impl = agendas(
         base = baseline(
-            fn = function(x_data, resp_data, .cor_type = "pearson", .alt = "two.sided", .ci = 0.95) {
+            fn = function(.proc, .cor_type = "pearson", .alt = "two.sided", .ci = 0.95) {
+                x_data = .proc$x_data
+                resp_data = .proc$resp_data
+
                 if (length(resp_data) != 1L) {
                     cli::cli_abort(c(
                         "{.arg resp} must be a single variable.",

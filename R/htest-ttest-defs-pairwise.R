@@ -3,7 +3,11 @@ ttest_def_pairwise = test_define(
     # impl_class = "ttest_pairwise",
     impl = agendas(
         base = baseline(
-            fn = function(var_names, pairs, data, .paired = FALSE, .mu = 0, .alt = "two.sided", .ci = 0.95) {
+            fn = function(.proc, .paired = FALSE, .mu = 0, .alt = "two.sided", .ci = 0.95) {
+                var_names = .proc$var_names
+                pairs = .proc$pairs
+                data = .proc$data
+
                 n_vars = length(var_names)
 
                 if (length(.mu) == 1L) {

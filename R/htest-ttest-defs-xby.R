@@ -4,7 +4,10 @@ ttest_def_two = test_define(
     impl = agendas(
         base = baseline(
             # ---- Default implementation ----
-            fn = function(x, group_data, .paired = FALSE, .mu = 0, .alt = "two.sided", .ci = 0.95) {
+            fn = function(.proc, .paired = FALSE, .mu = 0, .alt = "two.sided", .ci = 0.95) {
+                x = .proc$x_data[[1]]
+                group_data = .proc$group_data
+
                 tests = lapply(names(group_data), function(grp_name) {
                     grp = as.character(group_data[[grp_name]])
                     lvls = unique(grp)
@@ -94,7 +97,10 @@ ttest_def_two = test_define(
         boot = variant(
             # ---- Bootstrapping ----
             # ---- variant: boot ----
-            fn = function(x, group_data, .ci = 0.95, n = 1000L, seed = NULL) {
+            fn = function(.proc, .ci = 0.95, n = 1000L, seed = NULL) {
+                x = .proc$x_data[[1]]
+                group_data = .proc$group_data
+
                 if (!is.null(seed)) set.seed(seed)
 
                 grp = as.character(group_data[[1]])
@@ -137,7 +143,10 @@ ttest_def_two = test_define(
         permute = variant(
             # ---- Permutation test ----
             # ---- variant: permute ----
-            fn = function(x, group_data, n = 1000L, seed = NULL) {
+            fn = function(.proc, n = 1000L, seed = NULL) {
+                x = .proc$x_data[[1]]
+                group_data = .proc$group_data
+
                 if (!is.null(seed)) set.seed(seed)
 
                 grp = as.character(group_data[[1]])
@@ -190,7 +199,10 @@ ttest_def_two = test_define(
         contrast = variant(
             # ---- Contrast t-test ----
             # ---- variant: contrast ----
-            fn = function(x, group_data, .mu = 0, .ci = 0.95, .contrast = NULL, .op = "==") {
+            fn = function(.proc, .mu = 0, .ci = 0.95, .contrast = NULL, .op = "==") {
+                x = .proc$x_data[[1]]
+                group_data = .proc$group_data
+
                 grp_name = names(group_data)[[1]]
                 grp = as.character(group_data[[grp_name]])
                 lvls = unique(grp)
