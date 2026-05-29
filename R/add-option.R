@@ -21,13 +21,16 @@
 #'
 #' @return An `add_variant_call` object, consumed by `%<-%`.
 #'
-#' @seealso [stat_define()], [variant()], [agendas()]
+#' @seealso [stat_define()], [variant()], [agendas()], [model_processor()]
 #'
 #' @examples
-#' # Add a bootstrap variant for x_by (user level)
+#' # Add a bootstrap variant for x_by (user level).
+#' # .proc$x_data[[1]] is the response vector; .proc$group_data is the
+#' # grouping data frame. See ?model_processor for all available keys.
 #' add_variant(TTEST, x_by, "another_boot") %<-% variant(
-#'     fn = function(x, group_data, .n = 1000L) {
-#'         grp = as.character(group_data[[1]])
+#'     fn = function(.proc, .n = 1000L) {
+#'         x = .proc$x_data[[1]]
+#'         grp = as.character(.proc$group_data[[1]])
 #'         lvls = unique(grp)
 #'         x1 = x[grp == lvls[[1]]]
 #'         x2 = x[grp == lvls[[2]]]
@@ -42,7 +45,7 @@
 #'
 #' # Package level (inside .onLoad())
 #' add_variant(TTEST, x_by, "another_boot", origin = "package") %<-% variant(
-#'     fn = function(x, group_data, .n = 1000L) { ... }
+#'     fn = function(.proc, .n = 1000L) { ... }
 #' )
 #'
 #' @name add-variant
