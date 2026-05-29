@@ -58,7 +58,7 @@ test_that("tidy() on contrast variant returns tibble with expected columns", {
 })
 
 test_that("tidy() errors when no method registered for variant", {
-    simple_variant = variant(fn = function(x, group_data) list(diff = 1))
+    simple_variant = variant(fn = function(.proc) list(diff = 1))
     add_variant(TTEST, x_by, "test_no_tidy") %<-% simple_variant
     on.exit(remove_variant(TTEST, x_by, "test_no_tidy"))
 
@@ -72,7 +72,7 @@ test_that("tidy() errors when no method registered for variant", {
 })
 
 test_that("making_tidy %<-% registers tidy method for new variant", {
-    simple_variant = variant(fn = function(x, group_data) list(diff = mean(x)))
+    simple_variant = variant(fn = function(.proc) list(diff = mean(.proc$x_data[[1]], na.rm = TRUE)))
     add_variant(TTEST, x_by, "test_tidy_reg") %<-% simple_variant
     on.exit({
         remove_variant(TTEST, x_by, "test_tidy_reg")
