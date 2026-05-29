@@ -1,5 +1,8 @@
 simple_variant = variant(
-    fn = function(x, group_data, .n = 100L) {
+    fn = function(.proc, .n = 100L) {
+        x = .proc$x_data[[1]]
+        group_data = .proc$group_data
+
         grp = as.character(group_data[[1]])
         lvls = unique(grp)
         x1 = x[grp == lvls[[1]]]
