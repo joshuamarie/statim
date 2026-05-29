@@ -15,6 +15,26 @@ cld_anova = S7::new_class(
     )
 )
 
+S7::method(update, anova_lazy) = function(object, ...) {
+    dots = list(...)
+    object@models = lapply(object@models, function(m) {
+        if (!is.null(m@recalibrate_spec)) {
+            m@recalibrate_spec$args = utils::modifyList(
+                m@recalibrate_spec$args,
+                dots
+            )
+        } else {
+            m@model_spec@args = utils::modifyList(
+                m@model_spec@args,
+                dots
+            )
+        }
+        m
+    })
+
+    object
+}
+
 S7::method(print, cld_anova) = function(x, ...) {
     stat_label = if (identical(x@cld_meta$method, "default")) {
         x@cld_meta$stat_name
@@ -135,6 +155,51 @@ S7::method(anova, cld_exec) = function(object, ..., test = "F") {
     build_anova(fitted, labels = character(0), test = test)
 }
 
+S7::method(print, anova_lazy) = function(x, ...) {
+    m1 = x@models[[1]]
+    spec = m1@model_spec
+
+    method = m1@recalibrate_spec$method_name %||% "default"
+
+    all_args = utils::modifyList(
+        spec@args,
+        m1@recalibrate_spec$args %||% list()
+    )
+
+    cat("\n")
+    cat(cli::rule(left = "Models", line = "-"), "\n\n")
+    for (i in seq_along(x@models)) {
+        m = x@models[[i]]
+        lbl = x@labels[[i]]
+        formula_str = model_id_info(m@model_id)$args
+        cat(sprintf("  %s : %s\n", lbl, formula_str))
+    }
+
+    cat("\n")
+    cat(cli::rule(left = "Model Specification", line = "-"), "\n\n")
+    cat("Model  :", spec@name, "\n")
+    cat("Method :", method, "\n")
+
+    if (length(all_args) > 0L) {
+        args_str = paste(
+            names(all_args),
+            vapply(all_args, function(a) {
+                if (is.function(a)) {
+                    paste0(deparse(a[[1]]), "()")
+                } else {
+                    as.character(a)
+                }
+            }, character(1)),
+            sep = " = ",
+            collapse = ", "
+        )
+        cat("Args   :", args_str, "\n")
+    }
+
+    cat("\n")
+    invisible(x)
+}
+
 valid_tests = function(test) {
     valid = c("F", "LRT", "Chisq")
     if (!test %in% valid) {
@@ -152,11 +217,11 @@ S7::method(build_anova, S7::class_list) = function(fitted, labels, test) {
         cli::cli_abort("{.fn anova} requires at least 2 models.")
     }
 
-    not_lm_object = !vapply(fitted, function(f) S7::S7_inherits(f, lm_object), logical(1))
-    if (any(not_lm_object)) {
+    not_able = !vapply(fitted, function(f) S7::S7_inherits(f, anova_able), logical(1))
+    if (any(not_able)) {
         cli::cli_abort(c(
-            "All models must return an {.cls lm_object} to participate in {.fn anova}.",
-            "x" = "Model{?s} {which(not_lm_object)} do{?es/} not."
+            "All models must return an {.cls anova_able} object to participate in {.fn anova}.",
+            "x" = "Model{?s} {which(not_able)} do{?es/} not."
         ))
     }
 
@@ -168,43 +233,27 @@ S7::method(build_anova, S7::class_list) = function(fitted, labels, test) {
         ))
     }
 
-    nobs = vapply(fitted, function(f) length(f@residuals), integer(1))
+    families = vapply(fitted, function(f) f@family, character(1))
+    if (length(unique(families)) > 1L) {
+        cli::cli_abort(c(
+            "All models must belong to the same error family.",
+            "x" = "Found: {.val {unique(families)}}.",
+            "i" = "Comparing models across families is not meaningful."
+        ))
+    }
+
+    nobs = vapply(fitted, function(f) length(f@terms), integer(1))
     if (length(unique(nobs)) > 1L) {
         cli::cli_abort(
             "Models were not all fitted to the same number of observations."
         )
     }
 
-    res_df = vapply(fitted, function(f) f@df_residual, numeric(1))
-    rss = vapply(fitted, function(f) sum(f@residuals^2), numeric(1))
-    df_diff = c(NA_real_, -diff(res_df))
-    rss_diff = c(NA_real_, -diff(rss))
-
-    big = which.min(res_df)
-    scale = rss[big] / res_df[big]
-
-    if (test == "F") {
-        stat = rss_diff / df_diff / scale
-        p_val = pf(stat, df_diff, res_df[big], lower.tail = FALSE)
-        stat_col = "f_value"
-    } else {
-        stat = rss_diff / scale
-        p_val = pchisq(stat, df_diff, lower.tail = FALSE)
-        stat_col = "chisq_value"
-    }
-
-    tbl = tibble::tibble(
-        model = if (length(labels) == length(fitted)) labels else as.character(seq_along(fitted)),
-        res_df = res_df,
-        rss = rss,
-        df = df_diff,
-        sum_sq = rss_diff,
-        !!stat_col := stat,
-        p_value = p_val
-    )
+    family = families[[1L]]
+    stats_tbl = compute_anova_stats(fitted, family = family, test = test)
 
     cld_anova(
-        data = tbl,
+        data = stats_tbl,
         impl_cls = "anova_lm",
         stat_cls = "anova_lm",
         print_fn = NULL,
@@ -215,6 +264,60 @@ S7::method(build_anova, S7::class_list) = function(fitted, labels, test) {
             method = test,
             data_name = ""
         )
+    )
+}
+
+#' Compute ANOVA test statistics from a list of anova_able objects
+#'
+#' Dispatches on family to select the right test statistic. Gaussian models
+#' use RSS-based F or chi-squared. All other families use deviance-based LRT.
+#' The `test` argument is honoured for Gaussian; for non-Gaussian families
+#' it is forced to `"LRT"` with a message.
+#'
+#' @param fitted A list of `anova_able` objects, sorted by increasing
+#'   complexity (fewest to most parameters).
+#' @param family A string, e.g. `"gaussian"`, `"binomial"`, `"poisson"`.
+#' @param test One of `"F"`, `"LRT"`, `"Chisq"`.
+#'
+#' @return A tibble with one row per model.
+#'
+#' @keywords internal
+#' @noRd
+compute_anova_stats = function(fitted, family, test) {
+    res_df = vapply(fitted, function(f) f@df_residual, numeric(1))
+    dev = vapply(fitted, function(f) f@deviance, numeric(1))
+    df_diff = c(NA_real_, -diff(res_df))
+    dev_diff = c(NA_real_, -diff(dev))
+
+    if (family != "gaussian" && test == "F") {
+        cli::cli_inform(c(
+            "!" = "F-test is only valid for Gaussian models.",
+            "i" = "Switching to LRT for family {.val {family}}."
+        ))
+        test = "LRT"
+    }
+
+    if (test == "F") {
+        big = which.min(res_df)
+        scale = dev[big] / res_df[big]
+        stat = dev_diff / df_diff / scale
+        p_val = pf(stat, df_diff, res_df[big], lower.tail = FALSE)
+        stat_col = "f_value"
+    } else {
+        scale = vapply(fitted, function(f) f@dispersion, numeric(1))
+        stat = dev_diff / scale[[which.min(res_df)]]
+        p_val = pchisq(stat, df_diff, lower.tail = FALSE)
+        stat_col = "chisq_value"
+    }
+
+    tibble::tibble(
+        model = if (length(labels) == length(fitted)) labels else as.character(seq_along(fitted)),
+        res_df = res_df,
+        deviance = dev,
+        df = df_diff,
+        dev_diff = dev_diff,
+        !!stat_col := stat,
+        p_value = p_val
     )
 }
 
@@ -233,3 +336,38 @@ run_model_lazy_raw = function(m) {
     )
     inject_and_run(impl = def@impl$base, processed = m@processed, args = all_args)
 }
+
+#' Protocol class for ANOVA participation
+#'
+#' Any model result container that should participate in [anova()] must
+#' inherit from `anova_able`. Subclasses fill the four required slots;
+#' `build_anova()` reads only those slots and dispatches the test statistic
+#' computation on `@family`.
+#'
+#' @slot terms The model terms object. Used to verify response consistency.
+#' @slot df_residual Residual degrees of freedom.
+#' @slot deviance Scalar deviance measure. For Gaussian LMs this is the
+#'   residual sum of squares. For GLMs this is the model deviance from
+#'   [stats::deviance()].
+#' @slot dispersion Scalar dispersion parameter. For Gaussian LMs this is
+#'   `sigma^2` (`rss / df_residual`). For GLMs with a known dispersion
+#'   (binomial, Poisson) set to `1`. For quasi-families use the estimated
+#'   Pearson dispersion.
+#' @slot family A string identifying the error family, e.g. `"gaussian"`,
+#'   `"binomial"`, `"poisson"`. Used by `build_anova()` to select the
+#'   correct test statistic. Must be consistent across all models passed to
+#'   a single [anova()] call.
+#'
+#' @seealso [anova()]
+#'
+#' @keywords internal
+anova_able = S7::new_class(
+    "anova_able",
+    properties = list(
+        terms = S7::new_property(class = S7::class_any),
+        df_residual = S7::class_numeric,
+        deviance = S7::class_numeric,
+        dispersion = S7::class_numeric,
+        family = S7::new_property(class = S7::class_character, default = "gaussian")
+    )
+)

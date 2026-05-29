@@ -6,8 +6,11 @@
 \usage{
 lm_object(
   terms = NULL,
-  residuals = integer(0),
   df_residual = integer(0),
+  deviance = integer(0),
+  dispersion = integer(0),
+  family = "gaussian",
+  residuals = integer(0),
   coefficients = (function (.data = list(), row.names = NULL) 
  {
      if

@@ -88,6 +88,18 @@ S7::method(write_models, S7::class_data.frame) = function(.data, ...) {
     expanded_model(models = models, labels = nms)
 }
 
+S7::method(print, expanded_model) = function(x, ...) {
+    cat("\n")
+    cat(cli::rule(left = "Models", line = "-"), "\n\n")
+    for (i in seq_along(x@models)) {
+        m = x@models[[i]]
+        lbl = x@labels[[i]]
+        cat(sprintf("  %s : %s\n", lbl, model_id_info(m@model_id)$args))
+    }
+    cat("\n")
+    invisible(x)
+}
+
 S7::method(prepare_model, list(expanded_model, S7::class_function)) = function(.x, .model_fn, ...) {
     spec = as_model_spec(.model_fn)
     models = lapply(.x@models, function(dm) {

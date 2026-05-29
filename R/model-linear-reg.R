@@ -83,10 +83,9 @@ LINEAR_REG = MODEL_FN(
 #' @export
 lm_object = S7::new_class(
     "lm_object",
+    parent = anova_able,
     properties = list(
-        terms = S7::new_property(class = S7::class_any),
         residuals = S7::class_numeric,
-        df_residual = S7::class_numeric,
         coefficients = S7::class_data.frame,
         fit_summary = S7::new_property(class = S7::class_data.frame, default = NULL)
     )
@@ -149,20 +148,61 @@ lm_to_lm_object = function(fit) {
     )
 
     s = summary(fit)
+    rss = sum(fit$residuals^2)
+    df_res = fit$df.residual
+
     fit_tbl = tibble::tibble(
         r_squared = s$r.squared,
         adj_r_squared = s$adj.r.squared,
         sigma = s$sigma,
-        df_residual = as.integer(fit$df.residual),
+        df_residual = as.integer(df_res),
         n_obs = as.integer(length(fit$residuals))
     )
 
     lm_object(
         terms = fit$terms,
         residuals = fit$residuals,
-        df_residual = fit$df.residual,
+        df_residual = df_res,
+        deviance = rss,
+        dispersion = rss / df_res,
+        family = "gaussian",
         coefficients = coef_tbl,
         fit_summary = fit_tbl
     )
 }
+# lm_to_lm_object = function(fit) {
+#     if (!inherits(fit, "lm")) {
+#         cli::cli_abort(c(
+#             "{.fn lm_to_lm_object} requires a fitted {.cls lm} object.",
+#             "i" = "Got {.cls {class(fit)[[1]]}}.",
+#             "i" = "Did you pass {.code method = \"model.frame\"} or similar?"
+#         ))
+#     }
+#
+#     coef_tbl = as.data.frame(summary(fit)$coefficients)
+#     coef_tbl = tibble::tibble(
+#         term = rownames(coef_tbl),
+#         estimate = coef_tbl[[1]],
+#         std_error = coef_tbl[[2]],
+#         statistic = coef_tbl[[3]],
+#         p_value = coef_tbl[[4]]
+#     )
+#
+#     s = summary(fit)
+#     fit_tbl = tibble::tibble(
+#         r_squared = s$r.squared,
+#         adj_r_squared = s$adj.r.squared,
+#         sigma = s$sigma,
+#         df_residual = as.integer(fit$df.residual),
+#         n_obs = as.integer(length(fit$residuals))
+#     )
+#
+#     lm_object(
+#         terms = fit$terms,
+#         residuals = fit$residuals,
+#         df_residual = fit$df.residual,
+#         coefficients = coef_tbl,
+#         fit_summary = fit_tbl
+#     )
+# }
 
