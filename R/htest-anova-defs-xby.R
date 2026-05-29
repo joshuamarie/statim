@@ -125,7 +125,10 @@ anova_def_xby = test_define(
             #   MSE — mean squared error from the full model
             #   F   ~ F(q, N - p) under H₀
             #
-            fn = function(x, group_data, .L = NULL, .c = NULL) {
+            fn = function(.proc, .L = NULL, .c = NULL) {
+                x = .proc$x_data[[1]]
+                group_data = .proc$group_data
+
                 grp_name = names(group_data)[[1]]
                 grp = as.character(group_data[[grp_name]])
                 lvls = unique(grp)
