@@ -1,17 +1,54 @@
 #' Declare the canonical implementation of a test or model
 #'
-#' `baseline()` declares the default implementation of a statistical procedure,
-#' which is the only implementation reachable on the eager path. It is always the
-#' default.
+#' `baseline()` declares the default implementation of a statistical procedure.
+#' It is always the default and is the only implementation reachable on the
+#' eager path.
 #'
-#' @param fn A function with named arguments. The framework injects
-#'   data and arguments by matching formals to the processed model output.
+#' @param fn A function whose first argument must be `.proc`, the processed
+#'   model output from [model_processor()]. The keys available on `.proc`
+#'   depend on the model ID used:
+#'   - `x_by`: `$x_data`, `$group_data`
+#'   - `rel`: `$x_data`, `$resp_data`
+#'   - `pairwise`: `$var_names`, `$pairs`, `$data`
+#'   - `formula`: `$data`, `$vars`, `$formula`
+#'
+#'   Try run this to explore the structure: `names(model_processor(<model_id>, <data>))`.
+#'
+#'   \cr
+#'
+#'   Additional named arguments are user-supplied statistical parameters
+#'   (e.g. `.mu`, `.ci`). See [model_processor()] for the full `.proc`
+#'   schema per model type.
+#'
+#'   ```r
+#'   baseline(
+#'       fn = function(.proc, .mu = 0, .alt = "two.sided", .ci = 0.95) {
+#'           x = .proc$x_data
+#'           group_data = .proc$group_data
+#'           # ...
+#'       }
+#'   )
+#'   ```
+#'
 #' @param print A function with signature `function(x, ...)` for formatting
-#'   the result. `NULL` falls back to `print(x@data)`.
+#'   the result. `x` is a `cld_exec` object — read your result from `x@data`.
+#'   `NULL` falls back to `print(x@data)`.
+#'
+#'   ```r
+#'   baseline(
+#'       fn = function(.proc, ...) { ... },
+#'       print = function(x, ...) {
+#'           dat = x@data
+#'           # render dat
+#'           invisible(x)
+#'       }
+#'   )
+#'   ```
 #'
 #' @return A `baseline` S7 object.
 #'
-#' @seealso [variant()], [agendas()], [stat_define()]
+#' @seealso [variant()], [agendas()], [stat_define()], [model_processor()],
+#'   `cld_exec`
 #'
 #' @export
 baseline = S7::new_class(
@@ -45,17 +82,53 @@ baseline = S7::new_class(
 
 #' Declare an alternative implementation of a test or model
 #'
-#' `variant()` declares a named method variant reachable only via [via()].
-#' Never runs on the eager path.
+#' `variant()` declares a named alternative implementation reachable only via
+#' [via()]. Never runs on the eager path.
 #'
-#' @param fn A function with named arguments. The framework injects
-#'   data and arguments by matching formals to the processed model output.
+#' @param fn A function whose first argument must be `.proc`, the processed
+#'   model output from [model_processor()]. The keys available on `.proc`
+#'   depend on the model ID used:
+#'   - `x_by`: `$x_data`, `$group_data`
+#'   - `rel`: `$x_data`, `$resp_data`
+#'   - `pairwise`: `$var_names`, `$pairs`, `$data`
+#'   - `formula`: `$data`, `$vars`, `$formula`
+#'
+#'   Try run this to explore the structure: `names(model_processor(<model_id>, <data>))`.
+#'
+#'   \cr
+#'
+#'   Additional named arguments are user-supplied statistical parameters
+#'   (e.g. `.mu`, `.ci`). See [model_processor()] for the full `.proc`
+#'   schema per model type.
+#'
+#'   ```r
+#'   variant(
+#'       fn = function(.proc, n = 1000L, seed = NULL) {
+#'           x = .proc$x_data[[1]]
+#'           group_data = .proc$group_data
+#'           # ...
+#'       }
+#'   )
+#'   ```
+#'
 #' @param print A function with signature `function(x, ...)` for formatting
-#'   the result. `NULL` falls back to `print(x@data)`.
+#'   the result. `x` is a `cld_exec` object — read your result from `x@data`.
+#'   `NULL` falls back to `print(x@data)`.
+#'
+#'   ```r
+#'   variant(
+#'       fn = function(.proc, ...) { ... },
+#'       print = function(x, ...) {
+#'           dat = x@data
+#'           # render dat
+#'           invisible(x)
+#'       }
+#'   )
+#'   ```
 #'
 #' @return A `variant` S7 object.
 #'
-#' @seealso [baseline()], [agendas()], [via()]
+#' @seealso [baseline()], [agendas()], [via()], [model_processor()], `cld_exec`
 #'
 #' @export
 variant = S7::new_class(

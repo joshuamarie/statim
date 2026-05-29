@@ -7,20 +7,56 @@
 baseline(fn, print = NULL)
 }
 \arguments{
-\item{fn}{A function with named arguments. The framework injects
-data and arguments by matching formals to the processed model output.}
+\item{fn}{A function whose first argument must be \code{.proc}, the processed
+model output from \code{\link[=model_processor]{model_processor()}}. The keys available on \code{.proc}
+depend on the model ID used:
+\itemize{
+\item \code{x_by}: \verb{$x_data}, \verb{$group_data}
+\item \code{rel}: \verb{$x_data}, \verb{$resp_data}
+\item \code{pairwise}: \verb{$var_names}, \verb{$pairs}, \verb{$data}
+\item \code{formula}: \verb{$data}, \verb{$vars}, \verb{$formula}
+}
+
+Try run this to explore the structure: \verb{names(model_processor(<model_id>, <data>))}.
+
+\cr
+
+Additional named arguments are user-supplied statistical parameters
+(e.g. \code{.mu}, \code{.ci}). See \code{\link[=model_processor]{model_processor()}} for the full \code{.proc}
+schema per model type.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{baseline(
+    fn = function(.proc, .mu = 0, .alt = "two.sided", .ci = 0.95) \{
+        x = .proc$x_data
+        group_data = .proc$group_data
+        # ...
+    \}
+)
+}\if{html}{\out{</div>}}}
 
 \item{print}{A function with signature \verb{function(x, ...)} for formatting
-the result. \code{NULL} falls back to \code{print(x@data)}.}
+the result. \code{x} is a \code{cld_exec} object — read your result from \code{x@data}.
+\code{NULL} falls back to \code{print(x@data)}.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{baseline(
+    fn = function(.proc, ...) \{ ... \},
+    print = function(x, ...) \{
+        dat = x@data
+        # render dat
+        invisible(x)
+    \}
+)
+}\if{html}{\out{</div>}}}
 }
 \value{
 A \code{baseline} S7 object.
 }
 \description{
-\code{baseline()} declares the default implementation of a statistical procedure,
-which is the only implementation reachable on the eager path. It is always the
-default.
+\code{baseline()} declares the default implementation of a statistical procedure.
+It is always the default and is the only implementation reachable on the
+eager path.
 }
 \seealso{
-\code{\link[=variant]{variant()}}, \code{\link[=agendas]{agendas()}}, \code{\link[=stat_define]{stat_define()}}
+\code{\link[=variant]{variant()}}, \code{\link[=agendas]{agendas()}}, \code{\link[=stat_define]{stat_define()}}, \code{\link[=model_processor]{model_processor()}},
+\code{cld_exec}
 }
