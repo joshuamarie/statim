@@ -29,33 +29,33 @@ model_infer_define(
 )
 }
 \arguments{
-\item{model_type}{A string matching the primary class of the model ID
-this implementation handles. E.g. \code{"x_by"}, \code{"pairwise"}, \code{"rel"}.}
+\item{model_type}{A model ID class this implementation handles (e.g. \code{x_by},
+\code{S7::class_formula}).}
 
-\item{impl}{An \code{\link[=agendas]{agendas()}} object declaring all implementations.}
+\item{impl}{An \code{\link[=agendas]{agendas()}} object collecting all implementations. The \code{fn}
+of each \code{\link[=baseline]{baseline()}} and \code{\link[=variant]{variant()}} inside receives \code{.proc} as its first
+argument. See \code{\link[=baseline]{baseline()}} for the expected signature and \code{\link[=model_processor]{model_processor()}}
+for the keys available on \code{.proc} per model type.}
 
 \item{compatible_params}{A list of S7 param classes (e.g. \code{list(MU, PI)})
 this implementation accepts in hypothesis claims. An empty list (the
-default) disables the check entirely — all param types pass through
-unchecked. Useful when a test is param-agnostic or the restriction has
-not yet been declared.}
+default) disables the check entirely. Useful when a test is param-agnostic
+or the restriction has not yet been declared.}
 
-\item{impl_class}{A string naming the implementation class.
-E.g. \code{"ttest_two"}, \code{"linear_reg_rel"}. Used in the S3 class vector
-of the result.}
-
-\item{eval_claim}{A function with signature \verb{function(self, claim)}
-that interprets a \code{ClaimDef} for this implementation. \code{NULL} if
-\code{write_claim()} is not supported.}
+\item{claim_translator}{A \code{claim_translate} object or function that maps a
+\code{ClaimDef} to named arguments injected into the implementation alongside
+\code{.proc}. \code{NULL} if \code{write_claim()} is not supported.}
 }
 \value{
 A \code{stat_define} S7 object.
 }
 \description{
-\code{stat_define()} declares a single implementation of a statistical procedure.
-Multiple \code{stat_define} objects are passed to \code{\link[=HTEST_FN]{HTEST_FN()}} or \code{\link[=MODEL_FN]{MODEL_FN()}}
-via \code{defs}. This is the main extension point for adding new tests or models.
+\code{stat_define()} declares a single implementation of a statistical procedure
+for a given model type. Multiple \code{stat_define} objects are passed to
+\code{\link[=HTEST_FN]{HTEST_FN()}} or \code{\link[=MODEL_FN]{MODEL_FN()}} via \code{defs}. This is the main extension point
+for adding new tests or models.
 }
 \seealso{
-\code{\link[=agendas]{agendas()}}, \code{\link[=baseline]{baseline()}}, \code{\link[=variant]{variant()}}, \code{\link[=HTEST_FN]{HTEST_FN()}}, \code{\link[=MODEL_FN]{MODEL_FN()}}
+\code{\link[=agendas]{agendas()}}, \code{\link[=baseline]{baseline()}}, \code{\link[=variant]{variant()}}, \code{\link[=model_processor]{model_processor()}},
+\code{\link[=HTEST_FN]{HTEST_FN()}}, \code{\link[=MODEL_FN]{MODEL_FN()}}
 }

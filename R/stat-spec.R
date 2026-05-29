@@ -1,27 +1,28 @@
 #' Define a statistical procedure implementation
 #'
-#' `stat_define()` declares a single implementation of a statistical procedure.
-#' Multiple `stat_define` objects are passed to [HTEST_FN()] or [MODEL_FN()]
-#' via `defs`. This is the main extension point for adding new tests or models.
+#' `stat_define()` declares a single implementation of a statistical procedure
+#' for a given model type. Multiple `stat_define` objects are passed to
+#' [HTEST_FN()] or [MODEL_FN()] via `defs`. This is the main extension point
+#' for adding new tests or models.
 #'
-#' @param model_type A string matching the primary class of the model ID
-#'   this implementation handles. E.g. `"x_by"`, `"pairwise"`, `"rel"`.
-#' @param impl_class A string naming the implementation class.
-#'   E.g. `"ttest_two"`, `"linear_reg_rel"`. Used in the S3 class vector
-#'   of the result.
-#' @param impl An [agendas()] object declaring all implementations.
+#' @param model_type A model ID class this implementation handles (e.g. `x_by`,
+#'   `S7::class_formula`).
+#' @param impl An [agendas()] object collecting all implementations. The `fn`
+#'   of each [baseline()] and [variant()] inside receives `.proc` as its first
+#'   argument. See [baseline()] for the expected signature and [model_processor()]
+#'   for the keys available on `.proc` per model type.
 #' @param compatible_params A list of S7 param classes (e.g. `list(MU, PI)`)
 #'   this implementation accepts in hypothesis claims. An empty list (the
-#'   default) disables the check entirely — all param types pass through
-#'   unchecked. Useful when a test is param-agnostic or the restriction has
-#'   not yet been declared.
-#' @param eval_claim A function with signature `function(self, claim)`
-#'   that interprets a `ClaimDef` for this implementation. `NULL` if
-#'   `write_claim()` is not supported.
+#'   default) disables the check entirely. Useful when a test is param-agnostic
+#'   or the restriction has not yet been declared.
+#' @param claim_translator A `claim_translate` object or function that maps a
+#'   `ClaimDef` to named arguments injected into the implementation alongside
+#'   `.proc`. `NULL` if `write_claim()` is not supported.
 #'
 #' @return A `stat_define` S7 object.
 #'
-#' @seealso [agendas()], [baseline()], [variant()], [HTEST_FN()], [MODEL_FN()]
+#' @seealso [agendas()], [baseline()], [variant()], [model_processor()],
+#'   [HTEST_FN()], [MODEL_FN()]
 #'
 #' @name stat-infer-definer
 #' @export
