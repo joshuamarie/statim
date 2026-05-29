@@ -34,6 +34,6 @@ model_id_info(x_by(extra, group))
 
 # with processed — includes vars and counts
 dm = define_model(x_by(extra, group), sleep)
-model_id_info(dm$model_id, dm$processed)
+model_id_info(dm@model_id, dm@processed)
 
 }
