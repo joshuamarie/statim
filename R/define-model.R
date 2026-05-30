@@ -4,14 +4,17 @@
 #' object that can be passed into [prepare_test()].
 #'
 #' @param .x A model ID object from [x_by()], [rel()], [pairwise()], or a
-#'   formula — **or** a data frame when using the data-first pipe style.
-#' @param data A data frame. When called on a model-ID object this defaults to
-#'   `parent.frame()`, resolving bare variable names against the calling
-#'   environment. When calling on a data frame, pass the model ID as
-#'   `to_analyze`.
-#' @param to_analyze A model ID or formula (only used in the
-#'   `define_model.data.frame` method).
+#'   formula. It is also dispatched for a data frame class when using the data-first
+#'   pipe style.
 #' @param ... Currently unused.
+#'
+#' @details
+#' Two dispatch methods are available depending on how `.x` is supplied:
+#'
+#' - **Model-ID first**: `.x` is a model ID or formula. Accepts `data`, a
+#'   data frame (defaults to `parent.frame()`).
+#' - **Data-first**: `.x` is a data frame. Accepts `to_analyze`, a model ID
+#'   or formula, as the second argument.
 #'
 #' @return A `def_model` S3 object containing `model_id` and `processed`.
 #'

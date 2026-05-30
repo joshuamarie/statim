@@ -4,10 +4,11 @@
 #' object. When `processed` is supplied, variable previews and count-based
 #' metadata are included in the result.
 #'
-#' @param model_id A model ID object from [x_by()], [rel()], [pairwise()], or
-#'   a formula.
+#' @param .model_id A model ID object from [x_by()], [rel()], [pairwise()],
+#'   or a formula.
 #' @param processed A named list returned by [model_processor()], or `NULL`.
 #'   When `NULL`, count-based fields in `other_info` and `vars` are omitted.
+#' @param ... Currently unused.
 #'
 #' @return A list with fields:
 #' \describe{
@@ -27,14 +28,13 @@
 #' model_id_info(dm@model_id, dm@processed)
 #'
 #' @export
-model_id_info = S7::new_generic("model_id_info", ".model_id")
-# model_id_info = function(model_id, processed = NULL) {
-#     UseMethod("model_id_info")
-# }
+model_id_info = S7::new_generic(
+    "model_id_info",
+    ".model_id",
+    function(.model_id, processed = NULL, ...) S7::S7_dispatch()
+)
 
-# #' @rdname model_id_info
-# #' @export
-S7::method(model_id_info, x_by) = function(.model_id, processed = NULL) {
+S7::method(model_id_info, x_by) = function(.model_id, processed = NULL, ...) {
     x_lbl = format_quo_label(.model_id@x)
     g_lbl = format_quo_label(.model_id@group)
 
@@ -57,9 +57,7 @@ S7::method(model_id_info, x_by) = function(.model_id, processed = NULL) {
     out
 }
 
-# #' @rdname model_id_info
-# #' @export
-S7::method(model_id_info, rel) = function(.model_id, processed = NULL) {
+S7::method(model_id_info, rel) = function(.model_id, processed = NULL, ...) {
     x_lbl = format_quo_label(.model_id@x)
     r_lbl = format_quo_label(.model_id@resp)
 
@@ -82,9 +80,7 @@ S7::method(model_id_info, rel) = function(.model_id, processed = NULL) {
     out
 }
 
-# #' @rdname model_id_info
-# #' @export
-S7::method(model_id_info, pairwise) = function(.model_id, processed = NULL) {
+S7::method(model_id_info, pairwise) = function(.model_id, processed = NULL, ...) {
     lbls = vapply(.model_id@dots_quos, format_quo_label, character(1))
 
     out = list(
@@ -103,10 +99,7 @@ S7::method(model_id_info, pairwise) = function(.model_id, processed = NULL) {
     out
 }
 
-# #' @rdname model_id_info
-# #' @export
-
-S7::method(model_id_info, S7::class_formula) = function(.model_id, processed = NULL) {
+S7::method(model_id_info, S7::class_formula) = function(.model_id, processed = NULL, ...) {
     f = .model_id
     data = processed$data %||% NULL
     trms = stats::terms(f, data = data)

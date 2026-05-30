@@ -3,8 +3,11 @@
 #' A function for development use to extract the information in model IDs.
 #'
 #' @param x The model IDs to be extracted.
-#' @param data The given data frame when supplied. It can be a `NULL` or a missing argument
-#' @param ... Currently unused; passed through for S3 method compatibility.
+#' @param ... Passed through S7 method compatibility.
+#'
+#' @details
+#' Methods accept an optional `data` argument — a data frame, or `NULL`
+#' to resolve variables from the calling environment.
 #'
 #' @name model-processor
 #' @export

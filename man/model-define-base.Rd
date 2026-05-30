@@ -9,17 +9,10 @@ define_model(.x, ...)
 }
 \arguments{
 \item{.x}{A model ID object from \code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, \code{\link[=pairwise]{pairwise()}}, or a
-formula — \strong{or} a data frame when using the data-first pipe style.}
+formula. It is also dispatched for a data frame class when using the data-first
+pipe style.}
 
 \item{...}{Currently unused.}
-
-\item{data}{A data frame. When called on a model-ID object this defaults to
-\code{parent.frame()}, resolving bare variable names against the calling
-environment. When calling on a data frame, pass the model ID as
-\code{to_analyze}.}
-
-\item{to_analyze}{A model ID or formula (only used in the
-\code{define_model.data.frame} method).}
 }
 \value{
 A \code{def_model} S3 object containing \code{model_id} and \code{processed}.
@@ -27,6 +20,15 @@ A \code{def_model} S3 object containing \code{model_id} and \code{processed}.
 \description{
 \code{define_model()} captures a model ID and optional data into a \code{def_model}
 object that can be passed into \code{\link[=prepare_test]{prepare_test()}}.
+}
+\details{
+Two dispatch methods are available depending on how \code{.x} is supplied:
+\itemize{
+\item \strong{Model-ID first}: \code{.x} is a model ID or formula. Accepts \code{data}, a
+data frame (defaults to \code{parent.frame()}).
+\item \strong{Data-first}: \code{.x} is a data frame. Accepts \code{to_analyze}, a model ID
+or formula, as the second argument.
+}
 }
 \examples{
 # model-ID first

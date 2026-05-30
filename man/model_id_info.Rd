@@ -4,14 +4,16 @@
 \alias{model_id_info}
 \title{Extract metadata from a model ID}
 \usage{
-model_id_info(.model_id, ...)
+model_id_info(.model_id, processed = NULL, ...)
 }
 \arguments{
-\item{model_id}{A model ID object from \code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, \code{\link[=pairwise]{pairwise()}}, or
-a formula.}
+\item{.model_id}{A model ID object from \code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, \code{\link[=pairwise]{pairwise()}},
+or a formula.}
 
 \item{processed}{A named list returned by \code{\link[=model_processor]{model_processor()}}, or \code{NULL}.
 When \code{NULL}, count-based fields in \code{other_info} and \code{vars} are omitted.}
+
+\item{...}{Currently unused.}
 }
 \value{
 A list with fields:
