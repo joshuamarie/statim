@@ -4,14 +4,17 @@
 #' object that can be passed into [prepare_test()].
 #'
 #' @param .x A model ID object from [x_by()], [rel()], [pairwise()], or a
-#'   formula — **or** a data frame when using the data-first pipe style.
-#' @param data A data frame. When called on a model-ID object this defaults to
-#'   `parent.frame()`, resolving bare variable names against the calling
-#'   environment. When calling on a data frame, pass the model ID as
-#'   `to_analyze`.
-#' @param to_analyze A model ID or formula (only used in the
-#'   `define_model.data.frame` method).
+#'   formula. It is also dispatched for a data frame class when using the data-first
+#'   pipe style.
 #' @param ... Currently unused.
+#'
+#' @details
+#' Two dispatch methods are available depending on how `.x` is supplied:
+#'
+#' - **Model-ID first**: `.x` is a model ID or formula. Accepts `data`, a
+#'   data frame (defaults to `parent.frame()`).
+#' - **Data-first**: `.x` is a data frame. Accepts `to_analyze`, a model ID
+#'   or formula, as the second argument.
 #'
 #' @return A `def_model` S3 object containing `model_id` and `processed`.
 #'
@@ -24,61 +27,32 @@
 #'
 #' @name model-define-base
 #' @export
-define_model = function(.x, ...) {
-    if (inherits(.x, "formula")) {
-        class(.x) = c(class(.x), "model_id")
-    }
-    UseMethod("define_model")
-}
+define_model = S7::new_generic("define_model", ".x")
 
-#' @rdname model-define-base
-#' @export
-define_model.model_id = function(.x, data = parent.frame(), ...) {
-    metad = model_processor(.x, data)
-
-    model_id = if (inherits(.x, "formula")) {
-        out = list(formula = metad$formula)
-        class(out) = c("formula", "model_id")
-        out
-    } else {
-        .x
-    }
-
-    out = list(
-        model_id = model_id,
-        # options = vctrs::vec_c(...),
-        processed = metad
+S7::method(define_model, S7::new_union(S7::class_formula, model_id)) = function(.x, data = parent.frame(), ...) {
+    def_model(
+        model_id = .x,
+        processed = model_processor(.x, data)
     )
-    class(out) = "def_model"
-    out
 }
 
-#' @rdname model-define-base
-#' @export
-define_model.data.frame = function(.x, to_analyze, ...) {
-    metad = model_processor(to_analyze, .x)
-
-    model_id = if (inherits(to_analyze, "formula")) {
-        out = list(formula = metad$formula)
-        class(out) = c("formula", "model_id")
-        out
-    } else {
-        to_analyze
-    }
-
-    out = list(
-        model_id = model_id,
-        # options = vctrs::vec_c(...),
-        processed = metad
+S7::method(define_model, S7::class_data.frame) = function(.x, to_analyze, ...) {
+    def_model(
+        model_id = to_analyze,
+        processed = model_processor(to_analyze, .x)
     )
-    class(out) = "def_model"
-    out
 }
 
-#' @keywords internal
-#' @export
-print.def_model = function(x, ...) {
-    info = model_id_info(x$model_id, x$processed)
+def_model = S7::new_class(
+    "def_model",
+    properties = list(
+        model_id = S7::class_any,
+        processed = S7::class_list
+    )
+)
+
+S7::method(print, def_model) = function(x, ...) {
+    info = model_id_info(x@model_id, x@processed)
 
     cat("\n")
     cat(cli::rule(left = "Model Definition", line = "-"), "\n\n")

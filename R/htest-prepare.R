@@ -1,3 +1,17 @@
+test_lazy = S7::new_class(
+    "test_lazy",
+    properties = list(
+        model_id = S7::new_property(
+            class = S7::new_union(model_id, S7::class_formula)
+        ),
+        processed = S7::new_property(class = S7::class_list),
+        test_spec = S7::new_property(class = test_spec),
+        recalibrate_spec = S7::new_property(default = NULL),
+        claims = S7::new_property(default = NULL),
+        data_name = S7::new_property(class = S7::class_character, default = "")
+    )
+)
+
 #' Lazily prepare a single test
 #'
 #' `prepare_test()` attaches a test specification to a `def_model` object,
@@ -21,41 +35,33 @@
 #'
 #' @name prepare-test
 #' @export
-prepare_test = function(.x, .test, ...) {
-    UseMethod("prepare_test")
-}
+prepare_test = S7::new_generic("prepare_test", dispatch_args = c(".x", ".test"))
+# prepare_test = function(.x, .test, ...) {
+#     UseMethod("prepare_test")
+# }
 
-#' @rdname prepare-test
-#' @export
-prepare_test.def_model = function(.x, .test, ...) {
+S7::method(prepare_test, list(def_model, S7::class_function)) = function(.x, .test, ...) {
     spec = as_test_spec(.test)
-
-    out = list(
-        model_id = .x$model_id,
-        processed = .x$processed,
-        test_spec = spec,
-        recalibrate_spec = NULL,
-        claims = NULL
+    test_lazy(
+        model_id = .x@model_id,
+        processed = .x@processed,
+        test_spec = spec
     )
-    class(out) = "test_lazy"
-    out
 }
 
-#' @keywords internal
-#' @export
-print.test_lazy = function(x, ...) {
+S7::method(print, test_lazy) = function(x, ...) {
     cat("\n")
-    print(x$model_id)
+    print(x@model_id)
 
     cat("\n")
     cat(cli::rule(left = "Test Specification", line = "-"), "\n\n")
-    cat("Test :", x$test_spec$name, "\n")
+    cat("Test   :", x@test_spec@name, "\n")
 
-    method = x$recalibrate_spec$method_name %||% "default"
-    cat("Method :", method)
+    method = x@recalibrate_spec$method_name %||% "default"
+    cat("Method :", method, "\n")
 
-    if (!is.null(x$recalibrate_spec)) {
-        method_args = Filter(Negate(is.null), x$recalibrate_spec$args)
+    if (!is.null(x@recalibrate_spec$args)) {
+        method_args = Filter(Negate(is.null), x@recalibrate_spec$args)
         if (length(method_args) > 0L) {
             args_str = paste(
                 names(method_args),
@@ -63,10 +69,9 @@ print.test_lazy = function(x, ...) {
                 sep = " = ",
                 collapse = ", "
             )
-            cat(" (", args_str, ")", sep = "")
+            cat("Args   :", args_str, "\n")
         }
     }
-    cat("\n")
 
     cat("\n")
     invisible(x)
@@ -89,18 +94,20 @@ print.test_lazy = function(x, ...) {
 #'     update(.paired = TRUE) |>
 #'     conclude()
 #'
-#' @importFrom stats update
-#' @export
-update.test_lazy = function(object, ...) {
+#' @name update-test-lazy
+#' @keywords internal
+NULL
+
+S7::method(update, test_lazy) = function(object, ...) {
     dots = list(...)
-    if (!is.null(object$recalibrate_spec)) {
-        object$recalibrate_spec$args = utils::modifyList(
-            object$recalibrate_spec$args,
+    if (!is.null(object@recalibrate_spec)) {
+        object@recalibrate_spec$args = utils::modifyList(
+            object@recalibrate_spec$args,
             dots
         )
     } else {
-        object$test_spec$args = utils::modifyList(
-            object$test_spec$args,
+        object@test_spec@args = utils::modifyList(
+            object@test_spec@args,
             dots
         )
     }
@@ -109,13 +116,21 @@ update.test_lazy = function(object, ...) {
 
 as_test_spec = function(.test) {
     if (!is.function(.test)) {
-        cli::cli_abort("{.arg .test} must be a function. ")
+        cli::cli_abort("{.arg .test} must be a function.")
     }
 
     spec = .test(.model = NULL)
 
-    if (!inherits(spec, "test_spec"))
+    if (S7::S7_inherits(spec, model_spec)) {
+        cli::cli_abort(c(
+            "{.arg .test} is a model function, not a test function.",
+            "i" = "Did you mean {.fn prepare_model}?"
+        ))
+    }
+
+    if (!S7::S7_inherits(spec, test_spec)) {
         cli::cli_abort("{.arg .test} must return a {.cls test_spec}.")
+    }
 
     spec
 }

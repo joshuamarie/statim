@@ -1,9 +1,12 @@
 ttest_def_formula = test_define(
-    model_type = "formula",
-    impl_class = "ttest_formula",
+    model_type = S7::class_formula,
+    # impl_class = "ttest_formula",
     impl = agendas(
         base = baseline(
-            fn = function(data, formula, .mu = 0, .alt = "two.sided", .ci = 0.95) {
+            fn = function(.proc, .mu = 0, .alt = "two.sided", .ci = 0.95) {
+                formula = .proc$formula
+                data = .proc$data
+
                 trms = terms(formula)
                 response = all.vars(formula)[1]
                 rhs_labels = attr(trms, "term.labels")
@@ -56,11 +59,11 @@ ttest_def_formula = test_define(
             },
             print = function(x, ...) {
                 rlang::check_installed(
-                    c("broom", "purrr"),
+                    c("broom", "purrr", "dplyr"),
                     reason = "to retrieve t-test results and re-store it in a data frame"
                 )
 
-                dat = x$data
+                dat = x@data
 
                 tidy_rows = lapply(seq_len(nrow(dat)), function(i) {
                     td = broom::tidy(dat$ttest[[i]])

@@ -4,10 +4,11 @@
 #' object. When `processed` is supplied, variable previews and count-based
 #' metadata are included in the result.
 #'
-#' @param model_id A model ID object from [x_by()], [rel()], [pairwise()], or
-#'   a formula.
+#' @param .model_id A model ID object from [x_by()], [rel()], [pairwise()],
+#'   or a formula.
 #' @param processed A named list returned by [model_processor()], or `NULL`.
 #'   When `NULL`, count-based fields in `other_info` and `vars` are omitted.
+#' @param ... Currently unused.
 #'
 #' @return A list with fields:
 #' \describe{
@@ -24,19 +25,18 @@
 #'
 #' # with processed — includes vars and counts
 #' dm = define_model(x_by(extra, group), sleep)
-#' model_id_info(dm$model_id, dm$processed)
+#' model_id_info(dm@model_id, dm@processed)
 #'
 #' @export
-model_id_info = function(model_id, processed = NULL) {
-    UseMethod("model_id_info")
-}
+model_id_info = S7::new_generic(
+    "model_id_info",
+    ".model_id",
+    function(.model_id, processed = NULL, ...) S7::S7_dispatch()
+)
 
-#' @rdname model_id_info
-#' @export
-model_id_info.x_by = function(model_id, processed = NULL) {
-    quos = unclass(model_id)
-    x_lbl = format_quo_label(quos$x)
-    g_lbl = format_quo_label(quos$group)
+S7::method(model_id_info, x_by) = function(.model_id, processed = NULL, ...) {
+    x_lbl = format_quo_label(.model_id@x)
+    g_lbl = format_quo_label(.model_id@group)
 
     out = list(
         model_type = "x_by",
@@ -57,12 +57,9 @@ model_id_info.x_by = function(model_id, processed = NULL) {
     out
 }
 
-#' @rdname model_id_info
-#' @export
-model_id_info.rel = function(model_id, processed = NULL) {
-    quos = unclass(model_id)
-    x_lbl = format_quo_label(quos$x)
-    r_lbl = format_quo_label(quos$resp)
+S7::method(model_id_info, rel) = function(.model_id, processed = NULL, ...) {
+    x_lbl = format_quo_label(.model_id@x)
+    r_lbl = format_quo_label(.model_id@resp)
 
     out = list(
         model_type = "rel",
@@ -83,17 +80,14 @@ model_id_info.rel = function(model_id, processed = NULL) {
     out
 }
 
-#' @rdname model_id_info
-#' @export
-model_id_info.pairwise = function(model_id, processed = NULL) {
-    dots_quos = model_id$args$dots_quos
-    lbls = vapply(dots_quos, format_quo_label, character(1))
+S7::method(model_id_info, pairwise) = function(.model_id, processed = NULL, ...) {
+    lbls = vapply(.model_id@dots_quos, format_quo_label, character(1))
 
     out = list(
         model_type = "pairwise",
         args = paste(lbls, collapse = ", "),
         other_info = list(
-            direction = model_id$direction
+            direction = .model_id@direction
         )
     )
 
@@ -105,11 +99,10 @@ model_id_info.pairwise = function(model_id, processed = NULL) {
     out
 }
 
-#' @rdname model_id_info
-#' @export
-model_id_info.formula = function(model_id, processed = NULL) {
-    f = model_id$formula
-    trms = stats::terms(f)
+S7::method(model_id_info, S7::class_formula) = function(.model_id, processed = NULL, ...) {
+    f = .model_id
+    data = processed$data %||% NULL
+    trms = stats::terms(f, data = data)
     lhs_vars = all.vars(rlang::f_lhs(f))
     rhs_vars = attr(trms, "term.labels")
 
@@ -123,9 +116,9 @@ model_id_info.formula = function(model_id, processed = NULL) {
     )
 
     if (!is.null(processed)) {
-        out$vars = vars_preview(
-            as.list(processed$data[, processed$vars, drop = FALSE])
-        )
+        all_vars = c(lhs_vars, rhs_vars)
+        avail = all_vars[all_vars %in% names(processed$data)]
+        out$vars = vars_preview(as.list(processed$data[, avail, drop = FALSE]))
     }
 
     out

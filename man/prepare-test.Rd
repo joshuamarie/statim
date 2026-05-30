@@ -3,12 +3,9 @@
 \name{prepare-test}
 \alias{prepare-test}
 \alias{prepare_test}
-\alias{prepare_test.def_model}
 \title{Lazily prepare a single test}
 \usage{
 prepare_test(.x, .test, ...)
-
-\method{prepare_test}{def_model}(.x, .test, ...)
 }
 \arguments{
 \item{.x}{A \code{def_model} object from \code{\link[=define_model]{define_model()}}.}

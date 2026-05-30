@@ -3,29 +3,19 @@
 \name{model-processor}
 \alias{model-processor}
 \alias{model_processor}
-\alias{model_processor.formula}
-\alias{model_processor.x_by}
-\alias{model_processor.rel}
-\alias{model_processor.pairwise}
 \title{Model evaluator}
 \usage{
 model_processor(x, ...)
-
-\method{model_processor}{formula}(x, data = NULL, ...)
-
-\method{model_processor}{x_by}(x, data = NULL, ...)
-
-\method{model_processor}{rel}(x, data = NULL, ...)
-
-\method{model_processor}{pairwise}(x, data = NULL, ...)
 }
 \arguments{
 \item{x}{The model IDs to be extracted.}
 
-\item{...}{Currently unused; passed through for S3 method compatibility.}
-
-\item{data}{The given data frame when supplied. It can be a \code{NULL} or a missing argument}
+\item{...}{Passed through S7 method compatibility.}
 }
 \description{
 A function for development use to extract the information in model IDs.
+}
+\details{
+Methods accept an optional \code{data} argument — a data frame, or \code{NULL}
+to resolve variables from the calling environment.
 }

@@ -22,8 +22,6 @@ Imports:
     cli,
     vctrs,
     tibble,
-    tidyr,
-    dplyr,
     tidyselect,
     stats,
     utils,
@@ -38,11 +36,59 @@ Suggests:
     broom,
     pander,
     Rfast2,
-    purrr
+    purrr,
+    tidyr, 
+    dplyr,
+    boot
+Collate:
+    'statim-package.R'
+    'ops.R'
+    'utils.R'
+    'add-option.R'
+    'zzz.R'
+    'define-model-ids.R'
+    'define-model-ids-info.R'
+    'define-model-process.R'
+    'define-model.R'
+    'define-model-helpers.R'
+    'generate-pairs.R'
+    'inject-and-run.R'
+    'stat-construct.R'
+    'baseline-variant.R'
+    'stat-spec.R'
+    'htest-prepare.R'
+    'model-prepare.R'
+    'recalibrator-via.R'
+    'hypothesis-params.R'
+    'hypothesis-parser.R'
+    'hypothesis-helpers.R'
+    'hypothesis-mappers.R'
+    'hypothesis-core.R'
+    'stat-exec.R'
+    'tidy-core.R'
+    'htest-impl-container.R'
+    'htest-anova-defs-xby.R'
+    'htest-anova-defs-formula.R'
+    'htest-anova.R'
+    'htest-ttest-defs-xby.R'
+    'htest-ttest-defs-formula.R'
+    'htest-ttest-defs-pairwise.R'
+    'htest-ttest.R'
+    'tidy-ttest-def-two.R'
+    'htest-testcor-defs-rel.R'
+    'htest-testcor.R'
+    'model-impl-container.R'
+    'model-anova-mod.R'
+    'model-expand.R'
+    'model-linear-reg-defs.R'
+    'model-linear-reg.R'
+    'model-glm-defs.R'
+    'model-glm.R'
+    'global_variables.R'
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 Depends: 
-    R (>= 3.6.0)  
+    R (>= 4.1.0)  
 URL: https://github.com/joshuamarie/statim
 BugReports: https://github.com/joshuamarie/statim/issues
 RoxygenNote: 7.3.3

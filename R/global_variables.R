@@ -1,1 +1,1 @@
-utils::globalVariables(c("terms"))
+utils::globalVariables(c("terms", "pchisq", "pf", ":="))

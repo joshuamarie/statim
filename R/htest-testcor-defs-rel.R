@@ -1,9 +1,12 @@
 cor_test_rel = test_define(
-    model_type = "rel",
-    impl_class = "cortest_rel",
+    model_type = rel,
+    # impl_class = "cortest_rel",
     impl = agendas(
         base = baseline(
-            fn = function(x_data, resp_data, .cor_type = "pearson", .alt = "two.sided", .ci = 0.95) {
+            fn = function(.proc, .cor_type = "pearson", .alt = "two.sided", .ci = 0.95) {
+                x_data = .proc$x_data
+                resp_data = .proc$resp_data
+
                 if (length(resp_data) != 1L) {
                     cli::cli_abort(c(
                         "{.arg resp} must be a single variable.",
@@ -36,11 +39,11 @@ cor_test_rel = test_define(
             },
             print = function(x, ...) {
                 rlang::check_installed(
-                    c("broom", "purrr"),
+                    c("broom", "purrr", "dplyr"),
                     reason = "to retrieve correlation test results and re-store in a data frame"
                 )
 
-                dat = x$data$res
+                dat = x@data$res
 
                 tidy_rows = lapply(seq_len(nrow(dat)), function(i) {
                     td = broom::tidy(dat$cortest[[i]])
@@ -49,7 +52,7 @@ cor_test_rel = test_define(
                     pair_lbl = paste0(dat$resp[[i]], " ~ ", dat$x[[i]])
 
                     has_ci = !is.null(ci)
-                    ci_level = if (has_ci) attr(ci, "conf.level") else x$data$ci_level
+                    ci_level = if (has_ci) attr(ci, "conf.level") else x@data$ci_level
                     lo_name = paste0("lower_", ci_level * 100)
                     up_name = paste0("upper_", ci_level * 100)
 

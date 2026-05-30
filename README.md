@@ -31,6 +31,39 @@ a double meaning:
 This simply means: you declare *what* statistical inference you want to
 perform, then `{statim}` immediately delivers *how*.
 
+## Why statim?
+
+Base R’s statistical functions are imperative and scattered. H-tests
+like t-test through `t.test()`, and a correlation test through
+`cor.test()`, each takes different arguments, returns a different output
+format, and switching from a classical procedure to a bootstrap or
+permutation variant means rewriting from scratch. There is no shared
+grammar, and no way to describe *what* you want without also specifying
+*how* to compute it step by step.
+
+`{statim}` replaces that with a declarative pipeline. You describe the
+model structure once with `define_model()`, attach a test, and
+optionally recalibrate the method with `via()`, without touching
+anything else:
+
+``` r
+# Base R: two functions, two different interfaces, two different output formats
+t.test(extra ~ group, data = sleep)
+cor.test(cars$speed, cars$dist)
+
+# statim: same pipeline shape regardless of the test
+sleep |> define_model(x_by(extra, group)) |> prepare_test(TTEST) |> conclude()
+cars |> define_model(rel(speed, dist)) |> prepare_test(CORTEST) |> conclude()
+
+# Switching to permutation is one word; nothing else in the pipeline moves
+sleep |> define_model(x_by(extra, group)) |> prepare_test(TTEST) |> via("permute", n = 1000L) |> conclude()
+```
+
+Any test registered with `test_define()` plugs into the same pipeline,
+including custom implementations. Most of the API is written in S7 with
+the purpose to enforce flexibility and strictness to make `{statim}`
+much usable and robust
+
 ## Installation
 
 The package is yet to be submitted into CRAN.
@@ -51,97 +84,142 @@ pak::pak("joshuamarie/statim")
 
 ## Usages
 
-`{statim}` provides a human-readable, easy-to-write syntax. `{statim}`
-is a much higher-level package, inherits most of strongest features in R
-that makes the code easy to write and understand, such as `{dplyr}` /
-`{tidyr}`’s use of `<tidyselect-helpers>`. This re-imagines the grammar
-of statistical inference implementation in R. It embodies almost the
-same paradigm as `{ggplot2}`, except it enforces the use of actual
-pipes, not `+`.
-
 ``` r
 library(statim)
 ```
 
-Here’s an example of a quick H-test pipeline:
+### T-test
 
-1.  tidyverse-like grammar semantics
+The pipeline form lets you recalibrate the method without rewriting
+anything else. Switching from a classical t-test to a permutation t-test
+is a single `via()` call:
 
-    ``` r
-    sleep |>
-        define_model(x_by(extra, group)) |>
-        prepare_test(TTEST) |>
-        conclude()
-    ```
+``` r
+# Classical
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    conclude()
+```
 
-        #> -- Summary ---------------------------------------------------------------------
-        #> 
-        #> ─────────────────────────────────
-        #>   groups   diff   t-stat  pval   
-        #> ─────────────────────────────────
-        #>   group   -1.580  -1.861  0.079  
-        #> ─────────────────────────────────
-        #> 
-        #> 
-        #> -- Confidence Interval ---------------------------------------------------------
-        #> 
-        #> ──────────────────────────────
-        #>   groups  lower_95  upper_95  
-        #> ──────────────────────────────
-        #>   group    -3.365    0.205    
-        #> ──────────────────────────────
+    #> 
+    #> == Model ======================================================================= 
+    #> 
+    #> Model ID : x_by 
+    #> Args : extra | group 
+    #>     x_vars : 1 
+    #>     by_vars : 1 
+    #> 
+    #> == T-Test ====================================================================== 
+    #> 
+    #> -- Summary ---------------------------------------------------------------------
+    #> 
+    #> ─────────────────────────────────
+    #>   groups   diff   t-stat  pval   
+    #> ─────────────────────────────────
+    #>   group   -1.580  -1.861  0.079  
+    #> ─────────────────────────────────
+    #> 
+    #> 
+    #> -- Confidence Interval ---------------------------------------------------------
+    #> 
+    #> ──────────────────────────────
+    #>   groups  lower_95  upper_95  
+    #> ──────────────────────────────
+    #>   group    -3.365    0.205    
+    #> ──────────────────────────────
 
-    ``` r
-    sleep |>
-        define_model(x_by(extra, group)) |>
-        prepare_test(TTEST) |>
-        via("permute", n = 500L) |> 
-        conclude()
-    ```
+``` r
+# Permutation: one line added, nothing else changes
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    via("permute", n = 500L, seed = 123L) |>
+    conclude()
+```
 
-        #> ============================== T-test Permutation ==============================
-        #> 
-        #> 
-        #> -- Summary ---------------------------------------------------------------------
-        #> 
-        #> ───────────────────────────────
-        #>   Statistic  p-value  n_perms  
-        #> ───────────────────────────────
-        #>    -1.580     0.082     500    
-        #> ───────────────────────────────
+    #> 
+    #> == Model ======================================================================= 
+    #> 
+    #> Model ID : x_by 
+    #> Args : extra | group 
+    #>     x_vars : 1 
+    #>     by_vars : 1 
+    #> 
+    #> == T-Test · permute ============================================================ 
+    #> 
+    #> ============================== T-test Permutation ==============================
+    #> 
+    #> 
+    #> -- Summary ---------------------------------------------------------------------
+    #> 
+    #> ───────────────────────────────
+    #>   Statistic  p-value  n_perms  
+    #> ───────────────────────────────
+    #>    -1.580     0.072     500    
+    #> ───────────────────────────────
 
-    The bottom part of this code is the part where the “pipeline” is
-    re-calibrated from the classical t-test procedure, into permutation
-    t-test.
+For a quick one-shot result, the eager form skips the pipeline entirely:
 
-2.  1-liner syntax
+``` r
+TTEST(x_by(extra, group), sleep)
+```
 
-    ``` r
-    TTEST(x_by(extra, group), sleep)
-    ```
+    #> -- Summary ---------------------------------------------------------------------
+    #> 
+    #> ─────────────────────────────────
+    #>   groups   diff   t-stat  pval   
+    #> ─────────────────────────────────
+    #>   group   -1.580  -1.861  0.079  
+    #> ─────────────────────────────────
+    #> 
+    #> 
+    #> -- Confidence Interval ---------------------------------------------------------
+    #> 
+    #> ──────────────────────────────
+    #>   groups  lower_95  upper_95  
+    #> ──────────────────────────────
+    #>   group    -3.365    0.205    
+    #> ──────────────────────────────
 
-        #> -- Summary ---------------------------------------------------------------------
-        #> 
-        #> ─────────────────────────────────
-        #>   groups   diff   t-stat  pval   
-        #> ─────────────────────────────────
-        #>   group   -1.580  -1.861  0.079  
-        #> ─────────────────────────────────
-        #> 
-        #> 
-        #> -- Confidence Interval ---------------------------------------------------------
-        #> 
-        #> ──────────────────────────────
-        #>   groups  lower_95  upper_95  
-        #> ──────────────────────────────
-        #>   group    -3.365    0.205    
-        #> ──────────────────────────────
+### Correlation test
 
-<!-- -->
+The same pipeline shape works for any registered test. Here is the same
+structure used for a correlation test:
 
-1)  is better since you can re-calibrate the declaration of the H-test
-    you want to perform. Otherwise, (2) if you want to eagerly run the
-    actual H-test.
+``` r
+cars |>
+    define_model(rel(speed, dist)) |>
+    prepare_test(CORTEST) |>
+    conclude()
+```
+
+    #> 
+    #> == Model ======================================================================= 
+    #> 
+    #> Model ID : rel 
+    #> Args : speed ; dist 
+    #>     x_vars : 1 
+    #>     resp_vars : 1 
+    #> 
+    #> == Correlation Test ============================================================ 
+    #> 
+    #> -- Summary ---------------------------------------------------------------------
+    #> 
+    #> ─────────────────────────────────────────
+    #>       pair      estimate  stat    pval   
+    #> ─────────────────────────────────────────
+    #>   dist ~ speed   0.807    9.464  <0.001  
+    #> ─────────────────────────────────────────
+    #> 
+    #> 
+    #> -- Confidence Interval ---------------------------------------------------------
+    #> 
+    #> ────────────────────────────────────
+    #>       pair      lower_95  upper_95  
+    #> ────────────────────────────────────
+    #>   dist ~ speed   0.682     0.886    
+    #> ────────────────────────────────────
 
 ## Core Ideas
 
@@ -149,12 +227,12 @@ The package is designed around three ideas:
 
 1.  **Declarative models**: describe the structure of your data with
     `define_model()` and model IDs like `x_by()`, `rel()`, and
-    `pairwise()`
+    `pairwise()`.
 2.  **Composable pipeline**: build up a test specification lazily, then
-    execute with `conclude()`
-3.  **Extensible implementations**: every test is a `test_define()`
-    object; bring your own engine, your own method, your own
-    implementation
+    execute with `conclude()`.
+3.  **Extensible implementations**: for instance, every test is a
+    `test_define()` object; bring your own engine, your own method, your
+    own implementation.
 
 ## License
 

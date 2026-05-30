@@ -2,28 +2,18 @@
 % Please edit documentation in R/define-model-ids-info.R
 \name{model_id_info}
 \alias{model_id_info}
-\alias{model_id_info.x_by}
-\alias{model_id_info.rel}
-\alias{model_id_info.pairwise}
-\alias{model_id_info.formula}
 \title{Extract metadata from a model ID}
 \usage{
-model_id_info(model_id, processed = NULL)
-
-\method{model_id_info}{x_by}(model_id, processed = NULL)
-
-\method{model_id_info}{rel}(model_id, processed = NULL)
-
-\method{model_id_info}{pairwise}(model_id, processed = NULL)
-
-\method{model_id_info}{formula}(model_id, processed = NULL)
+model_id_info(.model_id, processed = NULL, ...)
 }
 \arguments{
-\item{model_id}{A model ID object from \code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, \code{\link[=pairwise]{pairwise()}}, or
-a formula.}
+\item{.model_id}{A model ID object from \code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, \code{\link[=pairwise]{pairwise()}},
+or a formula.}
 
 \item{processed}{A named list returned by \code{\link[=model_processor]{model_processor()}}, or \code{NULL}.
 When \code{NULL}, count-based fields in \code{other_info} and \code{vars} are omitted.}
+
+\item{...}{Currently unused.}
 }
 \value{
 A list with fields:
@@ -46,6 +36,6 @@ model_id_info(x_by(extra, group))
 
 # with processed — includes vars and counts
 dm = define_model(x_by(extra, group), sleep)
-model_id_info(dm$model_id, dm$processed)
+model_id_info(dm@model_id, dm@processed)
 
 }

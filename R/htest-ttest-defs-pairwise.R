@@ -1,9 +1,13 @@
 ttest_def_pairwise = test_define(
-    model_type = "pairwise",
-    impl_class = "ttest_pairwise",
+    model_type = pairwise,
+    # impl_class = "ttest_pairwise",
     impl = agendas(
         base = baseline(
-            fn = function(var_names, pairs, data, .paired = FALSE, .mu = 0, .alt = "two.sided", .ci = 0.95) {
+            fn = function(.proc, .paired = FALSE, .mu = 0, .alt = "two.sided", .ci = 0.95) {
+                var_names = .proc$var_names
+                pairs = .proc$pairs
+                data = .proc$data
+
                 n_vars = length(var_names)
 
                 if (length(.mu) == 1L) {
@@ -41,11 +45,11 @@ ttest_def_pairwise = test_define(
             },
             print = function(x, ...) {
                 rlang::check_installed(
-                    c("broom", "purrr"),
+                    c("broom", "purrr", "dplyr"),
                     reason = "to retrieve t-test results and re-store it in a data frame"
                 )
 
-                dat = x$data
+                dat = x@data
 
                 tidy_rows = lapply(seq_len(nrow(dat)), function(i) {
                     td = broom::tidy(dat$ttest[[i]])
