@@ -133,21 +133,3 @@ variant_registry_key = function(stat_cls, model_type) {
 #' @keywords internal
 #' @noRd
 variant_registry = new.env(parent = emptyenv())
-
-resolve_impl = function(method_name, def, model_type, cls, global_variants) {
-    if (is.null(method_name)) return(def@impl$base)
-
-    key = variant_registry_key(cls, model_type)
-    registered = variant_registry[[key]][[method_name]]$impl
-
-    global_entries = global_variants[[cls]] %||% list()
-    global_match = Filter(function(e) identical(e$name, method_name), global_entries)
-
-    def@impl$variants[[method_name]] %||%
-        registered %||%
-        global_match[[1]]$impl %||%
-        cli::cli_abort(c(
-            "No variant {.val {method_name}} registered for model type {.val {model_type}}.",
-            "i" = "Available variant{?s}: {.val {names(def@impl$variants)}}."
-        ))
-}
