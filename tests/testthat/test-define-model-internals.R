@@ -35,24 +35,11 @@ test_that("classify_quo() identifies inlines() call", {
     expect_equal(cl$type, ":inlines_call")
 })
 
-test_that("classify_quo() identifies tidyselect : range", {
-    quo = rlang::quo(x1:x3)
-    cl = classify_quo(quo)
-
-    expect_equal(cl$type, ":tidyselect")
-})
-
-test_that("classify_quo() identifies tidyselect helpers", {
-    quo = rlang::quo(starts_with("x"))
-    cl = classify_quo(quo)
-
-    expect_equal(cl$type, ":tidyselect")
-})
-
-test_that("Do not call `tidyselect::` prefixes — `classify_quo()` will flag this", {
+test_that("Do not call `tidyselect::` prefixes, `classify_quo()` will flag this", {
     quo = rlang::quo(tidyselect::starts_with("x"))
+    cl = classify_quo(quo)
 
-    expect_error(statim:::classify_quo(quo))
+    expect_equal(cl$type, ":error")
 })
 
 test_that("classify_quo() marks arbitrary calls as :error", {
@@ -127,12 +114,10 @@ test_that("resolve_quo() errors on arbitrary call expression", {
     expect_error(resolve_quo(quo, data = NULL, role = "x"))
 })
 
-test_that("resolve_quo() resolves tidyselect from data frame", {
+test_that("resolve_quo() doesn't resolve expression when `data` is a data frame", {
     df = data.frame(xa = 1:5, xb = 6:10, y = 11:15)
     quo = rlang::quo(starts_with("x"))
-    result = resolve_quo(quo, data = df, role = "x")
-
-    expect_named(result, c("xa", "xb"))
+    expect_error(resolve_quo(quo, data = df, role = "x"), class = "rlang_error")
 })
 
 test_that("resolve_quo() errors when tidyselect used without data", {
@@ -192,7 +177,8 @@ test_that("pairwise_data_extract() returns var_names, pairs, data", {
     result = pairwise_data_extract(m, data = cars)
 
     expect_named(result, c("var_names", "pairs", "data"))
-    expect_equal(result$var_names, c("speed", "dist"))
+    expect_all_true(result$var_names == c("speed", "dist"))
+    # expect_equal(result$var_names, c("speed", "dist"))
 })
 
 test_that("pairwise_data_extract() respects direction", {

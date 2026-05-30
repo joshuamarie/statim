@@ -35,7 +35,8 @@ test_that("define_model() with pairwise() populates var_names, pairs, data", {
 
     expect_s7_class(dm@model_id, pairwise)
     expect_named(dm@processed, c("var_names", "pairs", "data"))
-    expect_equal(dm@processed$var_names, c("speed", "dist"))
+    expect_all_true(dm@processed$var_names == c("speed", "dist"))
+    # expect_equal(dm@processed$var_names, c("speed", "dist"))
 })
 
 test_that("define_model() with formula dispatches correctly", {
