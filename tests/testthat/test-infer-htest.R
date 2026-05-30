@@ -3,7 +3,7 @@ test_that("prepare_test() returns a test_lazy", {
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST)
 
-    expect_s7_class(tl, statim:::test_lazy)
+    expect_s7_class(tl, test_lazy)
 })
 
 test_that("prepare_test() stores model_id, processed, test_spec", {
@@ -11,8 +11,8 @@ test_that("prepare_test() stores model_id, processed, test_spec", {
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST)
 
-    expect_s7_class(tl@model_id, statim::x_by)
-    expect_s7_class(tl@test_spec, statim:::test_spec)
+    expect_s7_class(tl@model_id, x_by)
+    expect_s7_class(tl@test_spec, test_spec)
     expect_named(tl@processed, c("x_data", "group_data"))
 })
 
@@ -33,7 +33,7 @@ test_that("prepare_test() with a non-function errors", {
 
 test_that("as_test_spec() rejects a model function", {
     expect_error(
-        statim:::as_test_spec(LINEAR_REG),
+        as_test_spec(LINEAR_REG),
         class = "rlang_error"
     )
 })
@@ -128,7 +128,7 @@ test_that("conclude() on default method returns cld_exec", {
         prepare_test(TTEST) |>
         conclude()
 
-    expect_s7_class(result, statim:::cld_exec)
+    expect_s7_class(result, cld_exec)
 })
 
 test_that("conclude() dispatches permute variant", {
@@ -138,7 +138,7 @@ test_that("conclude() dispatches permute variant", {
         via("permute", n = 200L, seed = 1L) |>
         conclude()
 
-    expect_s7_class(result, statim:::cld_exec)
+    expect_s7_class(result, cld_exec)
     expect_equal(result@cld_meta$method, "permute")
 })
 
@@ -149,6 +149,6 @@ test_that("conclude() dispatches boot variant", {
         via("boot", n = 200L, seed = 1L) |>
         conclude()
 
-    expect_s7_class(result, statim:::cld_exec)
+    expect_s7_class(result, cld_exec)
     expect_equal(result@cld_meta$method, "boot")
 })
