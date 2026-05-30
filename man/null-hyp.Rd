@@ -13,7 +13,7 @@ more_h0(...)
 \arguments{
 \item{.x}{A \code{test_lazy} object from \code{\link[=prepare_test]{prepare_test()}}.}
 
-\item{expr}{A hypothesis expression, or a \code{more_h0()} block.}
+\item{...}{Currently unused.}
 }
 \value{
 The modified \code{test_lazy} object.
@@ -23,6 +23,14 @@ The modified \code{test_lazy} object.
 \code{test_lazy} object. Accepts either a single expression or a \code{more_h0()}
 block for multiple named hypotheses.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{expr}}{A hypothesis expression, or a \code{more_h0()} block. It is passed
+after \code{prepare_test(...)} to supply the hypothesis expression, e.g.
+\code{... |> prepare_test(TTEST) |> state_null(expr = MU(x) == 0)}}
+}}
+
 \examples{
 sleep |>
     define_model(extra \%by\% group) |>
@@ -30,13 +38,15 @@ sleep |>
     state_null(MU(extra) == 0) |>
     conclude()
 
+\dontrun{
 sleep |>
     define_model(extra \%by\% group) |>
     prepare_test(TTEST) |>
     state_null(more_h0(
         h01 = MU(extra) == 2,
-        h02 = MU(extra) == 2 * h01
+        h02 = MU(extra) == 3
     )) |>
     conclude()
+}
 
 }

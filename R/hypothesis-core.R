@@ -5,7 +5,11 @@
 #' block for multiple named hypotheses.
 #'
 #' @param .x A `test_lazy` object from [prepare_test()].
-#' @param expr A hypothesis expression, or a `more_h0()` block.
+#' @param ... Currently unused.
+#'
+#' @slot expr A hypothesis expression, or a `more_h0()` block. It is passed
+#'     after `prepare_test(...)` to supply the hypothesis expression, e.g.
+#'     `... |> prepare_test(TTEST) |> state_null(expr = MU(x) == 0)`
 #'
 #' @return The modified `test_lazy` object.
 #'
@@ -16,14 +20,16 @@
 #'     state_null(MU(extra) == 0) |>
 #'     conclude()
 #'
+#' \dontrun{
 #' sleep |>
 #'     define_model(extra %by% group) |>
 #'     prepare_test(TTEST) |>
 #'     state_null(more_h0(
 #'         h01 = MU(extra) == 2,
-#'         h02 = MU(extra) == 2 * h01
+#'         h02 = MU(extra) == 3
 #'     )) |>
 #'     conclude()
+#' }
 #'
 #' @name null-hyp
 #' @export
