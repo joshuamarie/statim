@@ -33,13 +33,13 @@ perform, then `{statim}` immediately delivers *how*.
 
 ## Why statim?
 
-Base R’s statistical functions are imperative and scattered. A t-test is
-`t.test()`, a correlation test is `cor.test()`, each takes different
-arguments, returns a different output format, and switching from a
-classical procedure to a bootstrap or permutation variant means
-rewriting from scratch. There is no shared grammar, and no way to
-describe *what* you want without also specifying *how* to compute it
-step by step.
+Base R’s statistical functions are imperative and scattered. H-tests
+like t-test through `t.test()`, and a correlation test through
+`cor.test()`, each takes different arguments, returns a different output
+format, and switching from a classical procedure to a bootstrap or
+permutation variant means rewriting from scratch. There is no shared
+grammar, and no way to describe *what* you want without also specifying
+*how* to compute it step by step.
 
 `{statim}` replaces that with a declarative pipeline. You describe the
 model structure once with `define_model()`, attach a test, and
@@ -60,7 +60,9 @@ sleep |> define_model(x_by(extra, group)) |> prepare_test(TTEST) |> via("permute
 ```
 
 Any test registered with `test_define()` plugs into the same pipeline,
-including custom implementations.
+including custom implementations. Most of the API is written in S7 with
+the purpose to enforce flexibility and strictness to make `{statim}`
+much usable and robust
 
 ## Installation
 
