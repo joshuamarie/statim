@@ -79,6 +79,8 @@ S7::method(print, cld_anova) = function(x, ...) {
 #' @param ... Additional `model_lazy` or `cld_exec` objects.
 #' @param test A string. One of `"F"` (default), `"LRT"`, or `"Chisq"`.
 #'
+#' @usage anova(object, ..., test = "F")
+#'
 #' @return A `cld_anova` object, invisibly.
 #'
 #' @seealso [write_models()], [prepare_model()], [conclude()]

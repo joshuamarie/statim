@@ -9,7 +9,7 @@
 An object of class \code{S7_external_generic} of length 4.
 }
 \usage{
-anova
+anova(object, ..., test = "F")
 }
 \arguments{
 \item{object}{An \code{anova_lazy}, \code{model_lazy}, or \code{cld_exec} object.}
