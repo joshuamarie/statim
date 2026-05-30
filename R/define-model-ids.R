@@ -5,7 +5,6 @@
 #'
 #' @export
 model_id = S7::new_class("model_id")
-# model_id = S7::new_S3_class("model_id")
 
 #' 'Variable compared by groups' model mapping
 #'
@@ -43,13 +42,6 @@ x_by = S7::new_class(
         )
     }
 )
-# x_by = function(x, group) {
-#     args = rlang::list2(
-#         x = rlang::enquo(x),
-#         group = rlang::enquo(group)
-#     )
-#     model_id_class(args, "x_by")
-# }
 
 #' @rdname x_by
 #' @export
@@ -84,13 +76,6 @@ rel = S7::new_class(
         )
     }
 )
-# rel = function(x, resp) {
-#     args = rlang::list2(
-#         x = rlang::enquo(x),
-#         resp = rlang::enquo(resp)
-#     )
-#     model_id_class(args, "rel")
-# }
 
 #' 'Pairs between variables' model mapping
 #'
@@ -128,43 +113,6 @@ pairwise = S7::new_class(
         )
     }
 )
-
-# pairwise = function(..., direction = "lt") {
-#     dots = rlang::enquos(...)
-#     out = list(
-#         args = list(
-#             dots = rlang::expr(c(!!!dots)),
-#             dots_quos = dots
-#         ),
-#         direction = direction
-#     )
-#     model_id_class(out, "pairwise")
-# }
-
-# #' Attach a model-ID class to an object
-# #'
-# #' @param obj A list representing the model ID payload.
-# #' @param clss A string giving the primary class name.
-# #'
-# #' @return `obj` with `class` set to `c(clss, "model_id")`.
-# #'
-# #' @export
-# model_id_class = function(obj, clss) {
-#     class(obj) = c(clss, "model_id")
-#     obj
-# }
-
-# #' @keywords internal
-# #' @export
-# print.model_id = function(x, ...) {
-#     info = model_id_info(x)
-#
-#     cat(cli::rule(left = "Model Definition", line = "-"), "\n\n")
-#     cat("Model ID :", info$model_type, "\n")
-#     cat("Args :", info$args, "\n")
-#
-#     invisible(x)
-# }
 
 S7::method(print, model_id) = function(x, ...) {
     info = model_id_info(x)
