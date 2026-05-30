@@ -3,53 +3,64 @@
 \name{glm_object}
 \alias{glm_object}
 \title{Structured result container for GLM fits}
-\usage{
-glm_object(
-  terms = NULL,
-  df_residual = integer(0),
-  deviance = integer(0),
-  dispersion = integer(0),
-  family = "gaussian",
-  coefficients = (function (.data = list(), row.names = NULL) 
- {
-     if
-    (is.null(row.names)) {
-         list2DF(.data)
-     }
-     else {
-         out <-
-    list2DF(.data, length(row.names))
-         attr(out, "row.names") <- row.names
-      
-      out
-     }
- })(),
-  fit_summary = (function (.data = list(), row.names = NULL) 
- {
-     if
-    (is.null(row.names)) {
-         list2DF(.data)
-     }
-     else {
-         out <-
-    list2DF(.data, length(row.names))
-         attr(out, "row.names") <- row.names
-      
-      out
-     }
- })()
-)
-}
 \description{
-Structured result container for GLM fits
+An S7 class produced by \link{GLM} pipelines. Not constructed manually —
+use \code{define_model() |> prepare_model(GLM) |> conclude()} instead.
+
+Inherits from \link{anova_able}, so it participates in \code{\link[=anova]{anova()}} directly.
+Downstream packages can use it as a \code{parent} in \code{S7::new_class()}.
 }
-\section{Slots}{
+\details{
+Constructor arguments (populated automatically by \link{GLM}):
+\itemize{
+\item \code{terms}: model terms object.
+\item \code{df_residual}: residual degrees of freedom.
+\item \code{deviance}: scalar deviance.
+\item \code{dispersion}: scalar dispersion parameter.
+\item \code{family}: string naming the error family, e.g. \code{"binomial"}.
+\item \code{coefficients}: data frame with columns \code{term}, \code{estimate},
+\code{std_error}, \code{statistic}, \code{p_value}.
+\item \code{fit_summary}: data frame with columns \code{family}, \code{link},
+\code{null_deviance}, \code{deviance}, \code{df_residual}, \code{aic}, \code{n_obs}.
+}
+}
+\examples{
+# Inheriting from glm_object in a downstream package:
+my_glm = S7::new_class(
+    "my_glm",
+    parent = statim::glm_object
+)
 
-\describe{
-\item{\code{family}}{A string naming the GLM family, e.g. \code{"binomial"}.
-Populated automatically from the fitted object.}
-}}
+# Populating glm_object from a fitted glm (as done internally):
+fit = glm(am ~ wt + hp, data = mtcars, family = binomial())
+s = summary(fit)
+fam = fit$family$family
 
+obj = glm_object(
+    terms = fit$terms,
+    df_residual = fit$df.residual,
+    deviance = fit$deviance,
+    dispersion = if (fam \%in\% c("binomial", "poisson")) 1 else s$dispersion,
+    family = fam,
+    coefficients = tibble::tibble(
+        term = rownames(coef(s)),
+        estimate = coef(s)[, 1],
+        std_error = coef(s)[, 2],
+        statistic = coef(s)[, 3],
+        p_value = coef(s)[, 4]
+    ),
+    fit_summary = tibble::tibble(
+        family = fam,
+        link = fit$family$link,
+        null_deviance = fit$null.deviance,
+        deviance = fit$deviance,
+        df_residual = as.integer(fit$df.residual),
+        aic = fit$aic,
+        n_obs = as.integer(length(fit$residuals))
+    )
+)
+
+}
 \seealso{
 \link{anova_able}, \link{GLM}
 }

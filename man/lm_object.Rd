@@ -3,79 +3,71 @@
 \name{lm_object}
 \alias{lm_object}
 \title{Structured result container for linear model fits}
-\usage{
-lm_object(
-  terms = NULL,
-  df_residual = integer(0),
-  deviance = integer(0),
-  dispersion = integer(0),
-  family = "gaussian",
-  residuals = integer(0),
-  coefficients = (function (.data = list(), row.names = NULL) 
- {
-     if
-    (is.null(row.names)) {
-         list2DF(.data)
-     }
-     else {
-         out <-
-    list2DF(.data, length(row.names))
-         attr(out, "row.names") <- row.names
-      
-      out
-     }
- })(),
-  fit_summary = (function (.data = list(), row.names = NULL) 
- {
-     if
-    (is.null(row.names)) {
-         list2DF(.data)
-     }
-     else {
-         out <-
-    list2DF(.data, length(row.names))
-         attr(out, "row.names") <- row.names
-      
-      out
-     }
- })()
-)
-}
 \description{
-\code{lm_object} is the standard return type for any \code{fn} inside a
-\code{model_infer_define} that fits a linear model. It holds only the
-information that is universally meaningful across all engines and
-variants, and satisfies the protocol required by \code{\link[=anova]{anova()}}.
+An S7 class produced by \link{LINEAR_REG} pipelines. Not constructed manually —
+use \code{define_model() |> prepare_model(LINEAR_REG) |> conclude()} instead.
+
+Inherits from \link{anova_able}, so it participates in \code{\link[=anova]{anova()}} directly.
+Downstream packages can use it as a \code{parent} in \code{S7::new_class()}.
 }
 \details{
-Implementors must populate all slots from their engine's output.
-The method label is supplied automatically from \code{\link[=agendas]{agendas()}} via
-the enclosing \code{cld_exec} objects, no manual labelling is needed.
+Constructor arguments (populated automatically by \link{LINEAR_REG}):
+\itemize{
+\item \code{terms}: model terms object.
+\item \code{df_residual}: residual degrees of freedom.
+\item \code{deviance}: scalar deviance.
+\item \code{dispersion}: scalar dispersion parameter.
+\item \code{family}: always \code{"gaussian"} for OLS.
+\item \code{residuals}: numeric vector of model residuals.
+\item \code{coefficients}: data frame with columns \code{term}, \code{estimate},
+\code{std_error}, \code{statistic}, \code{p_value}.
+\item \code{fit_summary}: data frame with columns \code{r_squared}, \code{adj_r_squared},
+\code{sigma}, \code{df_residual}, \code{n_obs}.
 }
-\section{Slots}{
-
-\describe{
-\item{\code{terms}}{The model terms object. Used by \code{\link[=anova]{anova()}} to
-verify response consistency across models.}
-
-\item{\code{residuals}}{A numeric vector of model residuals. Used by
-\code{\link[=anova]{anova()}} for nobs checking and deviance computation.}
-
-\item{\code{df_residual}}{Residual degrees of freedom.}
-
-\item{\code{coefficients}}{A data frame with columns \code{term}, \code{estimate},
-\code{std_error}, \code{statistic}, \code{p_value}.}
-
-\item{\code{fit_summary}}{A data frame with columns \code{r_squared},
-\code{adj_r_squared}, \code{sigma}, \code{df_residual}, \code{nobs}.}
-}}
-
+}
 \section{anova() protocol}{
 
 \code{lm_object} participates in \code{\link[=anova]{anova()}} directly. The comparison
 is computed from \verb{@residuals}, \verb{@df_residual}, and \verb{@terms}.
 }
 
+\examples{
+# Inheriting from lm_object in a downstream package:
+my_lm = S7::new_class(
+    "my_lm",
+    parent = statim::lm_object
+)
+
+# Populating lm_object from a fitted lm (as done internally):
+fit = lm(dist ~ speed, data = cars)
+s = summary(fit)
+rss = sum(fit$residuals^2)
+df_res = fit$df.residual
+
+obj = lm_object(
+    terms = fit$terms,
+    residuals = fit$residuals,
+    df_residual = df_res,
+    deviance = rss,
+    dispersion = rss / df_res,
+    family = "gaussian",
+    coefficients = tibble::tibble(
+        term = rownames(coef(s)),
+        estimate = coef(s)[, 1],
+        std_error = coef(s)[, 2],
+        statistic = coef(s)[, 3],
+        p_value = coef(s)[, 4]
+    ),
+    fit_summary = tibble::tibble(
+        r_squared = s$r.squared,
+        adj_r_squared = s$adj.r.squared,
+        sigma = s$sigma,
+        df_residual = as.integer(df_res),
+        n_obs = as.integer(length(fit$residuals))
+    )
+)
+
+}
 \seealso{
 \code{\link[=anova]{anova()}}, \link{LINEAR_REG}
 }

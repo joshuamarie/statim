@@ -13,9 +13,6 @@ GLM(.model = NULL, .data = NULL, ...)
 \item{.data}{A data frame. Used when \code{.model} is supplied directly.}
 
 \item{...}{Additional arguments passed to \code{\link[stats:glm]{stats::glm()}}.}
-
-\item{family}{A family object, e.g. \code{\link[stats:family]{stats::binomial()}}, \code{\link[stats:family]{stats::poisson()}}.
-Defaults to \code{\link[stats:family]{stats::gaussian()}}.}
 }
 \value{
 A \code{cld_exec} object in a \code{glm_object}, or a \code{model_spec}
@@ -23,6 +20,12 @@ when \code{.model = NULL}.
 }
 \description{
 A modified GLM for \code{{statim}} pipeline passed through \code{\link[stats:glm]{stats::glm()}}.
+}
+\details{
+Additional arguments are passed to \code{\link[stats:glm]{stats::glm()}}. The most important
+is \code{family}, which controls the error distribution and link function
+(e.g. \code{\link[stats:family]{stats::binomial()}}, \code{\link[stats:family]{stats::poisson()}}). Defaults to
+\code{\link[stats:family]{stats::gaussian()}} when omitted.
 }
 \examples{
 # logistic regression
@@ -32,11 +35,25 @@ mtcars |>
     update(family = binomial()) |>
     conclude()
 
+\dontrun{
 # model comparison via anova()
-mod1 = mtcars |> define_model(am ~ 1) |> prepare_model(GLM) |> update(family = binomial()) |> conclude()
-mod2 = mtcars |> define_model(am ~ wt) |> prepare_model(GLM) |> update(family = binomial()) |> conclude()
-mod3 = mtcars |> define_model(am ~ wt + hp) |> prepare_model(GLM) |> update(family = binomial()) |> conclude()
+mod1 = mtcars |>
+    define_model(am ~ 1) |>
+    prepare_model(GLM) |>
+    update(family = binomial()) |>
+    conclude()
+mod2 = mtcars |>
+    define_model(am ~ wt) |>
+    prepare_model(GLM) |>
+    update(family = binomial()) |>
+    conclude()
+mod3 = mtcars |>
+    define_model(am ~ wt + hp) |>
+    prepare_model(GLM) |>
+    update(family = binomial()) |>
+    conclude()
 
 anova(mod1, mod2, mod3)
+}
 
 }
