@@ -38,7 +38,8 @@ Suggests:
     Rfast2,
     purrr,
     tidyr, 
-    dplyr
+    dplyr,
+    boot
 Collate:
     'statim-package.R'
     'ops.R'
