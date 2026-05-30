@@ -7,6 +7,15 @@
 \usage{
 lhs \%=\% rhs
 }
+\arguments{
+\item{lhs}{The left-hand side population parameter.}
+
+\item{rhs}{The right-hand side population parameter.}
+}
+\value{
+Does not return. Always throws an error when called outside
+\code{\link[=state_null]{state_null()}}.
+}
 \description{
 \verb{\%=\%} declares that all chained population parameters are hypothesized
 to be equal. Used inside \code{\link[=state_null]{state_null()}} only — it is a syntactic macro

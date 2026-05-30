@@ -34,6 +34,12 @@
 #' to be equal. Used inside [state_null()] only — it is a syntactic macro
 #' and will error if called outside that context.
 #'
+#' @param lhs The left-hand side population parameter.
+#' @param rhs The right-hand side population parameter.
+#'
+#' @return Does not return. Always throws an error when called outside
+#'   [state_null()].
+#'
 #' @examples
 #' sleep |>
 #'     define_model(x_by(extra, group)) |>
