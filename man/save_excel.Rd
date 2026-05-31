@@ -21,3 +21,13 @@ save_excel(x, ...)
 \code{.xlsx} file. It snapshots the console print output and writes it
 into an Excel sheet as a formatted monospace report.
 }
+\examples{
+\dontrun{
+sleep |>
+    define_model(extra ~ sleep) |>
+    prepare_test(TTEST) |>
+    conclude() |>
+    save_excel("t-test.xlsx")
+}
+
+}

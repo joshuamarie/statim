@@ -10,6 +10,15 @@
 #'
 #' @return `x`, invisibly.
 #'
+#' @examples
+#' \dontrun{
+#' sleep |>
+#'     define_model(extra ~ sleep) |>
+#'     prepare_test(TTEST) |>
+#'     conclude() |>
+#'     save_excel("t-test.xlsx")
+#' }
+#'
 #' @export
 save_excel = S7::new_generic("save_excel", "x")
 
