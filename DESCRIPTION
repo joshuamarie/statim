@@ -85,6 +85,7 @@ Collate:
     'model-glm-defs.R'
     'model-glm.R'
     'tidy-auto.R'
+    'save-excel.R'
     'global_variables.R'
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
