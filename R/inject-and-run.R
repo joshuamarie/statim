@@ -19,20 +19,34 @@ inject_and_run = function(impl, processed, args, claims = NULL) {
     fn_args = names(fn_formals)
     fn_args = fn_args[fn_args != "..."]
 
-    injected = lapply(fn_args, function(arg) {
-        if (arg == ".proc") return(processed)
-        if (!is.null(args[[arg]])) return(args[[arg]])
-        fn_formals[[arg]]
-    })
+    injected = vector("list", length(fn_args))
     names(injected) = fn_args
+    missing_args = character(0)
 
-    missing_args = vapply(injected, function(x) {
-        is.symbol(x) && identical(as.character(x), "")
-    }, logical(1))
+    for (arg in fn_args) {
+        if (arg == ".proc") {
+            injected[[arg]] = processed
+            next
+        }
+        if (!is.null(args[[arg]])) {
+            injected[[arg]] = args[[arg]]
+            next
+        }
+        if (rlang::is_missing(formals(fn)[[arg]])) {
+            missing_args = c(missing_args, arg)
+            next
+        }
+        val = formals(fn)[[arg]]
+        injected[[arg]] = if (is.call(val)) {
+            eval(val, envir = environment(fn) %||% baseenv())
+        } else {
+            val
+        }
+    }
 
-    if (any(missing_args)) {
+    if (length(missing_args) > 0L) {
         cli::cli_abort(c(
-            "{sum(missing_args)} required argument{?s} not supplied: {.arg {fn_args[missing_args]}}.",
+            "{length(missing_args)} required argument{?s} not supplied: {.arg {missing_args}}.",
             "i" = "Supply via {.code ...} in the test call."
         ))
     }
@@ -44,26 +58,42 @@ inject_and_run = function(impl, processed, args, claims = NULL) {
     } else {
         rlang::exec(fn, !!!injected)
     }
-    # rlang::exec(fn, !!!injected, !!!extra)
 }
-
-# #' Map a single fn argument name to processed model output.
-# #' Tries direct match first, then appends `_data` suffix.
-# #'
-# #' @keywords internal
-# #' @noRd
-# resolve_from_processed = function(arg, processed) {
-#     if (!is.null(processed[[arg]])) return(processed[[arg]])
+# inject_and_run = function(impl, processed, args, claims = NULL) {
+#     fn = impl@fn
+#     fn_formals = formals(fn)
+#     fn_args = names(fn_formals)
+#     fn_args = fn_args[fn_args != "..."]
 #
-#     # val = processed[[arg]]
-#     with_suffix = paste0(arg, "_data")
-#     val = processed[[with_suffix]]
-#     if (!is.null(val)) {
-#         if ((is.data.frame(val) || is.list(val)) && length(val) == 1L) {
-#             return(val[[1]])
+#     injected = lapply(fn_args, function(arg) {
+#         if (arg == ".proc") return(processed)
+#         if (!is.null(args[[arg]])) return(args[[arg]])
+#         # fn_formals[[arg]]
+#         default = fn_formals[[arg]]
+#         if (is.call(default)) {
+#             return(eval(default, envir = environment(fn) %||% baseenv()))
 #         }
-#         return(val)
+#         default
+#     })
+#     names(injected) = fn_args
+#
+#     missing_args = vapply(injected, function(x) {
+#         is.symbol(x) && identical(as.character(x), "")
+#     }, logical(1))
+#
+#     if (any(missing_args)) {
+#         cli::cli_abort(c(
+#             "{sum(missing_args)} required argument{?s} not supplied: {.arg {fn_args[missing_args]}}.",
+#             "i" = "Supply via {.code ...} in the test call."
+#         ))
 #     }
 #
-#     NULL
+#     extra = args[!names(args) %in% fn_args]
+#     has_dots = "..." %in% names(formals(fn))
+#     if (has_dots) {
+#         rlang::exec(fn, !!!injected, !!!extra)
+#     } else {
+#         rlang::exec(fn, !!!injected)
+#     }
+#     # rlang::exec(fn, !!!injected, !!!extra)
 # }
