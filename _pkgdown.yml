@@ -98,6 +98,11 @@ reference:
     contents:
     - inlines
 
+  - subtitle: Output renderer and saver
+    desc: Capture the printed output in specific formats
+    contents:
+    - save_excel
+
   # - title: Low Level API
   #   desc: Functions to interact with the statim internals
 
