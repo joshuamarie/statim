@@ -41,18 +41,18 @@ test_that("tidy() on boot variant lower is less than upper", {
     expect_lt(result$lower, result$upper)
 })
 
-test_that("tidy() on contrast variant returns tibble with expected columns", {
+test_that("tidy() on weighted variant returns tibble with expected columns", {
     result = sleep |>
         define_model(extra %by% group) |>
         prepare_test(TTEST) |>
-        via("contrast") |>
+        via("weighted") |>
         conclude() |>
         tidy()
 
     expect_s3_class(result, "tbl_df")
     expect_named(
         result,
-        c("group", "contrast", "tstat", "df", "p_value", "lower", "upper"),
+        c("group", "est", "tstat", "df", "p_value", "lower", "upper"),
         ignore.order = TRUE
     )
 })

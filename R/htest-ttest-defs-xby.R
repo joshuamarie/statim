@@ -196,10 +196,10 @@ ttest_def_two = test_define(
                 invisible(x)
             }
         ),
-        contrast = variant(
-            # ---- Contrast t-test ----
-            # ---- variant: contrast ----
-            fn = function(.proc, .mu = 0, .ci = 0.95, .contrast = NULL, .op = "==") {
+        weighted = variant(
+            # ---- Weighted t-test ----
+            # ---- variant: "weighted" ----
+            fn = function(.proc, .mu = 0, .ci = 0.95, .w = NULL, .op = "==") {
                 x = .proc$x_data[[1]]
                 group_data = .proc$group_data
 
@@ -224,22 +224,22 @@ ttest_def_two = test_define(
                 s1 = stats::var(x1)
                 s2 = stats::var(x2)
 
-                coefs = if (is.null(.contrast)) {
+                coefs = if (is.null(.w)) {
                     c(1, -1)
                 } else {
-                    coef_nms = names(.contrast)
+                    coef_nms = names(.w)
                     c(
-                        .contrast[coef_nms == lvls[[1]]],
-                        .contrast[coef_nms == lvls[[2]]]
+                        .w[coef_nms == lvls[[1]]],
+                        .w[coef_nms == lvls[[2]]]
                     )
                 }
 
                 c1 = coefs[[1]]
                 c2 = coefs[[2]]
 
-                contrast_val = c1 * xbar1 + c2 * xbar2
+                est_val = c1 * xbar1 + c2 * xbar2
                 se = sqrt(c1^2 * s1 / n1 + c2^2 * s2 / n2)
-                tstat = (contrast_val - .mu) / se
+                tstat = (est_val - .mu) / se
                 df = (c1^2 * s1 / n1 + c2^2 * s2 / n2)^2 /
                     ((c1^2 * s1 / n1)^2 / (n1 - 1) + (c2^2 * s2 / n2)^2 / (n2 - 1))
 
@@ -276,7 +276,7 @@ ttest_def_two = test_define(
 
                 list(
                     group = grp_name,
-                    contrast = contrast_val,
+                    est = est_val,
                     coefs = coefs,
                     tstat = tstat,
                     df = df,
@@ -305,7 +305,7 @@ ttest_def_two = test_define(
 
                 stat_out = tibble::tibble(
                     groups = dat$group,
-                    contrast = round(dat$contrast, 4),
+                    est = round(dat$est, 4),
                     `t-stat` = round(dat$tstat, 4),
                     df = round(dat$df, 2),
                     pval = round(dat$p.value, 4)
@@ -365,10 +365,10 @@ ttest_def_two = test_define(
                 )
             }
         ),
-        contrast = map_claim(
+        weighted = map_claim(
             .mu = function(claim, processed) claim_contrast_coefs(claim)$scalar,
             .op = function(claim, processed) claim_contrast_coefs(claim)$op,
-            .contrast = function(claim, processed) claim_contrast_coefs(claim)$coefs
+            .w = function(claim, processed) claim_contrast_coefs(claim)$coefs
         )
     )
 )

@@ -14,11 +14,11 @@ making_tidy(TTEST, x_by) %<-% method_tidy(
             n_reps = .x@data$n
         )
     },
-    contrast = function(.x, ...) {
+    weighted = function(.x, ...) {
         dat = .x@data
         tibble::tibble(
             group = dat$group,
-            contrast = dat$contrast,
+            est = dat$est,
             tstat = dat$tstat,
             df = dat$df,
             p_value = dat$p.value,
