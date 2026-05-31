@@ -152,6 +152,7 @@ reference:
   - subtitle: Tidy implementation container
     desc: Add or replace `tidy()` method for following `STAT_CONSTRUCTOR` objects
     contents:
+    - auto_tidy
     - making_tidy
     - method_tidy
     - modifying-assignment
