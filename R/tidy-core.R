@@ -13,10 +13,12 @@ S7::method(tidy, cld_exec) = function(.x, ...) {
 
     mt = register_tidy[[key]]
     if (is.null(mt)) {
-        cli::cli_abort(c(
-            "No tidy method registered for {.val {(.x@impl_cls)}}.",
-            "i" = "Register one with {.code making_tidy(<stat_fn>, <model_type>) %<-% method_tidy(...)}."
+        cli::cli_inform(c(
+            "i" = "No tidy method registered for {.val {(.x@impl_cls)}}.",
+            "i" = "Register one with {.code making_tidy(<stat_fn>, <model_type>) %<-% method_tidy(...)} for a custom tidy.",
+            "i" = "Falling back to {.fn auto_tidy}."
         ))
+        return(auto_tidy(x = .x@data, impl_cls = .x@impl_cls))
     }
 
     method_nm = .x@cld_meta$method
