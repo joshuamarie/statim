@@ -365,6 +365,7 @@ run_model_lazy_raw = function(m) {
 #' @keywords internal
 anova_able = S7::new_class(
     "anova_able",
+    parent = class_stat_infer,
     properties = list(
         terms = S7::new_property(class = S7::class_any),
         df_residual = S7::class_numeric,
