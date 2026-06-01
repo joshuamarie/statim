@@ -8,7 +8,7 @@ making_tidy(obj, model_type)
 }
 \arguments{
 \item{obj}{A stat function built with \code{\link[=HTEST_FN]{HTEST_FN()}} or \code{\link[=MODEL_FN]{MODEL_FN()}}
-(e.g. \code{TTEST}). Used to scope the registry key.}
+(e.g. \code{TTEST}).}
 
 \item{model_type}{An S7 model ID class (e.g. \code{x_by}, \code{S7::class_formula}).}
 }
@@ -16,13 +16,21 @@ making_tidy(obj, model_type)
 A \code{making_tidy_call} object, consumed by \verb{\%<-\%}.
 }
 \description{
-\code{making_tidy()} is used as the left-hand side of the \verb{\%<-\%} operator
-to register a \code{\link[=method_tidy]{method_tidy()}} for a stat function and model type.
+\code{making_tidy()} is the escape hatch for registering tidy methods when a
+variant's \code{fn} intentionally returns a non-\link{class_stat_infer} object
+(plain list, S3, S4, or R6). When \code{fn} returns a \link{class_stat_infer}
+subclass, implement \code{\link[=auto_tidy]{auto_tidy()}} on the result class instead — no
+registration needed.
 }
 \examples{
+# Only needed when fn returns a non-class_stat_infer object.
+# Prefer implementing auto_tidy() on your result class instead.
 making_tidy(TTEST, x_by) \%<-\% method_tidy(
     default = function(.x, ...) { ... },
     boot = function(.x, ...) { ... }
 )
 
+}
+\seealso{
+\code{\link[=auto_tidy]{auto_tidy()}}, \code{\link[=method_tidy]{method_tidy()}}, \link{class_stat_infer}
 }

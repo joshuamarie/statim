@@ -7,38 +7,45 @@
 auto_tidy(x, ...)
 }
 \arguments{
-\item{x}{A statistical result object, such as \link{lm_object} or \link{glm_object}.}
+\item{x}{A \link{class_stat_infer} subclass object, typically \code{cld_exec@data}.}
 
 \item{...}{Currently unused. Passed to the dispatched method.}
 }
 \value{
-A tibble of coefficients or other primary results, depending on
-the class of \code{x}.
+A tibble.
 }
 \description{
-A generic fallback tidier for S7 result objects produced by \code{{statim}}
-pipelines. Called automatically by \code{\link[=tidy]{tidy()}} when no method has been
-registered via \code{\link[=making_tidy]{making_tidy()}}. Can also be called directly.
+\code{auto_tidy()} is the protocol generic for tidying result objects produced
+by \code{fn} in \code{\link[=baseline]{baseline()}} and \code{\link[=variant]{variant()}}. It is called automatically by
+\code{\link[=tidy]{tidy()}} when the result stored in \code{cld_exec@data} is a \link{class_stat_infer}
+subclass.
 }
 \details{
-Dispatch is based on the class of \code{x}, typically the object stored in
-\code{cld_exec@data}. When multiple stat functions share the same result class
-(e.g. both \code{LINEAR_REG} and a variant producing an \link{lm_object}), they
-share the same \code{auto_tidy()} output without needing separate registrations.
-}
-\examples{
-fit = cars |>
-    define_model(dist ~ speed) |>
-    prepare_model(LINEAR_REG) |>
-    conclude()
+Register a method on your result class to participate in the protocol:
 
-# called directly
-auto_tidy(fit@data)
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{example_out = S7::new_class("example_out", parent = class_stat_infer)
 
-# called implicitly via tidy() when no method is registered
-tidy(fit)
+S7::method(auto_tidy, example_out) = function(x, ...) \{
+    tibble::tibble(...)
+\}
+}\if{html}{\out{</div>}}
 
+When a variant's \code{fn} returns the same result class as \code{baseline}, it
+inherits \code{auto_tidy()} automatically via S7's parent chain. When it
+returns a subclass, it can override selectively:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{new_boot_class = S7::new_class("new_boot_class", parent = example_out)
+
+# override only for boot
+# everything else inherited from `example_out`
+S7::method(auto_tidy, new_boot_class) = function(x, ...) \{
+    tibble::tibble(...)
+\}
+}\if{html}{\out{</div>}}
+
+If no \code{auto_tidy()} method is found and no \code{\link[=making_tidy]{making_tidy()}} entry exists,
+\code{\link[=tidy]{tidy()}} falls back to an informative error.
 }
 \seealso{
-\code{\link[=tidy]{tidy()}}, \code{\link[=making_tidy]{making_tidy()}}, \code{\link[=method_tidy]{method_tidy()}}
+\code{\link[=tidy]{tidy()}}, \code{\link[=making_tidy]{making_tidy()}}, \code{\link[=method_tidy]{method_tidy()}}, \link{class_stat_infer}
 }

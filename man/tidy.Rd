@@ -9,11 +9,33 @@ tidy(.x, ...)
 \arguments{
 \item{.x}{A \code{cld_exec} object produced by \code{\link[=conclude]{conclude()}}.}
 
-\item{...}{Passed to the registered tidy function.}
+\item{...}{Passed to the dispatched method.}
 }
 \value{
 A tibble.
 }
 \description{
-Tidy a concluded statistical result
+\code{tidy()} extracts a tibble of primary results from a \code{cld_exec} object
+produced by \code{\link[=conclude]{conclude()}}.
+}
+\section{Dispatch}{
+
+Two paths are tried in order:
+
+\strong{Path 1: \code{auto_tidy()} (preferred).}
+When \code{cld_exec@data} is a \link{class_stat_infer} subclass, \code{\link[=auto_tidy]{auto_tidy()}} is
+called directly on it. You need no registry, and S7 automatically dispatches on the
+particular output class, and variants that return the same class inherit the method
+automatically via the parent chain.
+
+\strong{Path 2: \code{making_tidy()} registry (escape hatch).}
+When \code{cld_exec@data} is not a \link{class_stat_infer} subclass, for example,when a variant
+intentionally returns any data structure e.g. just a plain list, S3, S4, or R6 object
+(\code{check_sic_s7 = FALSE}), \code{\link[=tidy]{tidy()}} falls back to the registry populated
+by \code{\link[=making_tidy]{making_tidy()}}. If no entry exists there either, an informative error
+is raised.
+}
+
+\seealso{
+\code{\link[=auto_tidy]{auto_tidy()}}, \code{\link[=making_tidy]{making_tidy()}}, \code{\link[=method_tidy]{method_tidy()}}, \link{class_stat_infer}
 }

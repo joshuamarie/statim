@@ -7,17 +7,20 @@
 method_tidy(default = NULL, ...)
 }
 \arguments{
-\item{default}{A function with signature \verb{function(.x, ...)} for the base
-implementation. Required.}
+\item{default}{A function with signature \verb{function(.x, ...)}. Required.}
 
-\item{...}{Named functions, one per variant (e.g. \verb{boot =}, \verb{contrast =}).
-Names must match the variant names registered in \code{\link[=agendas]{agendas()}}.}
+\item{...}{Named functions, one per variant. Names must match variant
+names registered in \code{\link[=agendas]{agendas()}}. Omitted variants fall back to
+\code{default} automatically.}
 }
 \value{
 A \code{method_tidy} S7 object.
 }
 \description{
-\code{method_tidy()} collects tidy functions for the base implementation and any
-named variants. The \code{default} function handles results from the base
-implementation; additional named arguments handle variant results.
+\code{method_tidy()} is the companion to \code{\link[=making_tidy]{making_tidy()}}. It collects tidy
+functions for the base implementation and named variants, used only when
+\code{fn} returns a non-\link{class_stat_infer} object.
+}
+\seealso{
+\code{\link[=making_tidy]{making_tidy()}}, \code{\link[=auto_tidy]{auto_tidy()}}, \link{class_stat_infer}
 }
