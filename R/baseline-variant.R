@@ -22,10 +22,9 @@
 #'
 #'   ```r
 #'   baseline(
-#'       fn = function(.proc, .mu = 0, .alt = "two.sided", .ci = 0.95) {
-#'           x = .proc$x_data
-#'           group_data = .proc$group_data
+#'       fn = function(.proc, .mu = 0, .ci = 0.95) {
 #'           # ...
+#'           my_result(...)   # return a class_stat_infer subclass
 #'       }
 #'   )
 #'   ```
@@ -34,30 +33,29 @@
 #'   the result. `x` is a `cld_exec` object — read your result from `x@data`.
 #'   `NULL` falls back to `print(x@data)`.
 #'
-#'   ```r
-#'   baseline(
-#'       fn = function(.proc, ...) { ... },
-#'       print = function(x, ...) {
-#'           dat = x@data
-#'           # render dat
-#'           invisible(x)
-#'       }
-#'   )
-#'   ```
+#' @param check_sic_s7 A single logical. When `TRUE`, [conclude()] verifies
+#'   at runtime that `fn` returns a [class_stat_infer] subclass. A warning
+#'   is issued if it does not, reminding you that [auto_tidy()] and future
+#'   `auto_*()` generics will not dispatch automatically.
+#'
+#'   Set to `FALSE` (the default) when `fn` intentionally returns anything.
+#'   In that case, register a tidy method via [making_tidy()] if [tidy()] support
+#'   is needed.
 #'
 #' @return A `baseline` S7 object.
 #'
 #' @seealso [variant()], [agendas()], [stat_define()], [model_processor()],
-#'   `cld_exec`
+#'   [class_stat_infer], [auto_tidy()]
 #'
 #' @export
 baseline = S7::new_class(
     "baseline",
     properties = list(
         fn = S7::new_property(class = S7::class_function),
-        print = S7::new_property(default = NULL)
+        print = S7::new_property(default = NULL),
+        check_sic_s7 = S7::new_property(class = S7::class_logical, default = FALSE)
     ),
-    constructor = function(fn, print = NULL) {
+    constructor = function(fn, print = NULL, check_sic_s7 = FALSE) {
         if (!is.function(fn)) {
             cli::cli_abort("{.arg fn} must be a function.")
         }
@@ -72,10 +70,14 @@ baseline = S7::new_class(
         if (!is.null(print) && !is.function(print)) {
             cli::cli_abort("{.arg print} must be a function or {.val NULL}.")
         }
+        if (!is.logical(check_sic_s7) || length(check_sic_s7) != 1L || is.na(check_sic_s7)) {
+            cli::cli_abort("{.arg check_sic_s7} must be a single {.cls logical} value.")
+        }
         S7::new_object(
             S7::S7_object(),
             fn = fn,
-            print = print
+            print = print,
+            check_sic_s7 = check_sic_s7
         )
     }
 )
@@ -111,33 +113,51 @@ baseline = S7::new_class(
 #'   )
 #'   ```
 #'
-#' @param print A function with signature `function(x, ...)` for formatting
-#'   the result. `x` is a `cld_exec` object — read your result from `x@data`.
-#'   `NULL` falls back to `print(x@data)`.
+#'   A variant whose `fn` returns the same [class_stat_infer] subclass as
+#'   `baseline` inherits [auto_tidy()] and all future `auto_*()` methods
+#'   automatically. A variant returning a subclass can override selectively:
 #'
 #'   ```r
+#'   # inherits auto_tidy() from my_result
 #'   variant(
-#'       fn = function(.proc, ...) { ... },
-#'       print = function(x, ...) {
-#'           dat = x@data
-#'           # render dat
-#'           invisible(x)
-#'       }
+#'       fn = function(.proc, ...) { my_result(...) },
+#'       check_sic_s7 = TRUE
+#'   )
+#'
+#'   # overrides auto_tidy() via subclass
+#'   variant(
+#'       fn = function(.proc, ...) { my_result_boot(...) },
+#'       check_sic_s7 = TRUE
+#'   )
+#'
+#'   # intentionally plain, no internal `auto_*()` dispatch
+#'   variant(
+#'       fn = function(.proc, ...) { list(...) },
+#'       check_sic_s7 = FALSE
 #'   )
 #'   ```
 #'
+#' @param print A function with signature `function(x, ...)`. `x` is a
+#'   `cld_exec` object. `NULL` falls back to `print(x@data)`.
+#'
+#' @param check_sic_s7 A single logical. When `TRUE`, [conclude()] verifies
+#'   that `fn` returns a [class_stat_infer] subclass, warning if it does not.
+#'   Default `FALSE` preserves full freedom over the return type.
+#'
 #' @return A `variant` S7 object.
 #'
-#' @seealso [baseline()], [agendas()], [via()], [model_processor()], `cld_exec`
+#' @seealso [baseline()], [agendas()], [via()], [model_processor()],
+#'   [class_stat_infer], [auto_tidy()]
 #'
 #' @export
 variant = S7::new_class(
     "variant",
     properties = list(
         fn = S7::new_property(class = S7::class_function),
-        print = S7::new_property(default = NULL)
+        print = S7::new_property(default = NULL),
+        check_sic_s7 = S7::new_property(class = S7::class_logical, default = FALSE)
     ),
-    constructor = function(fn, print = NULL) {
+    constructor = function(fn, print = NULL, check_sic_s7 = FALSE) {
         if (!is.function(fn)) {
             cli::cli_abort("{.arg fn} must be a function.")
         }
@@ -152,10 +172,14 @@ variant = S7::new_class(
         if (!is.null(print) && !is.function(print)) {
             cli::cli_abort("{.arg print} must be a function or {.val NULL}.")
         }
+        if (!is.logical(check_sic_s7) || length(check_sic_s7) != 1L || is.na(check_sic_s7)) {
+            cli::cli_abort("{.arg check_sic_s7} must be a single {.cls logical} value.")
+        }
         S7::new_object(
             S7::S7_object(),
             fn = fn,
-            print = print
+            print = print,
+            check_sic_s7 = check_sic_s7
         )
     }
 )
@@ -163,8 +187,8 @@ variant = S7::new_class(
 #' Collect implementations for a statistical procedure
 #'
 #' `agendas()` is the container for all implementations of a procedure.
-#' It requires exactly one [baseline()] as its first argument, and accepts
-#' any number of named [variant()] objects.
+#' Requires exactly one [baseline()] and accepts any number of named
+#' [variant()] objects.
 #'
 #' @param base A [baseline()] object. Required.
 #' @param ... Named [variant()] objects.
@@ -188,7 +212,6 @@ agendas = function(base, ...) {
         if (length(unnamed) > 0) {
             cli::cli_abort("All variants in {.fn agendas} must be named.")
         }
-
         bad = Filter(function(nm) !S7::S7_inherits(variants[[nm]], variant), names(variants))
         if (length(bad) > 0) {
             cli::cli_abort(c(

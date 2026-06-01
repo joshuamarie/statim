@@ -16,8 +16,8 @@ An \code{agendas} S3 object.
 }
 \description{
 \code{agendas()} is the container for all implementations of a procedure.
-It requires exactly one \code{\link[=baseline]{baseline()}} as its first argument, and accepts
-any number of named \code{\link[=variant]{variant()}} objects.
+Requires exactly one \code{\link[=baseline]{baseline()}} and accepts any number of named
+\code{\link[=variant]{variant()}} objects.
 }
 \seealso{
 \code{\link[=baseline]{baseline()}}, \code{\link[=variant]{variant()}}, \code{\link[=stat_define]{stat_define()}}

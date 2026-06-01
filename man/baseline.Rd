@@ -4,7 +4,7 @@
 \alias{baseline}
 \title{Declare the canonical implementation of a test or model}
 \usage{
-baseline(fn, print = NULL)
+baseline(fn, print = NULL, check_sic_s7 = FALSE)
 }
 \arguments{
 \item{fn}{A function whose first argument must be \code{.proc}, the processed
@@ -26,27 +26,25 @@ Additional named arguments are user-supplied statistical parameters
 schema per model type.
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{baseline(
-    fn = function(.proc, .mu = 0, .alt = "two.sided", .ci = 0.95) \{
-        x = .proc$x_data
-        group_data = .proc$group_data
+    fn = function(.proc, .mu = 0, .ci = 0.95) \{
         # ...
+        my_result(...)   # return a class_stat_infer subclass
     \}
 )
 }\if{html}{\out{</div>}}}
 
 \item{print}{A function with signature \verb{function(x, ...)} for formatting
 the result. \code{x} is a \code{cld_exec} object — read your result from \code{x@data}.
-\code{NULL} falls back to \code{print(x@data)}.
+\code{NULL} falls back to \code{print(x@data)}.}
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{baseline(
-    fn = function(.proc, ...) \{ ... \},
-    print = function(x, ...) \{
-        dat = x@data
-        # render dat
-        invisible(x)
-    \}
-)
-}\if{html}{\out{</div>}}}
+\item{check_sic_s7}{A single logical. When \code{TRUE}, \code{\link[=conclude]{conclude()}} verifies
+at runtime that \code{fn} returns a \link{class_stat_infer} subclass. A warning
+is issued if it does not, reminding you that \code{\link[=auto_tidy]{auto_tidy()}} and future
+\verb{auto_*()} generics will not dispatch automatically.
+
+Set to \code{FALSE} (the default) when \code{fn} intentionally returns anything.
+In that case, register a tidy method via \code{\link[=making_tidy]{making_tidy()}} if \code{\link[=tidy]{tidy()}} support
+is needed.}
 }
 \value{
 A \code{baseline} S7 object.
@@ -58,5 +56,5 @@ eager path.
 }
 \seealso{
 \code{\link[=variant]{variant()}}, \code{\link[=agendas]{agendas()}}, \code{\link[=stat_define]{stat_define()}}, \code{\link[=model_processor]{model_processor()}},
-\code{cld_exec}
+\link{class_stat_infer}, \code{\link[=auto_tidy]{auto_tidy()}}
 }

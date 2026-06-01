@@ -4,7 +4,7 @@
 \alias{variant}
 \title{Declare an alternative implementation of a test or model}
 \usage{
-variant(fn, print = NULL)
+variant(fn, print = NULL, check_sic_s7 = FALSE)
 }
 \arguments{
 \item{fn}{A function whose first argument must be \code{.proc}, the processed
@@ -32,21 +32,37 @@ schema per model type.
         # ...
     \}
 )
-}\if{html}{\out{</div>}}}
+}\if{html}{\out{</div>}}
 
-\item{print}{A function with signature \verb{function(x, ...)} for formatting
-the result. \code{x} is a \code{cld_exec} object — read your result from \code{x@data}.
-\code{NULL} falls back to \code{print(x@data)}.
+A variant whose \code{fn} returns the same \link{class_stat_infer} subclass as
+\code{baseline} inherits \code{\link[=auto_tidy]{auto_tidy()}} and all future \verb{auto_*()} methods
+automatically. A variant returning a subclass can override selectively:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{variant(
-    fn = function(.proc, ...) \{ ... \},
-    print = function(x, ...) \{
-        dat = x@data
-        # render dat
-        invisible(x)
-    \}
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# inherits auto_tidy() from my_result
+variant(
+    fn = function(.proc, ...) \{ my_result(...) \},
+    check_sic_s7 = TRUE
+)
+
+# overrides auto_tidy() via subclass
+variant(
+    fn = function(.proc, ...) \{ my_result_boot(...) \},
+    check_sic_s7 = TRUE
+)
+
+# intentionally plain, no internal `auto_*()` dispatch
+variant(
+    fn = function(.proc, ...) \{ list(...) \},
+    check_sic_s7 = FALSE
 )
 }\if{html}{\out{</div>}}}
+
+\item{print}{A function with signature \verb{function(x, ...)}. \code{x} is a
+\code{cld_exec} object. \code{NULL} falls back to \code{print(x@data)}.}
+
+\item{check_sic_s7}{A single logical. When \code{TRUE}, \code{\link[=conclude]{conclude()}} verifies
+that \code{fn} returns a \link{class_stat_infer} subclass, warning if it does not.
+Default \code{FALSE} preserves full freedom over the return type.}
 }
 \value{
 A \code{variant} S7 object.
@@ -56,5 +72,6 @@ A \code{variant} S7 object.
 \code{\link[=via]{via()}}. Never runs on the eager path.
 }
 \seealso{
-\code{\link[=baseline]{baseline()}}, \code{\link[=agendas]{agendas()}}, \code{\link[=via]{via()}}, \code{\link[=model_processor]{model_processor()}}, \code{cld_exec}
+\code{\link[=baseline]{baseline()}}, \code{\link[=agendas]{agendas()}}, \code{\link[=via]{via()}}, \code{\link[=model_processor]{model_processor()}},
+\link{class_stat_infer}, \code{\link[=auto_tidy]{auto_tidy()}}
 }
