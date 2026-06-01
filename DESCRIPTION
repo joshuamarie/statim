@@ -54,6 +54,7 @@ Collate:
     'generate-pairs.R'
     'inject-and-run.R'
     'stat-construct.R'
+    'stat-infer-class.R'
     'baseline-variant.R'
     'stat-spec.R'
     'htest-prepare.R'
