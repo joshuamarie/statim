@@ -4,14 +4,22 @@
 \alias{save_excel}
 \title{Save statistical output to Excel}
 \usage{
-save_excel(x, ...)
+save_excel(x, file, sheet = NULL, overwrite = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{cld_exec} object from \code{conclude()}.}
 
-\item{...}{Currently unused.}
-
 \item{file}{Path to the \code{.xlsx} file to write.}
+
+\item{sheet}{Sheet name. Defaults to the test name (e.g. \code{"T-Test"}).
+Truncated to 31 characters (Excel limit).}
+
+\item{overwrite}{Controls overwrite behaviour when \code{file} already exists.
+One of \code{"none"} (default, aborts), \code{"sheet"} (replaces only the matching
+sheet), or \code{"file"} (replaces the entire workbook). When \code{NULL}, the user
+is prompted interactively.}
+
+\item{...}{Currently unused.}
 }
 \value{
 \code{x}, invisibly.
@@ -24,10 +32,16 @@ into an Excel sheet as a formatted monospace report.
 \examples{
 \dontrun{
 sleep |>
-    define_model(extra ~ sleep) |>
+    define_model(extra ~ group) |>
     prepare_test(TTEST) |>
     conclude() |>
     save_excel("t-test.xlsx")
+
+iris |>
+    define_model(pairwise(1:4, direction = "all")) |>
+    prepare_test(TTEST) |>
+    conclude() |>
+    save_excel("t-test.xlsx", sheet = "t-test-pairwise")
 }
 
 }
