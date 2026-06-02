@@ -1,4 +1,3 @@
-
 #' Execute a lazy pipeline
 #'
 #' `conclude()` is the terminal step of the pipeline. It resolves the
@@ -28,7 +27,7 @@
 #'
 #' @section Writing print functions:
 #' The `print` argument of [baseline()] and [variant()] receives a `cld_exec`
-#' object as `x`. Read your result from `x@data`:
+#' object as `x`. Read your output from `x@data`:
 #'
 #' ```r
 #' baseline(
@@ -41,25 +40,27 @@
 #' )
 #' ```
 #'
+#' Otherwise, when the base S7 class dispatches `print()` elsewhere, it is inherited
+#' without writing `print` from [baseline()] / [variant()]
+#'
 #' @section Writing tidy functions:
-#' Functions passed to [method_tidy()] receive a `cld_exec` object as `.x`.
-#' Read your result from `.x@data`. Use `.x@cld_meta$method` if you need to
-#' branch on the variant:
+#' Prefer implementing [auto_tidy()] on your result class when `fn` returns
+#' a [class_stat_infer] subclass. Use [making_tidy()] only when `fn`
+#' intentionally returns a non-[class_stat_infer] object.
+#'
+#' For example:
 #'
 #' ```r
 #' making_tidy(TTEST, x_by) %<-% method_tidy(
 #'     default = function(.x, ...) {
 #'         dat = .x@data
 #'         # return a tibble
-#'     },
-#'     boot = function(.x, ...) {
-#'         dat = .x@data
-#'         # return a tibble
 #'     }
 #' )
 #' ```
 #'
-#' @seealso [prepare_test()], [prepare_model()], [via()], [model_processor()]
+#' @seealso [prepare_test()], [prepare_model()], [via()], [model_processor()],
+#'   [class_stat_infer], [auto_tidy()]
 #'
 #' @examples
 #' sleep |>

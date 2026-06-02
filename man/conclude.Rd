@@ -38,7 +38,7 @@ method variant, runs the implementation, and returns a \code{cld_exec} S7 object
 \section{Writing print functions}{
 
 The \code{print} argument of \code{\link[=baseline]{baseline()}} and \code{\link[=variant]{variant()}} receives a \code{cld_exec}
-object as \code{x}. Read your result from \code{x@data}:
+object as \code{x}. Read your output from \code{x@data}:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{baseline(
     fn = function(.proc, .mu = 0) \{ ... \},
@@ -49,20 +49,21 @@ object as \code{x}. Read your result from \code{x@data}:
     \}
 )
 }\if{html}{\out{</div>}}
+
+Otherwise, when the base S7 class dispatches \code{print()} elsewhere, it is inherited
+without writing \code{print} from \code{\link[=baseline]{baseline()}} / \code{\link[=variant]{variant()}}
 }
 
 \section{Writing tidy functions}{
 
-Functions passed to \code{\link[=method_tidy]{method_tidy()}} receive a \code{cld_exec} object as \code{.x}.
-Read your result from \code{.x@data}. Use \code{.x@cld_meta$method} if you need to
-branch on the variant:
+Prefer implementing \code{\link[=auto_tidy]{auto_tidy()}} on your result class when \code{fn} returns
+a \link{class_stat_infer} subclass. Use \code{\link[=making_tidy]{making_tidy()}} only when \code{fn}
+intentionally returns a non-\link{class_stat_infer} object.
+
+For example:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{making_tidy(TTEST, x_by) \%<-\% method_tidy(
     default = function(.x, ...) \{
-        dat = .x@data
-        # return a tibble
-    \},
-    boot = function(.x, ...) \{
         dat = .x@data
         # return a tibble
     \}
@@ -89,5 +90,6 @@ mtcars |>
 
 }
 \seealso{
-\code{\link[=prepare_test]{prepare_test()}}, \code{\link[=prepare_model]{prepare_model()}}, \code{\link[=via]{via()}}, \code{\link[=model_processor]{model_processor()}}
+\code{\link[=prepare_test]{prepare_test()}}, \code{\link[=prepare_model]{prepare_model()}}, \code{\link[=via]{via()}}, \code{\link[=model_processor]{model_processor()}},
+\link{class_stat_infer}, \code{\link[=auto_tidy]{auto_tidy()}}
 }
