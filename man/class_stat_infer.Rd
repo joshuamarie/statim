@@ -20,7 +20,7 @@ generics, without any manual registration via \code{\link[=making_tidy]{making_t
 
 Inheriting from \code{class_stat_infer} is the contract that enables automatic
 dispatch for \code{\link[=auto_tidy]{auto_tidy()}}, and future \code{auto_plot()} and \code{auto_export()}
-generics — without any manual registration via \code{\link[=making_tidy]{making_tidy()}}.
+generics, without any manual registration via \code{\link[=making_tidy]{making_tidy()}}.
 
 When \code{fn} in \code{\link[=baseline]{baseline()}} or \code{\link[=variant]{variant()}} returns a \code{class_stat_infer}
 subclass, \code{\link[=tidy]{tidy()}} calls \code{\link[=auto_tidy]{auto_tidy()}} on it automatically. Register a
@@ -43,7 +43,8 @@ inherits automatically:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{my_result_boot = S7::new_class("my_result_boot", parent = my_result)
 
-# only auto_tidy() differs — all other auto_*() inherited from my_result
+# only auto_tidy() differs
+# all other auto_*() inherited from my_result
 S7::method(auto_tidy, my_result_boot) = function(x, ...) \{
     tibble::tibble(...)
 \}

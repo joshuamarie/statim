@@ -11,7 +11,7 @@
 #' @section Protocol:
 #' Inheriting from `class_stat_infer` is the contract that enables automatic
 #' dispatch for [auto_tidy()], and future `auto_plot()` and `auto_export()`
-#' generics — without any manual registration via [making_tidy()].
+#' generics, without any manual registration via [making_tidy()].
 #'
 #' When `fn` in [baseline()] or [variant()] returns a `class_stat_infer`
 #' subclass, [tidy()] calls [auto_tidy()] on it automatically. Register a
@@ -34,7 +34,8 @@
 #' ```r
 #' my_result_boot = S7::new_class("my_result_boot", parent = my_result)
 #'
-#' # only auto_tidy() differs — all other auto_*() inherited from my_result
+#' # only auto_tidy() differs
+#' # all other auto_*() inherited from my_result
 #' S7::method(auto_tidy, my_result_boot) = function(x, ...) {
 #'     tibble::tibble(...)
 #' }

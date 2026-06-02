@@ -126,7 +126,7 @@ reference:
   - subtitle: Base statistical inference output class
     desc: Requires within the pipeline, e.g. `tidy()`
     contents:
-    - class_stat_define
+    - class_stat_infer
     - lm_object
     - glm_object
 
