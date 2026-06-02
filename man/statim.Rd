@@ -6,7 +6,7 @@
 \alias{statim}
 \title{statim: Higher Level Interface for Statistical Inference}
 \description{
-This is a high-level package, attempting the re-imagination of "grammar of statistical inference" framework in a package, mixing with 'ggplot2' / 'tidyverse' paradigm.
+This is a high-level package, attempting the re-imagination of "grammar of statistical inference" framework in a package in S7 class, mixing with 'ggplot2' / 'tidyverse' paradigm.
 }
 \seealso{
 Useful links:
