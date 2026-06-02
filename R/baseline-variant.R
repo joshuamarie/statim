@@ -181,7 +181,8 @@ agendas = function(base, ...) {
 
     variants = list(...)
     if (length(variants) > 0) {
-        unnamed = which(names(variants) == "" | is.null(names(variants)))
+        nms = names(variants)
+        unnamed = if (is.null(nms)) seq_along(variants) else which(nms == "")
         if (length(unnamed) > 0) {
             cli::cli_abort("All variants in {.fn agendas} must be named.")
         }
