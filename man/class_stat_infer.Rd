@@ -18,13 +18,13 @@ generics, without any manual registration via \code{\link[=making_tidy]{making_t
 }
 \section{Protocol}{
 
-When \code{fn} in \code{\link[=baseline]{baseline()}} or \code{\link[=variant]{variant()}} returns a \code{class_stat_infer}
-subclass, the following generics dispatch automatically on \code{conclude()}:
-\itemize{
-\item \code{\link[=auto_tidy]{auto_tidy()}}, which is called by \code{\link[=tidy]{tidy()}}
-}
+Inheriting from \code{class_stat_infer} is the contract that enables automatic
+dispatch for \code{\link[=auto_tidy]{auto_tidy()}}, and future \code{auto_plot()} and \code{auto_export()}
+generics — without any manual registration via \code{\link[=making_tidy]{making_tidy()}}.
 
-Register methods on your result class:
+When \code{fn} in \code{\link[=baseline]{baseline()}} or \code{\link[=variant]{variant()}} returns a \code{class_stat_infer}
+subclass, \code{\link[=tidy]{tidy()}} calls \code{\link[=auto_tidy]{auto_tidy()}} on it automatically. Register a
+method on your result class to participate:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{example_out = S7::new_class("example_out", parent = class_stat_infer)
 
@@ -34,14 +34,35 @@ S7::method(auto_tidy, example_out) = function(x, ...) \{
 }\if{html}{\out{</div>}}
 }
 
-\section{Variants}{
+\section{Variant inheritance}{
 
 A variant whose \code{fn} returns the same result class as \code{baseline} inherits
 all \verb{auto_*()} methods for free via S7's parent chain. A variant that
-returns a subclass overrides only what it needs.
+returns a subclass overrides only what it needs — everything else
+inherits automatically:
 
-Set \code{check_sic_s7 = TRUE} in \code{\link[=baseline]{baseline()}} or \code{\link[=variant]{variant()}} to verify at
-runtime that \code{fn} returns a \code{class_stat_infer} subclass.
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{my_result_boot = S7::new_class("my_result_boot", parent = my_result)
+
+# only auto_tidy() differs — all other auto_*() inherited from my_result
+S7::method(auto_tidy, my_result_boot) = function(x, ...) \{
+    tibble::tibble(...)
+\}
+}\if{html}{\out{</div>}}
+}
+
+\section{Class hierarchy}{
+
+The built-in hierarchy is:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{class_stat_infer
+    ├── anova_able
+    │       └── lm_object
+    └── <your-own-output-class>
+            └── <your-own-subclass>
+}\if{html}{\out{</div>}}
+
+Downstream packages can extend the hierarchy further by using any
+\code{class_stat_infer} subclass as a \code{parent} in \code{S7::new_class()}.
 }
 
 \seealso{
