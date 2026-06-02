@@ -24,23 +24,18 @@
 #'   baseline(
 #'       fn = function(.proc, .mu = 0, .ci = 0.95) {
 #'           # ...
-#'           my_result(...)   # return a class_stat_infer subclass
+#'           <your-own-class>(...)   # return a class_stat_infer subclass
 #'       }
 #'   )
 #'   ```
 #'
+#'   When `fn` returns a [class_stat_infer] subclass, [auto_tidy()] and
+#'   future `auto_*()` generics dispatch automatically on the result.
+#'   Otherwise, register a tidy method via [making_tidy()].
+#'
 #' @param print A function with signature `function(x, ...)` for formatting
 #'   the result. `x` is a `cld_exec` object — read your result from `x@data`.
 #'   `NULL` falls back to `print(x@data)`.
-#'
-#' @param check_sic_s7 A single logical. When `TRUE`, [conclude()] verifies
-#'   at runtime that `fn` returns a [class_stat_infer] subclass. A warning
-#'   is issued if it does not, reminding you that [auto_tidy()] and future
-#'   `auto_*()` generics will not dispatch automatically.
-#'
-#'   Set to `FALSE` (the default) when `fn` intentionally returns anything.
-#'   In that case, register a tidy method via [making_tidy()] if [tidy()] support
-#'   is needed.
 #'
 #' @return A `baseline` S7 object.
 #'
@@ -52,10 +47,9 @@ baseline = S7::new_class(
     "baseline",
     properties = list(
         fn = S7::new_property(class = S7::class_function),
-        print = S7::new_property(default = NULL),
-        check_sic_s7 = S7::new_property(class = S7::class_logical, default = FALSE)
+        print = S7::new_property(default = NULL)
     ),
-    constructor = function(fn, print = NULL, check_sic_s7 = FALSE) {
+    constructor = function(fn, print = NULL) {
         if (!is.function(fn)) {
             cli::cli_abort("{.arg fn} must be a function.")
         }
@@ -70,14 +64,10 @@ baseline = S7::new_class(
         if (!is.null(print) && !is.function(print)) {
             cli::cli_abort("{.arg print} must be a function or {.val NULL}.")
         }
-        if (!is.logical(check_sic_s7) || length(check_sic_s7) != 1L || is.na(check_sic_s7)) {
-            cli::cli_abort("{.arg check_sic_s7} must be a single {.cls logical} value.")
-        }
         S7::new_object(
             S7::S7_object(),
             fn = fn,
-            print = print,
-            check_sic_s7 = check_sic_s7
+            print = print
         )
     }
 )
@@ -115,34 +105,22 @@ baseline = S7::new_class(
 #'
 #'   A variant whose `fn` returns the same [class_stat_infer] subclass as
 #'   `baseline` inherits [auto_tidy()] and all future `auto_*()` methods
-#'   automatically. A variant returning a subclass can override selectively:
+#'   automatically via S7's parent chain. A variant returning a subclass
+#'   can override selectively:
 #'
 #'   ```r
-#'   # inherits auto_tidy() from my_result
-#'   variant(
-#'       fn = function(.proc, ...) { my_result(...) },
-#'       check_sic_s7 = TRUE
-#'   )
+#'   # inherits `auto_tidy()` from `new_out` S7 class
+#'   variant(fn = function(.proc, ...) { new_out(...) })
 #'
 #'   # overrides auto_tidy() via subclass
-#'   variant(
-#'       fn = function(.proc, ...) { my_result_boot(...) },
-#'       check_sic_s7 = TRUE
-#'   )
+#'   variant(fn = function(.proc, ...) { new_out_boot(...) })
 #'
-#'   # intentionally plain, no internal `auto_*()` dispatch
-#'   variant(
-#'       fn = function(.proc, ...) { list(...) },
-#'       check_sic_s7 = FALSE
-#'   )
+#'   # intentionally plain
+#'   variant(fn = function(.proc, ...) { list(...) })
 #'   ```
 #'
 #' @param print A function with signature `function(x, ...)`. `x` is a
 #'   `cld_exec` object. `NULL` falls back to `print(x@data)`.
-#'
-#' @param check_sic_s7 A single logical. When `TRUE`, [conclude()] verifies
-#'   that `fn` returns a [class_stat_infer] subclass, warning if it does not.
-#'   Default `FALSE` preserves full freedom over the return type.
 #'
 #' @return A `variant` S7 object.
 #'
@@ -154,10 +132,9 @@ variant = S7::new_class(
     "variant",
     properties = list(
         fn = S7::new_property(class = S7::class_function),
-        print = S7::new_property(default = NULL),
-        check_sic_s7 = S7::new_property(class = S7::class_logical, default = FALSE)
+        print = S7::new_property(default = NULL)
     ),
-    constructor = function(fn, print = NULL, check_sic_s7 = FALSE) {
+    constructor = function(fn, print = NULL) {
         if (!is.function(fn)) {
             cli::cli_abort("{.arg fn} must be a function.")
         }
@@ -172,14 +149,10 @@ variant = S7::new_class(
         if (!is.null(print) && !is.function(print)) {
             cli::cli_abort("{.arg print} must be a function or {.val NULL}.")
         }
-        if (!is.logical(check_sic_s7) || length(check_sic_s7) != 1L || is.na(check_sic_s7)) {
-            cli::cli_abort("{.arg check_sic_s7} must be a single {.cls logical} value.")
-        }
         S7::new_object(
             S7::S7_object(),
             fn = fn,
-            print = print,
-            check_sic_s7 = check_sic_s7
+            print = print
         )
     }
 )

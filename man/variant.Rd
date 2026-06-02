@@ -4,7 +4,7 @@
 \alias{variant}
 \title{Declare an alternative implementation of a test or model}
 \usage{
-variant(fn, print = NULL, check_sic_s7 = FALSE)
+variant(fn, print = NULL)
 }
 \arguments{
 \item{fn}{A function whose first argument must be \code{.proc}, the processed
@@ -36,33 +36,21 @@ schema per model type.
 
 A variant whose \code{fn} returns the same \link{class_stat_infer} subclass as
 \code{baseline} inherits \code{\link[=auto_tidy]{auto_tidy()}} and all future \verb{auto_*()} methods
-automatically. A variant returning a subclass can override selectively:
+automatically via S7's parent chain. A variant returning a subclass
+can override selectively:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{# inherits auto_tidy() from my_result
-variant(
-    fn = function(.proc, ...) \{ my_result(...) \},
-    check_sic_s7 = TRUE
-)
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# inherits `auto_tidy()` from `new_out` S7 class
+variant(fn = function(.proc, ...) \{ new_out(...) \})
 
 # overrides auto_tidy() via subclass
-variant(
-    fn = function(.proc, ...) \{ my_result_boot(...) \},
-    check_sic_s7 = TRUE
-)
+variant(fn = function(.proc, ...) \{ new_out_boot(...) \})
 
-# intentionally plain, no internal `auto_*()` dispatch
-variant(
-    fn = function(.proc, ...) \{ list(...) \},
-    check_sic_s7 = FALSE
-)
+# intentionally plain
+variant(fn = function(.proc, ...) \{ list(...) \})
 }\if{html}{\out{</div>}}}
 
 \item{print}{A function with signature \verb{function(x, ...)}. \code{x} is a
 \code{cld_exec} object. \code{NULL} falls back to \code{print(x@data)}.}
-
-\item{check_sic_s7}{A single logical. When \code{TRUE}, \code{\link[=conclude]{conclude()}} verifies
-that \code{fn} returns a \link{class_stat_infer} subclass, warning if it does not.
-Default \code{FALSE} preserves full freedom over the return type.}
 }
 \value{
 A \code{variant} S7 object.
