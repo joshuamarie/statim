@@ -99,7 +99,7 @@ test_that("agendas() errors if a variant argument is unnamed (all unnamed)", {
 })
 
 test_that("agendas() errors if a variant argument is unnamed (mixed named/unnamed)", {
-    b  = baseline(fn = function(.proc) .proc)
+    b = baseline(fn = function(.proc) .proc)
     v1 = variant(fn = function(.proc) .proc)
     v2 = variant(fn = function(.proc) .proc)
     expect_error(
