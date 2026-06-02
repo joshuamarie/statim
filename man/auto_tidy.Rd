@@ -21,7 +21,7 @@ by \code{fn} in \code{\link[=baseline]{baseline()}} and \code{\link[=variant]{va
 subclass.
 }
 \details{
-Register a method on your result class to participate in the protocol:
+Register a method on your output class to participate in the protocol:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{example_out = S7::new_class("example_out", parent = class_stat_infer)
 
@@ -30,7 +30,7 @@ S7::method(auto_tidy, example_out) = function(x, ...) \{
 \}
 }\if{html}{\out{</div>}}
 
-When a variant's \code{fn} returns the same result class as \code{baseline}, it
+When a variant's \code{fn} returns the same output class as \code{baseline}, it
 inherits \code{auto_tidy()} automatically via S7's parent chain. When it
 returns a subclass, it can override selectively:
 

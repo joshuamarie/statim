@@ -13,7 +13,7 @@
 #' automatically via the parent chain.
 #'
 #' **Path 2: `making_tidy()` registry (escape hatch).**
-#' When `cld_exec@data` is not a [class_stat_infer] subclass, for example,when a variant
+#' When `cld_exec@data` is not a [class_stat_infer] subclass, for example, when a variant
 #' intentionally returns any data structure e.g. just a plain list, S3, S4, or R6 object
 #' (`check_sic_s7 = FALSE`), [tidy()] falls back to the registry populated
 #' by [making_tidy()]. If no entry exists there either, an informative error
@@ -22,9 +22,16 @@
 #' @param .x A `cld_exec` object produced by [conclude()].
 #' @param ... Passed to the dispatched method.
 #'
-#' @return A tibble.
+#' @return Any type, typically in a `tibble` data frame format.
 #'
 #' @seealso [auto_tidy()], [making_tidy()], [method_tidy()], [class_stat_infer]
+#'
+#' @examples
+#' mtcars |>
+#'     define_model(mpg ~ .) |>
+#'     prepare_model(LINEAR_REG) |>
+#'     conclude() |>
+#'     tidy()
 #'
 #' @export
 tidy = S7::new_generic("tidy", ".x")
@@ -37,9 +44,11 @@ S7::method(tidy, cld_exec) = function(.x, ...) {
     key = tidy_registry_key(.x@impl_cls)
     mt = register_tidy[[key]]
 
+    impl_cls = .x@impl_cls
+
     if (is.null(mt)) {
         cli::cli_abort(c(
-            "No tidy method found for {.val {.x@impl_cls}}.",
+            "No tidy method found for {.val {impl_cls}}.",
             "i" = "Either return a {.cls class_stat_infer} subclass from {.fn fn},",
             "i" = "or register a tidy method via {.fn making_tidy}."
         ))
@@ -48,13 +57,19 @@ S7::method(tidy, cld_exec) = function(.x, ...) {
     method_nm = .x@cld_meta$method
     tidy_fn = if (identical(method_nm, "default")) {
         mt@default
+    } else if (!is.null(mt@variants[[method_nm]])) {
+        mt@variants[[method_nm]]
     } else {
-        mt@variants[[method_nm]] %||% mt@default
+        cli::cli_abort(c(
+            "No tidy entry for variant {.val {method_nm}} in {.val {impl_cls}}.",
+            "i" = "Add {.code {method_nm} =} to {.fn method_tidy}, or return a",
+            "i" = "{.cls class_stat_infer} subclass from {.fn fn} to use {.fn auto_tidy}."
+        ))
     }
 
     if (is.null(tidy_fn)) {
         cli::cli_abort(c(
-            "No {.arg default} tidy function registered for {.val {.x@impl_cls}}.",
+            "No {.arg default} tidy function registered for {.val {impl_cls}}.",
             "i" = "Supply {.code default =} in {.fn method_tidy}."
         ))
     }

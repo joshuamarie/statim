@@ -5,7 +5,7 @@
 #' [tidy()] when the result stored in `cld_exec@data` is a [class_stat_infer]
 #' subclass.
 #'
-#' Register a method on your result class to participate in the protocol:
+#' Register a method on your output class to participate in the protocol:
 #'
 #' ```r
 #' example_out = S7::new_class("example_out", parent = class_stat_infer)
@@ -15,7 +15,7 @@
 #' }
 #' ```
 #'
-#' When a variant's `fn` returns the same result class as `baseline`, it
+#' When a variant's `fn` returns the same output class as `baseline`, it
 #' inherits `auto_tidy()` automatically via S7's parent chain. When it
 #' returns a subclass, it can override selectively:
 #'
@@ -42,11 +42,10 @@
 #' @export
 auto_tidy = S7::new_generic("auto_tidy", "x")
 
-S7::method(auto_tidy, S7::class_any) = function(x, ...) {
+S7::method(auto_tidy, class_stat_infer) = function(x, ...) {
     cli::cli_abort(c(
         "No {.fn auto_tidy} method for {.cls {class(x)[[1]]}}.",
-        "i" = "Implement {.fn auto_tidy} on your result class, or register",
-        "i" = "a tidy method via {.fn making_tidy}."
+        "i" = "Implement {.fn auto_tidy} on your different {<{.cls class_stat_infer}>} class."
     ))
 }
 

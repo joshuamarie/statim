@@ -12,7 +12,7 @@ tidy(.x, ...)
 \item{...}{Passed to the dispatched method.}
 }
 \value{
-A tibble.
+Any type, typically in a \code{tibble} data frame format.
 }
 \description{
 \code{tidy()} extracts a tibble of primary results from a \code{cld_exec} object
@@ -29,13 +29,21 @@ particular output class, and variants that return the same class inherit the met
 automatically via the parent chain.
 
 \strong{Path 2: \code{making_tidy()} registry (escape hatch).}
-When \code{cld_exec@data} is not a \link{class_stat_infer} subclass, for example,when a variant
+When \code{cld_exec@data} is not a \link{class_stat_infer} subclass, for example, when a variant
 intentionally returns any data structure e.g. just a plain list, S3, S4, or R6 object
 (\code{check_sic_s7 = FALSE}), \code{\link[=tidy]{tidy()}} falls back to the registry populated
 by \code{\link[=making_tidy]{making_tidy()}}. If no entry exists there either, an informative error
 is raised.
 }
 
+\examples{
+mtcars |>
+    define_model(mpg ~ .) |>
+    prepare_model(LINEAR_REG) |>
+    conclude() |>
+    tidy()
+
+}
 \seealso{
 \code{\link[=auto_tidy]{auto_tidy()}}, \code{\link[=making_tidy]{making_tidy()}}, \code{\link[=method_tidy]{method_tidy()}}, \link{class_stat_infer}
 }
