@@ -12,8 +12,8 @@ Authors@R: c(
            comment = c(ORCID = "0000-0001-8159-0804"))
     )
 Description: This is a high-level package, attempting the re-imagination of 
-    "grammar of statistical inference" framework in a package, mixing with 
-    'ggplot2' / 'tidyverse' paradigm. 
+    "grammar of statistical inference" framework in a package in S7 class, mixing 
+    with 'ggplot2' / 'tidyverse' paradigm. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -22,10 +22,10 @@ Imports:
     cli,
     vctrs,
     tibble,
+    S7,
     tidyselect,
     stats,
     utils,
-    S7,
     tabstats,
     pillar
 Suggests:
