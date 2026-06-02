@@ -123,6 +123,13 @@ reference:
     - baseline
     - variant
 
+  - subtitle: Base statistical inference output class
+    desc: Requires within the pipeline, e.g. `tidy()`
+    contents:
+    - class_stat_define
+    - lm_object
+    - glm_object
+
   - subtitle: Test definition
     desc: Register a new test implementation
     contents:
