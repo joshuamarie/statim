@@ -15,7 +15,7 @@ LINEAR_REG(.model = NULL, .data = NULL, ...)
 \item{...}{Currently unused.}
 }
 \value{
-A \code{cld_exec} object containing an \link{lm_object}, or a \code{model_spec}
+A \code{cld_exec} object containing a \link{class_lm_object}, or a \code{model_spec}
 when \code{.model = NULL}.
 }
 \description{
@@ -23,7 +23,7 @@ Fits an ordinary least squares linear regression model.
 Accepts \code{\link[=rel]{rel()}} or a formula as the model ID.
 }
 \details{
-The result is an \link{lm_object}, which satisfies the \code{\link[=anova]{anova()}}
+The result is an \link{class_lm_object}, which satisfies the \code{\link[=anova]{anova()}}
 protocol and prints coefficients and model fit universally across
 all engines and variants.
 }
