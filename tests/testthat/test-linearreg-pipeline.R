@@ -1,8 +1,8 @@
-test_that("lm_to_lm_object() returns an lm_object from a fitted lm", {
+test_that("lm_to_lm_object() returns a class_lm_object from a fitted lm", {
     fit = lm(dist ~ speed, data = cars)
     obj = lm_to_lm_object(fit)
 
-    expect_s7_class(obj, statim::lm_object)
+    expect_s7_class(obj, statim::class_lm_object)
 })
 
 test_that("lm_to_lm_object() errors on non-lm input", {
@@ -42,10 +42,10 @@ test_that("LINEAR_REG() eager via rel() returns stat_infer_spec", {
     expect_s7_class(result, stat_infer_spec)
 })
 
-test_that("LINEAR_REG() eager result data is an lm_object", {
+test_that("LINEAR_REG() eager result data is a class_lm_object", {
     result = LINEAR_REG(rel(speed, dist), cars)
 
-    expect_s7_class(result@data, statim::lm_object)
+    expect_s7_class(result@data, statim::class_lm_object)
 })
 
 test_that("LINEAR_REG() eager via rel() matches base lm() coefficients", {
@@ -85,13 +85,13 @@ test_that("rel() pipeline returns cld_exec", {
     expect_s7_class(result, cld_exec)
 })
 
-test_that("rel() pipeline data is an lm_object", {
+test_that("rel() pipeline data is a class_lm_object", {
     result = cars |>
         define_model(rel(speed, dist)) |>
         prepare_model(LINEAR_REG) |>
         conclude()
 
-    expect_s7_class(result@data, statim::lm_object)
+    expect_s7_class(result@data, statim::class_lm_object)
 })
 
 test_that("rel() pipeline result matches base lm() r_squared", {
@@ -132,13 +132,13 @@ test_that("formula pipeline returns cld_exec", {
     expect_s7_class(result, cld_exec)
 })
 
-test_that("formula pipeline data is an lm_object", {
+test_that("formula pipeline data is alm_object", {
     result = cars |>
         define_model(dist ~ speed) |>
         prepare_model(LINEAR_REG) |>
         conclude()
 
-    expect_s7_class(result@data, statim::lm_object)
+    expect_s7_class(result@data, statim::class_lm_object)
 })
 
 test_that("formula and rel() pipelines produce identical coefficients", {
