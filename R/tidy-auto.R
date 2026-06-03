@@ -52,3 +52,19 @@ S7::method(auto_tidy, class_stat_infer) = function(x, ...) {
 S7::method(auto_tidy, S7::new_union(lm_object, glm_object)) = function(x, ...) {
     tibble::tibble(x@coefficients)
 }
+
+S7::method(auto_tidy, class_ttest_two) = function(x, ...) {
+    ci_level = x@ci_level * 100
+    lo_name = paste0("lower_", ci_level)
+    up_name = paste0("upper_", ci_level)
+
+    tibble::tibble(
+        group = x@group,
+        diff = x@diff,
+        t_stat = x@t_stat,
+        df = x@df,
+        p_val = x@p_val,
+        !!lo_name := x@lower_ci,
+        !!up_name := x@upper_ci
+    )
+}
