@@ -40,32 +40,25 @@ my_lm = S7::new_class(
 
 # Populating class_lm_object from a fitted lm (as done internally):
 fit = lm(dist ~ speed, data = cars)
-s = summary(fit)
+coef_tbl = summary(fit)$coefficients
 rss = sum(fit$residuals^2)
 df_res = fit$df.residual
 
 obj = class_lm_object(
     terms = fit$terms,
-    residuals = fit$residuals,
+    fitted = unname(fit$fitted.values),
+    residuals = unname(fit$residuals),
+    beta = coef_tbl[, 1],
+    std_beta = coef_tbl[, 2],
     df_residual = df_res,
     deviance = rss,
     dispersion = rss / df_res,
-    family = "gaussian",
-    coefficients = tibble::tibble(
-        term = rownames(coef(s)),
-        estimate = coef(s)[, 1],
-        std_error = coef(s)[, 2],
-        statistic = coef(s)[, 3],
-        p_value = coef(s)[, 4]
-    ),
-    fit_summary = tibble::tibble(
-        r_squared = s$r.squared,
-        adj_r_squared = s$adj.r.squared,
-        sigma = s$sigma,
-        df_residual = as.integer(df_res),
-        n_obs = as.integer(length(fit$residuals))
-    )
+    family = "gaussian"
 )
+
+# coefficients and fit_summary are computed automatically:
+obj@coefficients
+obj@fit_summary
 
 }
 \seealso{

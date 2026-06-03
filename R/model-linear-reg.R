@@ -93,43 +93,154 @@ LINEAR_REG = MODEL_FN(
 #'
 #' # Populating class_lm_object from a fitted lm (as done internally):
 #' fit = lm(dist ~ speed, data = cars)
-#' s = summary(fit)
+#' coef_tbl = summary(fit)$coefficients
 #' rss = sum(fit$residuals^2)
 #' df_res = fit$df.residual
 #'
 #' obj = class_lm_object(
 #'     terms = fit$terms,
-#'     residuals = fit$residuals,
+#'     fitted = unname(fit$fitted.values),
+#'     residuals = unname(fit$residuals),
+#'     beta = coef_tbl[, 1],
+#'     std_beta = coef_tbl[, 2],
 #'     df_residual = df_res,
 #'     deviance = rss,
 #'     dispersion = rss / df_res,
-#'     family = "gaussian",
-#'     coefficients = tibble::tibble(
-#'         term = rownames(coef(s)),
-#'         estimate = coef(s)[, 1],
-#'         std_error = coef(s)[, 2],
-#'         statistic = coef(s)[, 3],
-#'         p_value = coef(s)[, 4]
-#'     ),
-#'     fit_summary = tibble::tibble(
-#'         r_squared = s$r.squared,
-#'         adj_r_squared = s$adj.r.squared,
-#'         sigma = s$sigma,
-#'         df_residual = as.integer(df_res),
-#'         n_obs = as.integer(length(fit$residuals))
-#'     )
+#'     family = "gaussian"
 #' )
+#'
+#' # coefficients and fit_summary are computed automatically:
+#' obj@coefficients
+#' obj@fit_summary
 #'
 #' @export
 class_lm_object = S7::new_class(
     "class_lm_object",
     parent = anova_able,
     properties = list(
+
+        # ---- Required inputs ----
+        fitted = S7::class_numeric,
         residuals = S7::class_numeric,
-        coefficients = S7::new_property(class = S7::class_data.frame, default = data.frame()),
-        fit_summary = S7::new_property(class = S7::class_data.frame, default = data.frame())
+        beta = S7::class_numeric,
+        std_beta = S7::class_numeric,
+
+        # ---- Computed: per-coefficient stats ----
+        statistic = S7::new_property(
+            getter = function(self) self@beta / self@std_beta
+        ),
+        p_value = S7::new_property(
+            getter = function(self) {
+                2 * pt(abs(self@statistic), df = self@df_residual, lower.tail = FALSE)
+            }
+        ),
+
+        # ---- Computed: coefficients table ----
+        coefficients = S7::new_property(
+            getter = function(self) {
+                nms = if (!is.null(names(self@beta))) {
+                    names(self@beta)
+                } else {
+                    trms = attr(self@terms, "term.labels")
+                    if (attr(self@terms, "intercept") == 1L) c("(Intercept)", trms) else trms
+                }
+                tibble::tibble(
+                    term = nms,
+                    estimate = unname(self@beta),
+                    std_error = unname(self@std_beta),
+                    statistic = unname(self@statistic),
+                    p_value = unname(self@p_value)
+                )
+            }
+        ),
+
+        # ---- Computed: model fit summary ----
+        fit_summary = S7::new_property(
+            getter = function(self) {
+                y = self@fitted + self@residuals
+                n = length(y)
+                df_res = self@df_residual
+                rss = self@deviance
+                tss = sum((y - mean(y))^2)
+                p = n - df_res - 1L
+
+                r2 = 1 - rss / tss
+                adj_r2 = 1 - (1 - r2) * (n - 1L) / df_res
+                sigma = sqrt(rss / df_res)
+                f_stat = (r2 / p) / ((1 - r2) / df_res)
+                f_p_value = pf(f_stat, p, df_res, lower.tail = FALSE)
+
+                tibble::tibble(
+                    statistic = c(
+                        "R\u00b2", "Adj. R\u00b2", "Sigma",
+                        "df (residual)", "n",
+                        "F-statistic", "F df1", "F df2", "F p-value"
+                    ),
+                    value = c(
+                        round(r2, 4), round(adj_r2, 4), round(sigma, 4),
+                        df_res, n,
+                        round(f_stat, 4), p, df_res, round(f_p_value, 6)
+                    )
+                )
+            }
+        )
     )
 )
+
+# class_lm_object = S7::new_class(
+#     "class_lm_object",
+#     parent = anova_able,
+#     properties = list(
+#         residuals = S7::class_numeric,
+#         coefficients = S7::new_property(class = S7::class_data.frame, default = data.frame()),
+#         fit_summary = S7::new_property(class = S7::class_data.frame, default = data.frame())
+#     )
+# )
+
+# class_lm_object = S7::new_class(
+#     "class_lm_object",
+#     parent = anova_able,
+#     properties = list(
+#         residuals = S7::class_numeric,
+#         coefficients = S7::new_property(class = S7::class_data.frame, default = data.frame()),
+#         self_fit_summary = S7::new_property(class = S7::class_data.frame, default = data.frame()),
+#         fit_summary = S7::new_property(
+#             getter = function(self) {
+#                 if (!rlang::is_empty(self@self_fit_summary)) return(self@self_fit_summary)
+#
+#                 res = self@residuals
+#                 n = length(res)
+#                 df_res = self@df_residual
+#                 rss = self@deviance
+#                 tss = sum((res - mean(res))^2) + rss
+#
+#                 r2 = 1 - rss / tss
+#                 adj_r2 = 1 - (1 - r2) * (n - 1L) / df_res
+#                 sigma = sqrt(rss / df_res)
+#
+#                 p = n - df_res - 1L
+#                 f_stat = (r2 / p) / ((1 - r2) / df_res)
+#                 f_p_value = pf(f_stat, p, df_res, lower.tail = FALSE)
+#
+#                 tibble::tibble(
+#                     r_squared = r2,
+#                     adj_r_squared = adj_r2,
+#                     sigma = sigma,
+#                     df_residual = as.integer(df_res),
+#                     n_obs = as.integer(n),
+#                     f_statistic = f_stat,
+#                     f_df1 = as.integer(p),
+#                     f_df2 = as.integer(df_res),
+#                     f_p_value = f_p_value
+#                 )
+#             },
+#             setter = function(self, value) {
+#                 self@self_fit_summary = if (is.null(value)) data.frame() else value
+#                 self
+#             }
+#         )
+#     )
+# )
 
 S7::method(print, class_lm_object) = function(x, ...) {
     pval_styler = function(x) {
@@ -178,38 +289,63 @@ lm_to_lm_object = function(fit) {
         ))
     }
 
-    coef_tbl = as.data.frame(summary(fit)$coefficients)
-    coef_tbl = tibble::tibble(
-        term = rownames(coef_tbl),
-        estimate = coef_tbl[[1]],
-        std_error = coef_tbl[[2]],
-        statistic = coef_tbl[[3]],
-        p_value = coef_tbl[[4]]
-    )
-
-    s = summary(fit)
+    coef_tbl = summary(fit)$coefficients
     rss = sum(fit$residuals^2)
     df_res = fit$df.residual
 
-    fit_tbl = tibble::tibble(
-        r_squared = s$r.squared,
-        adj_r_squared = s$adj.r.squared,
-        sigma = s$sigma,
-        df_residual = as.integer(df_res),
-        n_obs = as.integer(length(fit$residuals))
-    )
-
     class_lm_object(
         terms = fit$terms,
-        residuals = fit$residuals,
+        fitted = unname(fit$fitted.values),
+        residuals = unname(fit$residuals),
+        beta = coef_tbl[, 1],
+        std_beta = coef_tbl[, 2],
         df_residual = df_res,
         deviance = rss,
         dispersion = rss / df_res,
-        family = "gaussian",
-        coefficients = coef_tbl,
-        fit_summary = fit_tbl
+        family = "gaussian"
     )
 }
+# lm_to_lm_object = function(fit) {
+#     if (!inherits(fit, "lm")) {
+#         cli::cli_abort(c(
+#             "{.fn lm_to_lm_object} requires a fitted {.cls lm} object.",
+#             "i" = "Got {.cls {class(fit)[[1]]}}.",
+#             "i" = "Did you pass {.code method = \"model.frame\"} or similar?"
+#         ))
+#     }
+#
+#     coef_tbl = as.data.frame(summary(fit)$coefficients)
+#     coef_tbl = tibble::tibble(
+#         term = rownames(coef_tbl),
+#         estimate = coef_tbl[[1]],
+#         std_error = coef_tbl[[2]],
+#         statistic = coef_tbl[[3]],
+#         p_value = coef_tbl[[4]]
+#     )
+#
+#     s = summary(fit)
+#     rss = sum(fit$residuals^2)
+#     df_res = fit$df.residual
+#
+#     fit_tbl = tibble::tibble(
+#         r_squared = s$r.squared,
+#         adj_r_squared = s$adj.r.squared,
+#         sigma = s$sigma,
+#         df_residual = as.integer(df_res),
+#         n_obs = as.integer(length(fit$residuals))
+#     )
+#
+#     class_lm_object(
+#         terms = fit$terms,
+#         residuals = fit$residuals,
+#         df_residual = df_res,
+#         deviance = rss,
+#         dispersion = rss / df_res,
+#         family = "gaussian",
+#         coefficients = coef_tbl,
+#         fit_summary = fit_tbl
+#     )
+# }
 # lm_to_lm_object = function(fit) {
 #     if (!inherits(fit, "lm")) {
 #         cli::cli_abort(c(
