@@ -129,8 +129,8 @@ reference:
     - class_stat_infer
     - class_ttest_pairwise
     - class_ttest_two
-    - lm_object
-    - glm_object
+    - class_lm_object
+    - class_glm_object
 
   - subtitle: Test definition
     desc: Register a new test implementation
