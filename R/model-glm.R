@@ -12,7 +12,7 @@
 #' @param .data A data frame. Used when `.model` is supplied directly.
 #' @param ... Additional arguments passed to [stats::glm()].
 #'
-#' @return A `cld_exec` object in a `glm_object`, or a `model_spec`
+#' @return A `cld_exec` object in a `class_glm_object`, or a `model_spec`
 #'   when `.model = NULL`.
 #'
 #' @examples
@@ -78,18 +78,18 @@ GLM = MODEL_FN(
 #' @seealso [anova_able], [GLM]
 #'
 #' @examples
-#' # Inheriting from glm_object in a downstream package:
+#' # Inheriting from class_glm_object in a downstream package:
 #' my_glm = S7::new_class(
 #'     "my_glm",
 #'     parent = class_glm_object
 #' )
 #'
-#' # Populating glm_object from a fitted glm (as done internally):
+#' # Populating class_glm_object from a fitted glm (as done internally):
 #' fit = glm(am ~ wt + hp, data = mtcars, family = binomial())
 #' s = summary(fit)
 #' fam = fit$family$family
 #'
-#' obj = glm_object(
+#' obj = class_glm_object(
 #'     terms = fit$terms,
 #'     df_residual = fit$df.residual,
 #'     deviance = fit$deviance,

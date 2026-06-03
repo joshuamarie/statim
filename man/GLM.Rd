@@ -15,7 +15,7 @@ GLM(.model = NULL, .data = NULL, ...)
 \item{...}{Additional arguments passed to \code{\link[stats:glm]{stats::glm()}}.}
 }
 \value{
-A \code{cld_exec} object in a \code{glm_object}, or a \code{model_spec}
+A \code{cld_exec} object in a \code{class_glm_object}, or a \code{model_spec}
 when \code{.model = NULL}.
 }
 \description{

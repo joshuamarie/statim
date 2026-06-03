@@ -25,18 +25,18 @@ Constructor arguments (populated automatically by \link{GLM}):
 }
 }
 \examples{
-# Inheriting from glm_object in a downstream package:
+# Inheriting from class_glm_object in a downstream package:
 my_glm = S7::new_class(
     "my_glm",
     parent = class_glm_object
 )
 
-# Populating glm_object from a fitted glm (as done internally):
+# Populating class_glm_object from a fitted glm (as done internally):
 fit = glm(am ~ wt + hp, data = mtcars, family = binomial())
 s = summary(fit)
 fam = fit$family$family
 
-obj = glm_object(
+obj = class_glm_object(
     terms = fit$terms,
     df_residual = fit$df.residual,
     deviance = fit$deviance,
