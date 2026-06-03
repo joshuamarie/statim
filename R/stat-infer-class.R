@@ -2,7 +2,7 @@
 #'
 #' `class_stat_infer` is the base S7 class for all result objects returned
 #' by `fn` in [baseline()] and [variant()]. Concrete result classes like
-#' [lm_object] inherit from it.
+#' [class_lm_object] inherit from it.
 #'
 #' Inheriting from `class_stat_infer` is the contract that enables automatic
 #' dispatch for [auto_tidy()], and future `auto_plot()` and `auto_export()`
@@ -47,7 +47,7 @@
 #' ```
 #' class_stat_infer
 #'     ├── anova_able
-#'     │       └── lm_object
+#'     │       └── class_lm_object
 #'     └── <your-own-output-class>
 #'             └── <your-own-subclass>
 #' ```
@@ -55,7 +55,7 @@
 #' Downstream packages can extend the hierarchy further by using any
 #' `class_stat_infer` subclass as a `parent` in `S7::new_class()`.
 #'
-#' @seealso [baseline()], [variant()], [auto_tidy()], [lm_object]
+#' @seealso [baseline()], [variant()], [auto_tidy()], [class_lm_object]
 #'
 #' @export
 class_stat_infer = S7::new_class("class_stat_infer")

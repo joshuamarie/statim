@@ -9,7 +9,7 @@ class_stat_infer()
 \description{
 \code{class_stat_infer} is the base S7 class for all result objects returned
 by \code{fn} in \code{\link[=baseline]{baseline()}} and \code{\link[=variant]{variant()}}. Concrete result classes like
-\link{lm_object} inherit from it.
+\link{class_lm_object} inherit from it.
 }
 \details{
 Inheriting from \code{class_stat_infer} is the contract that enables automatic
@@ -57,7 +57,7 @@ The built-in hierarchy is:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{class_stat_infer
     ├── anova_able
-    │       └── lm_object
+    │       └── class_lm_object
     └── <your-own-output-class>
             └── <your-own-subclass>
 }\if{html}{\out{</div>}}
@@ -67,5 +67,5 @@ Downstream packages can extend the hierarchy further by using any
 }
 
 \seealso{
-\code{\link[=baseline]{baseline()}}, \code{\link[=variant]{variant()}}, \code{\link[=auto_tidy]{auto_tidy()}}, \link{lm_object}
+\code{\link[=baseline]{baseline()}}, \code{\link[=variant]{variant()}}, \code{\link[=auto_tidy]{auto_tidy()}}, \link{class_lm_object}
 }

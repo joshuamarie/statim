@@ -3,7 +3,7 @@
 #' Fits an ordinary least squares linear regression model.
 #' Accepts [rel()] or a formula as the model ID.
 #'
-#' The result is an [lm_object], which satisfies the [anova()]
+#' The result is an [class_lm_object], which satisfies the [anova()]
 #' protocol and prints coefficients and model fit universally across
 #' all engines and variants.
 #'
@@ -12,7 +12,7 @@
 #' @param .data A data frame. Used when `.model` is supplied directly.
 #' @param ... Currently unused.
 #'
-#' @return A `cld_exec` object containing an [lm_object], or a `model_spec`
+#' @return A `cld_exec` object containing a [class_lm_object], or a `model_spec`
 #'   when `.model = NULL`.
 #'
 #' @examples
@@ -79,25 +79,25 @@ LINEAR_REG = MODEL_FN(
 #'   `sigma`, `df_residual`, `n_obs`.
 #'
 #' @section anova() protocol:
-#' `lm_object` participates in [anova()] directly. The comparison
+#' `class_lm_object` participates in [anova()] directly. The comparison
 #' is computed from `@residuals`, `@df_residual`, and `@terms`.
 #'
 #' @seealso [anova()], [LINEAR_REG]
 #'
 #' @examples
-#' # Inheriting from lm_object in a downstream package:
+#' # Inheriting from class_lm_object in a downstream package:
 #' my_lm = S7::new_class(
 #'     "my_lm",
-#'     parent = statim::lm_object
+#'     parent = statim::class_lm_object
 #' )
 #'
-#' # Populating lm_object from a fitted lm (as done internally):
+#' # Populating class_lm_object from a fitted lm (as done internally):
 #' fit = lm(dist ~ speed, data = cars)
 #' s = summary(fit)
 #' rss = sum(fit$residuals^2)
 #' df_res = fit$df.residual
 #'
-#' obj = lm_object(
+#' obj = class_lm_object(
 #'     terms = fit$terms,
 #'     residuals = fit$residuals,
 #'     df_residual = df_res,
@@ -121,8 +121,8 @@ LINEAR_REG = MODEL_FN(
 #' )
 #'
 #' @export
-lm_object = S7::new_class(
-    "lm_object",
+class_lm_object = S7::new_class(
+    "class_lm_object",
     parent = anova_able,
     properties = list(
         residuals = S7::class_numeric,
@@ -131,7 +131,7 @@ lm_object = S7::new_class(
     )
 )
 
-S7::method(print, lm_object) = function(x, ...) {
+S7::method(print, class_lm_object) = function(x, ...) {
     pval_styler = function(x) {
         x_num = suppressWarnings(as.numeric(x$value))
         if (is.na(x_num) || x_num > 0.05) {
@@ -165,7 +165,7 @@ S7::method(print, lm_object) = function(x, ...) {
 #' Internal helper used by `linear_reg_def_*` implementations.
 #'
 #' @param fit A fitted `lm` object.
-#' @return An `lm_object`.
+#' @return A `class_lm_object`.
 #'
 #' @keywords internal
 #' @noRd
@@ -199,7 +199,7 @@ lm_to_lm_object = function(fit) {
         n_obs = as.integer(length(fit$residuals))
     )
 
-    lm_object(
+    class_lm_object(
         terms = fit$terms,
         residuals = fit$residuals,
         df_residual = df_res,
