@@ -114,7 +114,7 @@ GLM = MODEL_FN(
 #' )
 #'
 #' @export
-glm_object = S7::new_class(
+class_glm_object = S7::new_class(
     "glm_object",
     parent = anova_able,
     properties = list(
@@ -123,7 +123,7 @@ glm_object = S7::new_class(
     )
 )
 
-S7::method(print, glm_object) = function(x, ...) {
+S7::method(print, class_glm_object) = function(x, ...) {
     pval_styler = function(x) {
         x_num = suppressWarnings(as.numeric(x$value))
         if (is.na(x_num) || x_num > 0.05) {
@@ -152,10 +152,10 @@ S7::method(print, glm_object) = function(x, ...) {
     invisible(x)
 }
 
-#' Extract slots from a fitted glm into a glm_object
+#' Extract slots from a fitted glm into a class_glm_object
 #'
 #' @param fit A fitted `glm` object.
-#' @return A `glm_object`.
+#' @return A `class_glm_object`.
 #'
 #' @keywords internal
 #' @noRd
@@ -193,7 +193,7 @@ glm_to_glm_object = function(fit) {
         n_obs = as.integer(length(fit$residuals))
     )
 
-    glm_object(
+    class_glm_object(
         terms = fit$terms,
         df_residual = fit$df.residual,
         deviance = fit$deviance,
