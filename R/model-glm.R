@@ -81,7 +81,7 @@ GLM = MODEL_FN(
 #' # Inheriting from glm_object in a downstream package:
 #' my_glm = S7::new_class(
 #'     "my_glm",
-#'     parent = statim::glm_object
+#'     parent = class_glm_object
 #' )
 #'
 #' # Populating glm_object from a fitted glm (as done internally):
