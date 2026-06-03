@@ -53,8 +53,8 @@ test_that("inject_and_run() passes processed as .proc and runs fn", {
 
     result = inject_and_run(impl, processed, args = list())
 
-    expect_s3_class(result, "data.frame")
-    expect_named(result, c("group", "ttest"))
+    expect_s7_class(result, class_ttest_two)
+    expect_true(length(result@group) > 0L)
 })
 
 test_that("inject_and_run() prefers user args over fn defaults", {

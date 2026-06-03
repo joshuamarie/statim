@@ -4,25 +4,26 @@ test_that("TTEST() eager form returns stat_infer_spec", {
     expect_s7_class(result, stat_infer_spec)
 })
 
-test_that("TTEST() eager result data is a data frame with group and ttest cols", {
+test_that("TTEST() eager result data is a class_ttest_two", {
     result = TTEST(x_by(extra, group), sleep)
 
-    expect_s3_class(result@data, "data.frame")
-    expect_named(result@data, c("group", "ttest"))
+    expect_s7_class(result@data, class_ttest_two)
 })
 
-test_that("TTEST() eager result contains an htest object", {
+test_that("TTEST() eager result data has expected slots", {
     result = TTEST(x_by(extra, group), sleep)
 
-    expect_s3_class(result@data$ttest[[1]], "htest")
+    expect_true(length(result@data@group) > 0L)
+    expect_true(length(result@data@t_stat) > 0L)
+    expect_true(length(result@data@p_val) > 0L)
 })
 
 test_that("TTEST() eager result matches base R t.test()", {
     result = TTEST(x_by(extra, group), sleep)
     base = t.test(extra ~ group, data = sleep)
 
-    expect_equal(result@data$ttest[[1]]$statistic, base$statistic, tolerance = 1e-6)
-    expect_equal(result@data$ttest[[1]]$p.value, base$p.value, tolerance = 1e-6)
+    expect_equal(result@data@t_stat[[1]], unname(base$statistic), tolerance = 1e-6)
+    expect_equal(result@data@p_val[[1]], base$p.value, tolerance = 1e-6)
 })
 
 test_that("TTEST() eager print returns invisibly", {
@@ -48,8 +49,8 @@ test_that("classical pipeline result matches eager result numerically", {
         conclude()
 
     expect_equal(
-        eager@data$ttest[[1]]$statistic,
-        pipeline@data$ttest[[1]]$statistic,
+        eager@data@t_stat[[1]],
+        pipeline@data@t_stat[[1]],
         tolerance = 1e-6
     )
 })
@@ -179,16 +180,17 @@ test_that("weighted variant returns cld_exec", {
     expect_equal(result@cld_meta$method, "weighted")
 })
 
-test_that("weighted variant result contains tstat, p.value, ci", {
+test_that("weighted variant result is a class_ttest_two", {
     result = sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
         via("weighted") |>
         conclude()
 
-    expect_true(!is.null(result@data$tstat))
-    expect_true(!is.null(result@data$p.value))
-    expect_length(result@data$ci, 2L)
+    expect_s7_class(result@data, class_ttest_two)
+    expect_true(length(result@data@t_stat) > 0L)
+    expect_true(length(result@data@p_val) > 0L)
+    expect_length(result@data@lower_ci, length(result@data@group))
 })
 
 test_that("weighted variant with wrong number of groups errors", {
@@ -233,17 +235,17 @@ test_that("tidy() on classical pipeline result returns a tibble", {
     expect_s3_class(result, "tbl_df")
 })
 
-test_that("tidy() on classical pipeline result has correct columns", {
+test_that("tidy() on classical pipeline result has expected columns", {
     result = sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
         conclude() |>
         tidy()
 
-    expect_true(all(c("group", "estimate", "statistic", "p.value") %in% names(result)))
+    expect_true(all(c("group", "estimate", "t_stat", "p_val") %in% names(result)))
 })
 
-test_that("tidy() on `boot` variant returns a tibble", {
+test_that("tidy() on boot variant returns a tibble", {
     result = sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
@@ -266,7 +268,7 @@ test_that("tidy() on boot variant returns a tibble with lower and upper", {
     expect_true(all(c("lower", "upper") %in% names(result)))
 })
 
-test_that("tidy() on weighted variant returns a tibble with tstat and p_value", {
+test_that("tidy() on weighted variant returns a tibble with expected columns", {
     result = sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
@@ -275,5 +277,5 @@ test_that("tidy() on weighted variant returns a tibble with tstat and p_value", 
         tidy()
 
     expect_s3_class(result, "tbl_df")
-    expect_true(all(c("tstat", "p_value") %in% names(result)))
+    expect_true(all(c("t_stat", "p_val") %in% names(result)))
 })

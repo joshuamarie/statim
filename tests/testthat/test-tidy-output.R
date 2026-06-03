@@ -52,7 +52,7 @@ test_that("tidy() on weighted variant returns tibble with expected columns", {
     expect_s3_class(result, "tbl_df")
     expect_named(
         result,
-        c("group", "est", "tstat", "df", "p_value", "lower", "upper"),
+        c("group", "estimate", "t_stat", "df", "p_val", "lower_95", "upper_95"),
         ignore.order = TRUE
     )
 })
@@ -74,9 +74,7 @@ test_that("tidy() errors when no method registered for variant", {
 test_that("making_tidy %<-% registers tidy method for new variant", {
     simple_variant = variant(fn = function(.proc) list(diff = mean(.proc$x_data[[1]], na.rm = TRUE)))
     add_variant(TTEST, x_by, "test_tidy_reg") %<-% simple_variant
-    on.exit({
-        remove_variant(TTEST, x_by, "test_tidy_reg")
-    })
+    on.exit(remove_variant(TTEST, x_by, "test_tidy_reg"))
 
     making_tidy(TTEST, x_by) %<-% method_tidy(
         test_tidy_reg = function(.x, ...) {
@@ -98,11 +96,12 @@ test_that("making_tidy %<-% registers tidy method for new variant", {
 test_that("making_tidy %<-% merges variants without overwriting existing ones", {
     key = tidy_registry_key("ttest_x_by")
     existing = register_tidy[[key]]
+    on.exit({ register_tidy[[key]] = existing })
 
     making_tidy(TTEST, x_by) %<-% method_tidy(
+        default = function(.x, ...) tibble::tibble(merged = TRUE),
         test_merge = function(.x, ...) tibble::tibble(merged = TRUE)
     )
-    on.exit({ register_tidy[[key]] = existing })
 
     updated = register_tidy[[key]]
     expect_false(is.null(updated@variants[["test_merge"]]))
