@@ -13,12 +13,17 @@ returns a \code{test_spec} for use in the pipeline via \code{\link[=prepare_test
 
 \item{.data}{A data frame. Only used on the standalone path.}
 
-\item{...}{Additional arguments passed to the implementation:
-\code{.paired}, \code{.mu}, \code{.alt}, \code{.ci} for the classical path.}
+\item{...}{Additional arguments passed to the implementation. See the
+\strong{Arguments by model ID} section for the full list per path.}
 }
 \value{
-An \code{htest_spec} object (standalone or eager), or a \code{test_spec}
-object (pipeline).
+A \code{cld_exec} object, or a \code{test_spec} when \code{.model = NULL}.
+The object stored in \code{cld_exec@data} depends on the model ID:
+\itemize{
+\item \code{x_by()} — a \link{class_ttest_two} object
+\item \code{pairwise()} — a \link{class_ttest_pairwise} object
+\item formula — a \link{class_ttest_two} object
+}
 }
 \description{
 \code{TTEST()} performs a t-test for one-sample, two-sample, paired, pairwise,
@@ -26,20 +31,46 @@ or formula-based comparisons.
 }
 \section{Supported model IDs}{
 
+Each model ID routes to a separate implementation. See the linked pages
+for full argument lists, variants, and result class details:
 \itemize{
-\item \code{x_by()} — two-sample or paired t-test
-\item \code{pairwise()} — pairwise t-tests across variables
-\item formula — one-sample or two-sample t-test
+\item \code{x_by()} — two-sample or paired t-test. See \link{ttest-xby}.
+\item \code{pairwise()} — pairwise t-tests across variables. See \link{ttest-pairwise}.
+\item formula — one-sample or two-sample t-test. See \link{ttest-formula}.
 }
 }
 
-\section{Method variants (via \code{\link[=via]{via()}})}{
+\section{Arguments}{
 
-\itemize{
-\item \code{"boot"} — bootstrap confidence interval
-\item \code{"permute"} — permutation test
-\item \code{"permute_rfast"} — permutation test backed by Rfast2
+The following arguments are passed via \code{...} in \code{\link[=TTEST]{TTEST()}} or \code{\link[=via]{via()}}:
+
+\describe{
+\item{\code{.paired}}{Logical. Whether to perform a paired t-test. Default \code{FALSE}.}
+\item{\code{.mu}}{Numeric. Hypothesized mean difference. Default \code{0}.}
+\item{\code{.alt}}{Direction: \code{"two.sided"}, \code{"greater"}, or \code{"less"}. Default \code{"two.sided"}.}
+\item{\code{.ci}}{Confidence level. Default \code{0.95}.}
 }
+}
+
+\section{Variants}{
+
+\describe{
+\item{\code{"boot"}}{Bootstrap CI. Accepts \code{n} (reps) and \code{seed}.}
+\item{\code{"permute"}}{Permutation test. Accepts \code{n} and \code{seed}.}
+\item{\code{"weighted"}}{Weighted contrast. Accepts \code{.w}, \code{.mu}, \code{.ci}, \code{.op}.}
+}
+}
+
+\section{Result class}{
+
+Returns a \link{class_ttest_two} object. All variants that also return
+\link{class_ttest_two} inherit \code{\link[=auto_tidy]{auto_tidy()}} and \code{\link[=print]{print()}} automatically.
+}
+
+\section{Hypothesis claims}{
+
+Supports \code{\link[=MU]{MU()}} via \code{\link[=state_null]{state_null()}}. The \code{weighted} variant additionally
+accepts contrast coefficients via \code{.w}.
 }
 
 \examples{
@@ -66,4 +97,32 @@ sleep |>
     via("permute", n = 2000) |>
     conclude()
 
+# weighted contrast
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    state_null(
+        2 * MU(extra, group == "1") <= MU(extra, group == "2")
+    ) |>
+    via("weighted") |>
+    conclude()
+
+# pairwise
+iris |>
+    define_model(pairwise(Sepal.Length, Sepal.Width, Petal.Length)) |>
+    prepare_test(TTEST) |>
+    conclude()
+
+# hypothesis claim
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    state_null(MU(extra) == 0) |>
+    conclude()
+
+}
+\seealso{
+\link{ttest-xby}, \link{ttest-pairwise}, \link{ttest-formula} for per-implementation
+details. \link{class_ttest_two}, \link{class_ttest_pairwise} for result class
+slots. \code{\link[=via]{via()}}, \code{\link[=state_null]{state_null()}}, \code{\link[=conclude]{conclude()}}, \code{\link[=auto_tidy]{auto_tidy()}}.
 }
