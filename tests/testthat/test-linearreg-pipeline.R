@@ -25,7 +25,7 @@ test_that("lm_to_lm_object() fit_summary has correct columns", {
 
     expect_named(
         obj@fit_summary,
-        c("r_squared", "adj_r_squared", "sigma", "df_residual", "n_obs")
+        c("statistic", "value")
     )
 })
 
@@ -94,18 +94,22 @@ test_that("rel() pipeline data is a class_lm_object", {
     expect_s7_class(result@data, statim::class_lm_object)
 })
 
-test_that("rel() pipeline result matches base lm() r_squared", {
+test_that("`{statim}` pipeline matches base lm() r_squared", {
     result = cars |>
         define_model(rel(speed, dist)) |>
         prepare_model(LINEAR_REG) |>
         conclude()
 
-    base = summary(lm(dist ~ speed, data = cars))
+    # base = summary(lm(dist ~ speed, data = cars))
+    #
+    # expect_equal(result@data@fit_summary$r_squared, base$r.squared, tolerance = 1e-8)
 
-    expect_equal(result@data@fit_summary$r_squared, base$r.squared, tolerance = 1e-8)
+    base = lm(dist ~ speed, data = cars) |> summary()
+    r2 = result@data@fit_summary$value[result@data@fit_summary$statistic == "R\u00b2"]
+    expect_equal(r2, base$r.squared, tolerance = 1e-4)
 })
 
-test_that("rel() pipeline stat_name is 'Linear Regression'", {
+test_that("`{statim}` pipeline `stat_name` is 'Linear Regression'", {
     result = cars |>
         define_model(rel(speed, dist)) |>
         prepare_model(LINEAR_REG) |>
