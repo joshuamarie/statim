@@ -124,9 +124,11 @@ reference:
     - variant
 
   - subtitle: Base statistical inference output class
-    desc: Requires within the pipeline, e.g. `tidy()`
+    desc: With different implementation but the same class, the methods, e.g. `tidy()`, will be shareable
     contents:
     - class_stat_infer
+    - class_ttest_pairwise
+    - class_ttest_two
     - lm_object
     - glm_object
 
@@ -168,12 +170,6 @@ reference:
     - making_tidy
     - method_tidy
     - modifying-assignment
-
-  - subtitle: Exclusive for linear models only
-    desc: Containerization of linear model outputs in S7 classes
-    contents:
-    - lm_object
-    - glm_object
 
 footer:
   structure:
