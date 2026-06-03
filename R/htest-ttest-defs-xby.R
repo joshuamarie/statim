@@ -1,6 +1,53 @@
+#' @title T-Test: Two-Sample (`x_by`)
+#'
+#' @description
+#' The `x_by` implementation performs an independent or paired two-sample
+#' t-test. It accepts one or more grouping variables via [x_by()].
+#'
+#' @section Arguments:
+#' The following arguments are passed via `...` in [TTEST()] or [via()]:
+#'
+#' \describe{
+#'   \item{`.paired`}{Logical. Whether to perform a paired t-test. Default `FALSE`.}
+#'   \item{`.mu`}{Numeric. Hypothesized mean difference. Default `0`.}
+#'   \item{`.alt`}{Direction: `"two.sided"`, `"greater"`, or `"less"`. Default `"two.sided"`.}
+#'   \item{`.ci`}{Confidence level. Default `0.95`.}
+#' }
+#'
+#' @section Variants:
+#' \describe{
+#'   \item{`"boot"`}{Bootstrap CI. Accepts `n` (reps) and `seed`.}
+#'   \item{`"permute"`}{Permutation test. Accepts `n` and `seed`.}
+#'   \item{`"weighted"`}{Weighted contrast. Accepts `.w`, `.mu`, `.ci`, `.op`.}
+#' }
+#'
+#' @section Result class:
+#' Returns a [class_ttest_two] object. All variants that also return
+#' [class_ttest_two] inherit [auto_tidy()] and [print()] automatically.
+#'
+#' @section Hypothesis claims:
+#' Supports [MU()] via [state_null()]. The `weighted` variant additionally
+#' accepts contrast coefficients via `.w`.
+#'
+#' @examples
+#' sleep |>
+#'     define_model(x_by(extra, group)) |>
+#'     prepare_test(TTEST) |>
+#'     conclude()
+#'
+#' sleep |>
+#'     define_model(x_by(extra, group)) |>
+#'     prepare_test(TTEST) |>
+#'     via("boot", n = 2000) |>
+#'     conclude()
+#'
+#' @keywords internal
+#' @name ttest-xby
+#' @family ttest-implementations
+NULL
+
 ttest_def_two = test_define(
     model_type = x_by,
-    # impl_class = "ttest_two",
     impl = agendas(
         base = baseline(
             # ---- Default implementation ----
@@ -28,70 +75,111 @@ ttest_def_two = test_define(
                         conf.level = .ci
                     )
 
-                    list(group = grp_name, ttest = res)
+                    list(
+                        group = grp_name,
+                        # estimate = unname(res$estimate),
+                        estimate = if (.paired) {
+                            unname(res$estimate)
+                        } else {
+                            unname(res$estimate[[1]] - res$estimate[[2]])
+                        },
+                        t_stat = unname(res$statistic),
+                        df = unname(res$parameter),
+                        p_val = res$p.value,
+                        lower_ci = res$conf.int[[1]],
+                        upper_ci = res$conf.int[[2]]
+                    )
                 })
 
-                tibble::tibble(
-                    group = vapply(tests, `[[`, character(1), "group"),
-                    ttest = lapply(tests, `[[`, "ttest")
+                class_ttest_two(
+                    group = vapply(tests, \(x) x$group, character(1)),
+                    estimate = vapply(tests, \(x) x$estimate, numeric(1)),
+                    t_stat = vapply(tests, \(x) x$t_stat, numeric(1)),
+                    df = vapply(tests, \(x) x$df, numeric(1)),
+                    p_val = vapply(tests, \(x) x$p_val, numeric(1)),
+                    lower_ci = vapply(tests, \(x) x$lower_ci, numeric(1)),
+                    upper_ci = vapply(tests, \(x) x$upper_ci, numeric(1)),
+                    ci_level = .ci
                 )
-            },
-            print = function(x, ...) {
-                rlang::check_installed(
-                    c("broom", "purrr", "dplyr"),
-                    reason = "to retrieve t-test results and re-store it in a data frame"
-                )
+            }
+        ),
+        weighted = variant(
+            # ---- Weighted t-test ----
+            # ---- variant: "weighted" ----
+            fn = function(.proc, .mu = 0, .ci = 0.95, .w = NULL, .op = "==") {
+                x = .proc$x_data[[1]]
+                group_data = .proc$group_data
 
-                dat = x@data
+                grp_name = names(group_data)[[1]]
+                grp = as.character(group_data[[grp_name]])
+                lvls = unique(grp)
 
-                tidy_rows = lapply(seq_len(nrow(dat)), function(i) {
-                    td = broom::tidy(dat$ttest[[i]])
-                    ci_level = attr(purrr::pluck(dat$ttest[[i]], "conf.int"), "conf.level")
-                    lo_name = paste0("lower_", ci_level * 100)
-                    up_name = paste0("upper_", ci_level * 100)
-
-                    stat_row = dplyr::transmute(
-                        td,
-                        groups = dat$group[[i]],
-                        diff = estimate,
-                        `t-stat` = statistic,
-                        pval = p.value
-                    )
-                    ci_row = dplyr::transmute(
-                        td,
-                        groups = dat$group[[i]],
-                        !!lo_name := ifelse(is.infinite(conf.low), "-Inf", conf.low),
-                        !!up_name := ifelse(is.infinite(conf.high), "Inf", conf.high)
-                    )
-                    list(stat = stat_row, ci = ci_row)
-                })
-
-                stat_out = dplyr::bind_rows(lapply(tidy_rows, `[[`, "stat"))
-                ci_out = dplyr::bind_rows(lapply(tidy_rows, `[[`, "ci"))
-
-                pval_styler = function(x) {
-                    x_num = suppressWarnings(as.numeric(x$value))
-                    if (is.na(x_num) || x_num > 0.05) {
-                        cli::style_italic(x$value)
-                    } else if (x_num > 0.01) {
-                        cli::col_red(x$value)
-                    } else {
-                        cli::style_bold("<0.001")
-                    }
+                if (length(lvls) != 2L) {
+                    cli::cli_abort(c(
+                        "Contrast t-test requires exactly 2 groups.",
+                        "i" = "Found {length(lvls)} group{{?s}} in {.val {grp_name}}."
+                    ))
                 }
 
-                cli::cat_line(cli::rule(left = "Summary", line = "-"), "\n")
-                tabstats::table_default(
-                    stat_out,
-                    style_columns = tabstats::td_style(pval = pval_styler)
+                x1 = x[grp == lvls[[1]]]
+                x2 = x[grp == lvls[[2]]]
+                n1 = length(x1)
+                n2 = length(x2)
+                xbar1 = mean(x1)
+                xbar2 = mean(x2)
+                s1 = stats::var(x1)
+                s2 = stats::var(x2)
+
+                coefs = if (is.null(.w)) {
+                    c(1, -1)
+                } else {
+                    coef_nms = names(.w)
+                    c(.w[coef_nms == lvls[[1]]], .w[coef_nms == lvls[[2]]])
+                }
+
+                c1 = coefs[[1]]
+                c2 = coefs[[2]]
+                est_val = c1 * xbar1 + c2 * xbar2
+                se = sqrt(c1^2 * s1 / n1 + c2^2 * s2 / n2)
+                tstat = (est_val - .mu) / se
+                df = (c1^2 * s1 / n1 + c2^2 * s2 / n2)^2 /
+                    ((c1^2 * s1 / n1)^2 / (n1 - 1) + (c2^2 * s2 / n2)^2 / (n2 - 1))
+
+                p.value = switch(
+                    .op,
+                    "==" = 2 * stats::pt(-abs(tstat), df = df),
+                    ">=" = , ">" = stats::pt(-tstat, df = df),
+                    "<=" = , "<" = stats::pt(tstat, df = df),
+                    "!=" = 2 * stats::pt(-abs(tstat), df = df)
                 )
-                cat("\n\n")
 
-                cli::cat_line(cli::rule(left = "Confidence Interval", line = "-"), "\n")
-                tabstats::table_default(ci_out)
-                cat("\n\n")
+                alpha = 1 - .ci
+                ci = switch(
+                    .op,
+                    "==" = , "!=" = {
+                        t_crit = stats::qt(1 - alpha / 2, df = df)
+                        c(.mu - t_crit * se, .mu + t_crit * se)
+                    },
+                    ">=" = , ">" = {
+                        t_crit = stats::qt(1 - alpha, df = df)
+                        c(.mu - t_crit * se, Inf)
+                    },
+                    "<=" = , "<" = {
+                        t_crit = stats::qt(1 - alpha, df = df)
+                        c(-Inf, .mu + t_crit * se)
+                    }
+                )
 
-                invisible(x)
+                class_ttest_two(
+                    group = grp_name,
+                    estimate = est_val,
+                    t_stat = tstat,
+                    df = df,
+                    p_val = p.value,
+                    lower_ci = ci[[1]],
+                    upper_ci = ci[[2]],
+                    ci_level = .ci
+                )
             }
         ),
         boot = variant(
@@ -115,11 +203,7 @@ ttest_def_two = test_define(
                     mean(b1) - mean(b2)
                 })
 
-                ci = quantile(
-                    boot_dist,
-                    c((1 - .ci) / 2, 1 - (1 - .ci) / 2)
-                )
-
+                ci = quantile(boot_dist, c((1 - .ci) / 2, 1 - (1 - .ci) / 2))
                 list(boot_dist = boot_dist, ci = ci, n = n)
             },
             print = function(x, ...) {
@@ -152,13 +236,11 @@ ttest_def_two = test_define(
                 grp = as.character(group_data[[1]])
                 lvls = unique(grp)
 
-                obs = mean(x[grp == lvls[[1]]]) -
-                    mean(x[grp == lvls[[2]]])
+                obs = mean(x[grp == lvls[[1]]]) - mean(x[grp == lvls[[2]]])
 
                 null_dist = replicate(n, {
                     perm = sample(x)
-                    mean(perm[grp == lvls[[1]]]) -
-                        mean(perm[grp == lvls[[2]]])
+                    mean(perm[grp == lvls[[1]]]) - mean(perm[grp == lvls[[2]]])
                 })
 
                 list(
@@ -195,145 +277,6 @@ ttest_def_two = test_define(
                 cat("\n\n")
                 invisible(x)
             }
-        ),
-        weighted = variant(
-            # ---- Weighted t-test ----
-            # ---- variant: "weighted" ----
-            fn = function(.proc, .mu = 0, .ci = 0.95, .w = NULL, .op = "==") {
-                x = .proc$x_data[[1]]
-                group_data = .proc$group_data
-
-                grp_name = names(group_data)[[1]]
-                grp = as.character(group_data[[grp_name]])
-                lvls = unique(grp)
-
-                if (length(lvls) != 2L) {
-                    cli::cli_abort(c(
-                        "Contrast t-test requires exactly 2 groups.",
-                        "i" = "Found {length(lvls)} group{{?s}} in {.val {grp_name}}."
-                    ))
-                }
-
-                x1 = x[grp == lvls[[1]]]
-                x2 = x[grp == lvls[[2]]]
-
-                n1 = length(x1)
-                n2 = length(x2)
-                xbar1 = mean(x1)
-                xbar2 = mean(x2)
-                s1 = stats::var(x1)
-                s2 = stats::var(x2)
-
-                coefs = if (is.null(.w)) {
-                    c(1, -1)
-                } else {
-                    coef_nms = names(.w)
-                    c(
-                        .w[coef_nms == lvls[[1]]],
-                        .w[coef_nms == lvls[[2]]]
-                    )
-                }
-
-                c1 = coefs[[1]]
-                c2 = coefs[[2]]
-
-                est_val = c1 * xbar1 + c2 * xbar2
-                se = sqrt(c1^2 * s1 / n1 + c2^2 * s2 / n2)
-                tstat = (est_val - .mu) / se
-                df = (c1^2 * s1 / n1 + c2^2 * s2 / n2)^2 /
-                    ((c1^2 * s1 / n1)^2 / (n1 - 1) + (c2^2 * s2 / n2)^2 / (n2 - 1))
-
-                p.value = switch(
-                    .op,
-                    "==" = 2 * stats::pt(-abs(tstat), df = df),
-                    ">=" = stats::pt(-tstat, df = df),
-                    "<=" = stats::pt(tstat, df = df),
-                    ">" = stats::pt(-tstat, df = df),
-                    "<" = stats::pt(tstat, df = df),
-                    "!=" = 2 * stats::pt(-abs(tstat), df = df)
-                )
-
-                alpha = 1 - .ci
-                ci = switch(
-                    .op,
-                    "==" = ,
-                    "!=" = {
-                        t_crit = stats::qt(1 - alpha / 2, df = df)
-                        c(.mu - t_crit * se, .mu + t_crit * se)
-                    },
-                    ">=" = ,
-                    ">" = {
-                        t_crit = stats::qt(1 - alpha, df = df)
-                        c(.mu - t_crit * se, Inf)
-                    },
-                    "<=" = ,
-                    "<" = {
-                        t_crit = stats::qt(1 - alpha, df = df)
-                        c(-Inf, .mu + t_crit * se)
-                    }
-                )
-                names(ci) = c("lower", "upper")
-
-                list(
-                    group = grp_name,
-                    est = est_val,
-                    coefs = coefs,
-                    tstat = tstat,
-                    df = df,
-                    p.value = p.value,
-                    ci = ci,
-                    ci_level = .ci,
-                    mu = .mu
-                )
-            },
-            print = function(x, ...) {
-                dat = x@data
-                ci_level = dat$ci_level * 100
-                lo_name = paste0("lower_", ci_level)
-                up_name = paste0("upper_", ci_level)
-
-                pval_styler = function(x) {
-                    x_num = suppressWarnings(as.numeric(x$value))
-                    if (is.na(x_num) || x_num > 0.05) {
-                        cli::style_italic(x$value)
-                    } else if (x_num > 0.01) {
-                        cli::col_red(x$value)
-                    } else {
-                        cli::style_bold("<0.001")
-                    }
-                }
-
-                stat_out = tibble::tibble(
-                    groups = dat$group,
-                    est = round(dat$est, 4),
-                    `t-stat` = round(dat$tstat, 4),
-                    df = round(dat$df, 2),
-                    pval = round(dat$p.value, 4)
-                )
-
-                fmt_ci = function(val) {
-                    if (is.infinite(val)) ifelse(val > 0, "Inf", "-Inf") else round(val, 4)
-                }
-
-                ci_out = tibble::tibble(
-                    groups = dat$group,
-                    !!lo_name := fmt_ci(dat$ci[["lower"]]),
-                    !!up_name := fmt_ci(dat$ci[["upper"]])
-                )
-
-                cli::cat_line(cli::rule(left = "Summary", line = "-"), "\n")
-                tabstats::table_default(
-                    stat_out,
-                    style_columns = tabstats::td_style(pval = pval_styler)
-                )
-                cat("\n\n")
-
-                cli::cat_line(cli::rule(left = "Confidence Interval", line = "-"), "\n")
-                tabstats::table_default(ci_out)
-                cat("\n\n")
-
-                invisible(x)
-            }
         )
     ),
     # ---- Modify Modelled Hypothesis ----
@@ -351,7 +294,7 @@ ttest_def_two = test_define(
                     cli::cli_abort(c(
                         "T-test only supports simple mean differences.",
                         "i" = "Found weighted contrast: {.val {coefs}}.",
-                        "i" = "Use {.code via(\"contrast\")} for weighted hypotheses."
+                        "i" = "Use {.code via(\"weighted\")} for weighted hypotheses."
                     ))
                 }
 

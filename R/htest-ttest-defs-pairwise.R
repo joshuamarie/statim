@@ -1,3 +1,49 @@
+#' @title T-Test: Pairwise (`pairwise`)
+#'
+#' @description
+#' The `pairwise` implementation performs pairwise t-tests across a set of
+#' numeric variables. Each pair of variables is compared independently, and
+#' results are presented as a matrix.
+#'
+#' Use [pairwise()] as the model ID to select this implementation.
+#'
+#' @section Arguments:
+#' The following arguments are passed via `...` in [TTEST()]:
+#'
+#' \describe{
+#'   \item{`.paired`}{Logical. Whether to perform paired comparisons.
+#'     Default `FALSE`.}
+#'   \item{`.mu`}{Numeric. Hypothesized mean or mean difference. Length 1
+#'     (applied to all pairs) or one value per variable. Default `0`.}
+#'   \item{`.alt`}{String. One of `"two.sided"`, `"greater"`, or `"less"`.
+#'     Default `"two.sided"`.}
+#'   \item{`.ci`}{Numeric. Confidence level. Default `0.95`.}
+#' }
+#'
+#' @section Variants:
+#' No variants are currently registered for the `pairwise` path. Use
+#' [add_variant()] to register custom variants at the user or package level.
+#'
+#' @section Result class:
+#' Returns a [class_ttest_pairwise] object inheriting from [class_stat_infer].
+#' Results are printed as a pairwise matrix via [tabstats::pairwise_matrix()].
+#'
+#' @section One-sample mode:
+#' When [pairwise()] is constructed with a `direction = "eq"` argument, each
+#' variable is tested against its own `.mu` value rather than against another
+#' variable. The result matrix displays diagonal entries only.
+#'
+#' @examples
+#' iris |>
+#'     define_model(pairwise(Sepal.Length, Sepal.Width, Petal.Length)) |>
+#'     prepare_test(TTEST) |>
+#'     conclude()
+#'
+#' @keywords internal
+#' @name ttest-pairwise
+#' @family ttest-implementations
+NULL
+
 ttest_def_pairwise = test_define(
     model_type = pairwise,
     impl = agendas(
@@ -66,8 +112,42 @@ ttest_def_pairwise = test_define(
     )
 )
 
+#' Structured result container for pairwise t-tests
+#'
+#' @description
+#' An S7 class produced by [TTEST] pipelines using [pairwise()] as the
+#' model ID. Not constructed manually — use the pipeline instead.
+#'
+#' Inherits from [class_stat_infer], so [auto_tidy()] dispatches on it
+#' automatically. Downstream packages can use it as a `parent` in
+#' `S7::new_class()`.
+#'
+#' @usage NULL
+#'
+#' @details
+#' Slots (populated automatically by [TTEST]):
+#'
+#' - `var1`: first variable in each pair.
+#' - `var2`: second variable in each pair.
+#' - `est`: mean difference per pair (or sample mean for one-sample mode).
+#' - `df`: degrees of freedom per pair.
+#' - `t_stat`: t-statistic per pair.
+#' - `p_value`: p-value per pair.
+#' - `method_name`: scalar string describing the test method, taken directly
+#'   from [stats::t.test()]. Must be length 1 — all pairs must share the
+#'   same method.
+#'
+#' @section One-sample mode:
+#' When [pairwise()] uses `direction = "eq"`, `var1` and `var2` are
+#' identical (each variable tested against itself). [print()] detects this
+#' and renders a diagonal-only matrix.
+#'
+#' @seealso [TTEST], [ttest-pairwise], [auto_tidy()], [class_stat_infer]
+#'
+#' @export
 class_ttest_pairwise = S7::new_class(
     "class_ttest_pairwise",
+    parent = class_stat_infer,
     properties = list(
         var1 = S7::class_character,
         var2 = S7::class_character,
@@ -92,9 +172,7 @@ S7::method(print, class_ttest_pairwise) = function(x, ...) {
     if (is_one_sample) {
         vars = x@var1
         grid = expand.grid(var1 = vars, var2 = vars, stringsAsFactors = FALSE)
-        diag_idx = match(vars, vars)
 
-        lookup = stats::setNames(seq_along(vars), vars)
         diff_vec = rep("", nrow(grid))
         t_vec = rep("", nrow(grid))
         pval_vec = rep("", nrow(grid))

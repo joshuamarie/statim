@@ -1,6 +1,61 @@
+#' @title T-Test: Formula interface
+#'
+#' @description
+#' The formula implementation performs one-sample or two-sample t-tests
+#' specified via a standard R formula. The response variable is taken from
+#' the left-hand side; the right-hand side determines the test type:
+#'
+#' 1. `y ~ group`: two-sample t-test, one test per grouping variable.
+#' 2. `y ~ 1`: one-sample t-test against `.mu`.
+#' 3. `y ~ group + 1`" both tests in a single call.
+#'
+#' Use a formula directly as the model ID to select this implementation.
+#'
+#' @section Arguments:
+#' The following arguments are passed via `...` in [TTEST()]:
+#'
+#' \describe{
+#'   \item{`.mu`}{Numeric. Hypothesized mean or mean difference. Default `0`.}
+#'   \item{`.alt`}{String. One of `"two.sided"`, `"greater"`, or `"less"`.
+#'     Default `"two.sided"`.}
+#'   \item{`.ci`}{Numeric. Confidence level. Default `0.95`.}
+#' }
+#'
+#' @section Variants:
+#' No variants are currently registered for the formula path. Use
+#' [add_variant()] to register custom variants at the user or package level.
+#'
+#' @section Result class:
+#' Returns a tibble with columns `type`, `group`, and `ttest` (a list-column
+#' of [stats::t.test()] results). This path does not currently return a
+#' [class_stat_infer] subclass — use [making_tidy()] to register a tidy
+#' method if needed.
+#'
+#' @examples
+#' sleep |>
+#'     define_model(extra ~ group) |>
+#'     prepare_test(TTEST) |>
+#'     conclude()
+#'
+#' # one-sample
+#' sleep |>
+#'     define_model(extra ~ 1) |>
+#'     prepare_test(TTEST) |>
+#'     conclude()
+#'
+#' # both in one call
+#' sleep |>
+#'     define_model(extra ~ group + 1) |>
+#'     prepare_test(TTEST) |>
+#'     conclude()
+#'
+#' @keywords internal
+#' @name ttest-formula
+#' @family ttest-implementations
+NULL
+
 ttest_def_formula = test_define(
     model_type = S7::class_formula,
-    # impl_class = "ttest_formula",
     impl = agendas(
         base = baseline(
             fn = function(.proc, .mu = 0, .alt = "two.sided", .ci = 0.95) {
@@ -130,3 +185,4 @@ ttest_def_formula = test_define(
 make_test = function(type, group, ttest) {
     list(type = type, group = group, ttest = ttest)
 }
+
