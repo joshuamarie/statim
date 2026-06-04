@@ -77,6 +77,7 @@ Collate:
     'htest-ttest-defs-pairwise.R'
     'htest-ttest.R'
     'tidy-ttest-def-two.R'
+    'tidy-ttest-def-formula.R'
     'htest-testcor-defs-rel.R'
     'htest-testcor.R'
     'model-impl-container.R'
