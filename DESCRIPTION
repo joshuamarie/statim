@@ -37,9 +37,10 @@ Suggests:
     pander,
     Rfast2,
     purrr,
-    tidyr, 
+    tidyr,
     dplyr,
-    boot
+    boot,
+    knitr
 Collate:
     'statim-package.R'
     'ops.R'
@@ -95,4 +96,4 @@ Depends:
 URL: https://github.com/joshuamarie/statim
 BugReports: https://github.com/joshuamarie/statim/issues
 RoxygenNote: 7.3.3
-
+VignetteBuilder: knitr

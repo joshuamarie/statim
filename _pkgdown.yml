@@ -20,9 +20,15 @@ home:
 navbar:
   type: light
   structure:
-    left: [intro, reference]
+    left: [intro, reference, articles, news]
     right: [search, github, lightswitch, blog]
   components:
+    intro:
+      text: Get started
+      href: articles/statim.html
+    reference:
+      text: Reference
+      href: reference/index.html
     blog:
       text: Blog
       icon: fa-blog
@@ -179,6 +185,13 @@ footer:
     built_with: >
       Built with <a href="https://pkgdown.r-lib.org/">pkgdown</a>.
       Visit my <a href="https://joshuamarie.com">blog</a> for more content.
+
+articles:
+
+  - title: Writing statim extensions
+    navbar: Writing statim extensions
+    contents:
+    - extend/extensibility
 
 development:
   mode: auto
