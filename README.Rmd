@@ -43,24 +43,26 @@ This simply means: you declare *what* statistical inference you want to perform,
 
 ## Why statim?
 
-Base R's statistical functions are imperative and scattered. H-tests like t-test through `t.test()`, and a correlation test through `cor.test()`, each takes different arguments, returns a different output format, and switching from a classical procedure to a bootstrap or permutation variant means rewriting from scratch. There is no shared grammar, and no way to describe *what* you want without also specifying *how* to compute it step by step.
+R has a rich statistical ecosystem, but hypothesis testing is served by an assortment of disconnected functions. R gained a grammar for graphics (`{ggplot2}`) and one for data manipulation (`{dplyr}`), but statistical inference has no equivalent: each testing function ships with its own interface, its own way of specifying data, and its own output format. There is no shared grammar for inference: no way to say *what* you want to test without simultaneously committing to *how* the procedure carries it out.
 
-`{statim}` replaces that with a declarative pipeline. You describe the model structure once with `define_model()`, attach a test, and optionally recalibrate the method with `via()`, without touching anything else:
+`{statim}` is an attempt to re-imagine this from the ground up, the same way `{ggplot2}` introduced a grammar for graphics without replacing base plotting functions. The core idea is that any inferential procedure can be described in three steps: define the structure of the data (`define_model()`), declare what you want to infer (`prepare_test()`), and optionally recalibrate the estimation method (`via()`). The procedure executes only when you call `conclude()`.
+
+This separation matters because it makes statistical workflows *composable*. Switching from a classical to a permutation procedure does not require rewriting your code; it is a single addition to the pipeline:
 
 ```r
-# Base R: two functions, two different interfaces, two different output formats
-t.test(extra ~ group, data = sleep)
-cor.test(cars$speed, cars$dist)
-
-# statim: same pipeline shape regardless of the test
+# Classical t-test
 sleep |> define_model(x_by(extra, group)) |> prepare_test(TTEST) |> conclude()
+
+# Permutation t-test: one line added, nothing else changes
+sleep |> define_model(x_by(extra, group)) |> prepare_test(TTEST) |> via("permute", n = 1000L) |> conclude()
+
+# The same pipeline shape works for any registered test
 cars |> define_model(rel(speed, dist)) |> prepare_test(CORTEST) |> conclude()
 
-# Switching to permutation is one word; nothing else in the pipeline moves
-sleep |> define_model(x_by(extra, group)) |> prepare_test(TTEST) |> via("permute", n = 1000L) |> conclude()
+# For a quick result, the eager form skips the pipeline entirely
+TTEST(x_by(extra, group), sleep)
+CORTEST(rel(speed, dist), cars)
 ```
-
-Any test registered with `test_define()` plugs into the same pipeline, including custom implementations. Most of the API is written in S7 with the purpose to enforce flexibility and strictness to make `{statim}` much usable and robust
 
 ## Installation
 
@@ -123,13 +125,31 @@ cars |>
     conclude()
 ```
 
+For a quick one-shot result, the eager form works here too:
+
+```{r}
+CORTEST(rel(speed, dist), cars)
+```
+
+## Model IDs
+
+Model IDs are named counterparts to R formulas. Rather than encoding the model structure implicitly in a formula string, each model ID carries an explicit name that tells `{statim}` what kind of relationship is intended:
+
+| Model ID | Analogous formula | Use case |
+|---|---|---|
+| `x_by(x, group)` | `x ~ group` | Compare a variable across groups |
+| `rel(x, resp)` | `resp ~ x` | Test the relationship between two variables |
+| `pairwise(a, b, c)` | *(no formula equivalent)* | All pairwise comparisons across columns |
+
+The name of the model ID directly determines the operation performed. Passing `pairwise(a, b, c)` to a t-test runs a pairwise t-test across every pair of columns; there is no equivalent formula syntax for this. The same model ID can be reused across different tests without any modification.
+
 ## Core Ideas
 
 The package is designed around three ideas:
 
-1. **Declarative models**: describe the structure of your data with `define_model()` and model IDs like `x_by()`, `rel()`, and `pairwise()`. 
-2. **Composable pipeline**: build up a test specification lazily, then execute with `conclude()`. 
-3. **Extensible implementations**: for instance, every test is a `test_define()` object; bring your own engine, your own method, your own implementation. 
+1. **A shared grammar**: every inferential procedure follows the same shape -- `define_model()`, `prepare_test()`, `conclude()` -- regardless of which test or model ID is used. The model ID (e.g. `x_by`, `rel`, `pairwise`) determines what the test does; the grammar stays the same. Eager forms (`TTEST()`, `CORTEST()`, ...) provide a shortcut when the full pipeline is not needed.
+2. **Composable pipelines**: build up a test specification lazily, recalibrate the estimation method with a single `via()` call, and execute with `conclude()`.
+3. **Extensible by design**: every test is a `stat_define()` object; bring your own engine, your own method, your own implementation. Auto dispatch handles `tidy()` for your method without requiring you to write it.
 
 ## License
 
