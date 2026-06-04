@@ -127,12 +127,8 @@ LINEAR_REG = MODEL_FN(
 #'     x_mat = as.numeric(stats::model.matrix(fit))
 #' )
 #'
-#' # computed slots:
 #' obj@coefficients
 #' obj@fit_summary
-#'
-#' # single-model Type I ANOVA:
-#' obj |> anova()
 #'
 #' @export
 class_lm_object = S7::new_class(

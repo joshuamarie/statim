@@ -15,32 +15,39 @@ Constructor arguments (populated automatically by \link{LINEAR_REG}):
 \itemize{
 \item \code{terms}: model terms object.
 \item \code{df_residual}: residual degrees of freedom.
-\item \code{deviance}: scalar deviance, i.e. the residual sum of squares (RSS)
-in an OLS context.
-\item \code{dispersion}: scalar dispersion parameter, i.e. the mean squared
-error (MSE) in an OLS context.
+\item \code{deviance}: residual sum of squares (RSS).
+\item \code{dispersion}: mean squared error (MSE), i.e. \code{rss / df_residual}.
 \item \code{family}: always \code{"gaussian"} for OLS.
 \item \code{fitted}: numeric vector of fitted values.
 \item \code{residuals}: numeric vector of model residuals.
-\item \code{beta}: named or unnamed numeric vector of coefficient estimates.
-\item \code{std_beta}: named or unnamed numeric vector of coefficient standard errors.
+\item \code{beta}: named numeric vector of coefficient estimates.
+\item \code{std_beta}: named numeric vector of coefficient standard errors.
+\item \code{x_mat}: model matrix stored as a flat numeric vector via
+\code{as.numeric(stats::model.matrix(fit))}. Required for single-model
+\code{\link[=anova]{anova()}}; omit only if Type I ANOVA is not needed.
 }
 
 The following are computed automatically and do not need to be supplied:
 \itemize{
-\item \code{statistic}: per-coefficient t-statistics, derived as \code{beta / std_beta}.
+\item \code{statistic}: per-coefficient t-statistics (\code{beta / std_beta}).
 \item \code{p_value}: per-coefficient two-sided p-values.
-\item \code{coefficients}: data frame with columns \code{term}, \code{estimate}, \code{std_error},
+\item \code{coefficients}: tibble with columns \code{term}, \code{estimate}, \code{std_error},
 \code{statistic}, \code{p_value}.
-\item \code{fit_summary}: two-column data frame (\code{statistic}, \code{value}) containing
-R-squared, adjusted R-squared, sigma, residual df, n, F-statistic, F df1, F df2,
-and F p-value.
+\item \code{fit_summary}: two-column tibble (\code{statistic}, \code{value}) with R-squared,
+adjusted R-squared, sigma, n, residual df, F-statistic, df1, df2, and
+F p-value.
 }
 }
 \section{anova() protocol}{
 
-\code{class_lm_object} participates in \code{\link[=anova]{anova()}} directly. The comparison
-is computed from \verb{@residuals}, \verb{@df_residual}, and \verb{@terms}.
+\code{class_lm_object} supports two \code{\link[=anova]{anova()}} modes:
+\itemize{
+\item \strong{Single model} — Type I (sequential) ANOVA. Each term is tested
+against the model containing all preceding terms. Requires \code{x_mat}
+to be populated.
+\item \strong{Multiple models} — incremental F-test or LRT across nested models.
+Uses \verb{@deviance} and \verb{@df_residual} only; \code{x_mat} is not needed.
+}
 }
 
 \examples{
@@ -65,10 +72,10 @@ obj = class_lm_object(
     df_residual = df_res,
     deviance = rss,
     dispersion = rss / df_res,
-    family = "gaussian"
+    family = "gaussian",
+    x_mat = as.numeric(stats::model.matrix(fit))
 )
 
-# coefficients and fit_summary are computed automatically:
 obj@coefficients
 obj@fit_summary
 
