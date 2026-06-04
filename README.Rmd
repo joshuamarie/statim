@@ -43,7 +43,7 @@ This simply means: you declare *what* statistical inference you want to perform,
 
 ## Why statim?
 
-R has a rich statistical ecosystem, but inferential procedures are fragmented by design: each function has its own interface, its own way of specifying data, and its own output format. There is no shared grammar for statistical inference: no way to say *what* you want to infer without also committing to *how* every individual step is carried out.
+R has a rich statistical ecosystem, but hypothesis testing is served by an assortment of disconnected functions. R gained a grammar for graphics (`{ggplot2}`) and one for data manipulation (`{dplyr}`), but statistical inference has no equivalent: each testing function ships with its own interface, its own way of specifying data, and its own output format. There is no shared grammar for inference: no way to say *what* you want to test without simultaneously committing to *how* the procedure carries it out.
 
 `{statim}` is an attempt to re-imagine this from the ground up, the same way `{ggplot2}` introduced a grammar for graphics without replacing base plotting functions. The core idea is that any inferential procedure can be described in three steps: define the structure of the data (`define_model()`), declare what you want to infer (`prepare_test()`), and optionally recalibrate the estimation method (`via()`). The procedure executes only when you call `conclude()`.
 
@@ -131,13 +131,25 @@ For a quick one-shot result, the eager form works here too:
 CORTEST(rel(speed, dist), cars)
 ```
 
+## Model IDs
+
+Model IDs are named counterparts to R formulas. Rather than encoding the model structure implicitly in a formula string, each model ID carries an explicit name that tells `{statim}` what kind of relationship is intended:
+
+| Model ID | Analogous formula | Use case |
+|---|---|---|
+| `x_by(x, group)` | `x ~ group` | Compare a variable across groups |
+| `rel(x, resp)` | `resp ~ x` | Test the relationship between two variables |
+| `pairwise(a, b, c)` | *(no formula equivalent)* | All pairwise comparisons across columns |
+
+The name of the model ID directly determines the operation performed. Passing `pairwise(a, b, c)` to a t-test runs a pairwise t-test across every pair of columns; there is no equivalent formula syntax for this. The same model ID can be reused across different tests without any modification.
+
 ## Core Ideas
 
 The package is designed around three ideas:
 
-1. **A shared grammar**: every inferential procedure follows the same shape -- `define_model()`, `prepare_test()`, `conclude()` -- regardless of which test is used. Eager forms (`TTEST()`, `CORTEST()`, ...) provide a shortcut when the full pipeline is not needed.
+1. **A shared grammar**: every inferential procedure follows the same shape -- `define_model()`, `prepare_test()`, `conclude()` -- regardless of which test or model ID is used. The model ID (e.g. `x_by`, `rel`, `pairwise`) determines what the test does; the grammar stays the same. Eager forms (`TTEST()`, `CORTEST()`, ...) provide a shortcut when the full pipeline is not needed.
 2. **Composable pipelines**: build up a test specification lazily, recalibrate the estimation method with a single `via()` call, and execute with `conclude()`.
-3. **Extensible by design**: every test is a `test_define()` object; bring your own engine, your own method, your own implementation.
+3. **Extensible by design**: every test is a `stat_define()` object; bring your own engine, your own method, your own implementation. Auto dispatch handles `tidy()` for your method without requiring you to write it.
 
 ## License
 
