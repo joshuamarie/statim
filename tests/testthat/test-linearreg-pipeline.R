@@ -105,7 +105,7 @@ test_that("`{statim}` pipeline matches base lm() r_squared", {
     # expect_equal(result@data@fit_summary$r_squared, base$r.squared, tolerance = 1e-8)
 
     base = lm(dist ~ speed, data = cars) |> summary()
-    r2 = result@data@fit_summary$value[result@data@fit_summary$statistic == "R\u00b2"]
+    r2 = result@data@fit_summary$value[result@data@fit_summary$statistic == "R Squared"]
     expect_equal(r2, base$r.squared, tolerance = 1e-4)
 })
 

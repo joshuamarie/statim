@@ -172,14 +172,26 @@ class_lm_object = S7::new_class(
 
                 tibble::tibble(
                     statistic = c(
-                        "R\u00b2", "Adj. R\u00b2", "Sigma",
-                        "df (residual)", "n",
-                        "F-statistic", "F df1", "F df2", "F p-value"
+                        "R Squared",
+                        "Adj. R Squared",
+                        "Sigma",
+                        "n",
+                        "df (residual)",
+                        "F-statistic",
+                        "df1",
+                        "df2",
+                        "p-value"
                     ),
                     value = c(
-                        round(r2, 4), round(adj_r2, 4), round(sigma, 4),
-                        df_res, n,
-                        round(f_stat, 4), p, df_res, round(f_p_value, 6)
+                        r2,       # round(r2, 4),
+                        adj_r2,   # round(adj_r2, 4),
+                        sigma,    # round(sigma, 4),
+                        n,        # n,
+                        df_res,   # df_res,
+                        f_stat,   # round(f_stat, 4),
+                        p,        # p,
+                        df_res,   # df_res,
+                        f_p_value # round(f_p_value, 6)
                     )
                 )
             }
@@ -264,8 +276,34 @@ S7::method(print, class_lm_object) = function(x, ...) {
     )
     cat("\n\n")
 
+    integer_stats = c("n", "df (residual)", "df1", "df2")
+    p_stats = "p-value"
+
+    fs = x@fit_summary
+    fs$value = vapply(seq_len(nrow(fs)), function(i) {
+        nm = fs$statistic[[i]]
+        v = fs$value[[i]]
+        if (nm %in% integer_stats) {
+            formatC(as.integer(v), format = "d")
+        } else if (nm %in% p_stats) {
+            x_num = suppressWarnings(as.numeric(v))
+            if (is.na(x_num) || x_num > 0.001) {
+                formatC(x_num, digits = 2, format = "f")
+            } else {
+                "<0.001"
+            }
+        } else {
+            formatC(v, digits = 2, format = "f")
+        }
+    }, character(1))
+
     cli::cat_line(cli::rule(left = "Model Fit", line = "-"), "\n")
-    tabstats::table_default(x@fit_summary)
+    tabstats::table_summary(
+        fs,
+        center_table = TRUE,
+        l = 5L,
+        style = tabstats::sm_style(sep = ":  ")
+    )
     cat("\n\n")
 
     invisible(x)
