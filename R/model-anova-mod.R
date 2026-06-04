@@ -59,7 +59,8 @@ S7::method(print, cld_anova) = function(x, ...) {
     cli::cat_line(cli::rule(left = "ANOVA Table", line = "-"), "\n")
     tabstats::table_default(
         x@data,
-        style_columns = tabstats::td_style(p_value = pval_styler)
+        style_columns = tabstats::td_style(p_value = pval_styler),
+        nrows = nrow(x@data)
     )
     cat("\n\n")
 
@@ -133,7 +134,6 @@ S7::method(anova, model_lazy) = function(object, ..., test = "F") {
     }
 
     valid_tests(test)
-
     all_lazy = c(list(object), rest)
     fitted = lapply(all_lazy, run_model_lazy_raw)
     build_anova(fitted, labels = character(0), test = test)
@@ -151,7 +151,6 @@ S7::method(anova, cld_exec) = function(object, ..., test = "F") {
     }
 
     valid_tests(test)
-
     all_execs = c(list(object), rest)
     fitted = lapply(all_execs, function(e) e@data)
     build_anova(fitted, labels = character(0), test = test)
@@ -215,16 +214,42 @@ valid_tests = function(test) {
 build_anova = S7::new_generic("build_anova", "fitted")
 
 S7::method(build_anova, S7::class_list) = function(fitted, labels, test) {
-    if (length(fitted) < 2L) {
-        cli::cli_abort("{.fn anova} requires at least 2 models.")
-    }
-
     not_able = !vapply(fitted, function(f) S7::S7_inherits(f, anova_able), logical(1))
     if (any(not_able)) {
         cli::cli_abort(c(
             "All models must return an {.cls anova_able} object to participate in {.fn anova}.",
             "x" = "Model{?s} {which(not_able)} do{?es/} not."
         ))
+    }
+
+    # Single model: sequential (Type I) ANOVA
+    if (length(fitted) == 1L) {
+        obj = fitted[[1L]]
+        if (!S7::S7_inherits(obj, class_lm_object)) {
+            cli::cli_abort(c(
+                "Single-model {.fn anova} is only supported for {.cls class_lm_object}.",
+                "i" = "Pass at least 2 models for other model types."
+            ))
+        }
+        stats_tbl = compute_anova_stats_single(obj)
+        return(cld_anova(
+            data = stats_tbl,
+            impl_cls = "anova_lm",
+            stat_cls = "anova_lm",
+            print_fn = NULL,
+            name = "ANOVA",
+            labels = character(0),
+            cld_meta = list(
+                stat_name = "ANOVA",
+                method = "Type I",
+                data_name = ""
+            )
+        ))
+    }
+
+    # Multi-model: incremental F / LRT
+    if (length(fitted) < 2L) {
+        cli::cli_abort("{.fn anova} requires at least 2 models.")
     }
 
     responses = vapply(fitted, function(f) deparse(f@terms[[2L]]), character(1))
@@ -252,7 +277,7 @@ S7::method(build_anova, S7::class_list) = function(fitted, labels, test) {
     }
 
     family = families[[1L]]
-    stats_tbl = compute_anova_stats(fitted, family = family, test = test)
+    stats_tbl = compute_anova_stats(fitted, labels = labels, family = family, test = test)
 
     cld_anova(
         data = stats_tbl,
@@ -278,6 +303,8 @@ S7::method(build_anova, S7::class_list) = function(fitted, labels, test) {
 #'
 #' @param fitted A list of `anova_able` objects, sorted by increasing
 #'   complexity (fewest to most parameters).
+#' @param labels If `length(mod) == 1L` in [anova()], the type I ANOVA will return
+#'   the terms of the covariate. Otherwise, the name of the model itself.
 #' @param family A string, e.g. `"gaussian"`, `"binomial"`, `"poisson"`.
 #' @param test One of `"F"`, `"LRT"`, `"Chisq"`.
 #'
@@ -285,7 +312,7 @@ S7::method(build_anova, S7::class_list) = function(fitted, labels, test) {
 #'
 #' @keywords internal
 #' @noRd
-compute_anova_stats = function(fitted, family, test) {
+compute_anova_stats = function(fitted, labels, family, test) {
     res_df = vapply(fitted, function(f) f@df_residual, numeric(1))
     dev = vapply(fitted, function(f) f@deviance, numeric(1))
     df_diff = c(NA_real_, -diff(res_df))
@@ -320,6 +347,59 @@ compute_anova_stats = function(fitted, family, test) {
         dev_diff = dev_diff,
         !!stat_col := stat,
         p_value = p_val
+    )
+}
+
+#' Type I ANOVA
+#'
+#' @keywords internal
+#' @noRd
+compute_anova_stats_single = function(obj) {
+    if (is.null(obj@x_mat)) {
+        cli::cli_abort(c(
+            "Single-model {.fn anova} requires {.field x_mat} to be populated.",
+            "i" = "Set {.code x_mat = as.numeric(stats::model.matrix(fit))} when constructing {.cls class_lm_object}."
+        ))
+    }
+
+    trms = obj@terms
+    all_labels = attr(trms, "term.labels")
+    resp = as.character(attr(trms, "variables")[[attr(trms, "response") + 1L]])
+    term_labels = all_labels[all_labels != resp]
+    has_intercept = attr(trms, "intercept") == 1L
+
+    y = obj@fitted + obj@residuals
+    n = length(y)
+    df_res = obj@df_residual
+    ncols = length(obj@beta)
+    X = matrix(obj@x_mat, nrow = n, ncol = ncols)
+
+    rss_baseline = if (has_intercept) sum((y - mean(y))^2) else sum(y^2)
+
+    start_col = if (has_intercept) 2L else 1L
+    rss_seq = numeric(length(term_labels))
+    for (k in seq_along(term_labels)) {
+        cols = seq_len(k) + (start_col - 1L)
+        X_sub = if (has_intercept) cbind(1, X[, cols, drop = FALSE]) else X[, cols, drop = FALSE]
+        rss_seq[k] = sum(.lm.fit(X_sub, y)$residuals^2)
+    }
+
+    rss_all = c(rss_baseline, rss_seq)
+    ss_terms = -diff(rss_all)
+    rss_final = rss_seq[length(rss_seq)]
+    ms_res = rss_final / df_res
+    f_val = ss_terms / ms_res
+    p_val = pf(f_val, 1L, df_res, lower.tail = FALSE)
+
+    df_terms = rep(1L, length(term_labels))
+
+    tibble::tibble(
+        term = c(term_labels, "Residuals"),
+        df = c(df_terms, df_res),
+        ss = c(ss_terms, rss_final),
+        ms = c(ss_terms / df_terms, rss_final / df_res),
+        f_value = c(f_val, NA_real_),
+        p_value = c(p_val, NA_real_)
     )
 }
 

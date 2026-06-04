@@ -15,14 +15,26 @@ Constructor arguments (populated automatically by \link{LINEAR_REG}):
 \itemize{
 \item \code{terms}: model terms object.
 \item \code{df_residual}: residual degrees of freedom.
-\item \code{deviance}: scalar deviance.
-\item \code{dispersion}: scalar dispersion parameter.
+\item \code{deviance}: scalar deviance, i.e. the residual sum of squares (RSS)
+in an OLS context.
+\item \code{dispersion}: scalar dispersion parameter, i.e. the mean squared
+error (MSE) in an OLS context.
 \item \code{family}: always \code{"gaussian"} for OLS.
+\item \code{fitted}: numeric vector of fitted values.
 \item \code{residuals}: numeric vector of model residuals.
-\item \code{coefficients}: data frame with columns \code{term}, \code{estimate},
-\code{std_error}, \code{statistic}, \code{p_value}.
-\item \code{fit_summary}: data frame with columns \code{r_squared}, \code{adj_r_squared},
-\code{sigma}, \code{df_residual}, \code{n_obs}.
+\item \code{beta}: named or unnamed numeric vector of coefficient estimates.
+\item \code{std_beta}: named or unnamed numeric vector of coefficient standard errors.
+}
+
+The following are computed automatically and do not need to be supplied:
+\itemize{
+\item \code{statistic}: per-coefficient t-statistics, derived as \code{beta / std_beta}.
+\item \code{p_value}: per-coefficient two-sided p-values.
+\item \code{coefficients}: data frame with columns \code{term}, \code{estimate}, \code{std_error},
+\code{statistic}, \code{p_value}.
+\item \code{fit_summary}: two-column data frame (\code{statistic}, \code{value}) containing
+R-squared, adjusted R-squared, sigma, residual df, n, F-statistic, F df1, F df2,
+and F p-value.
 }
 }
 \section{anova() protocol}{
