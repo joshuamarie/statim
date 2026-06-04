@@ -1,0 +1,108 @@
+---
+title: "Getting started with statim"
+description: "statim R package for starters"
+output: 
+    rmarkdown::html_vignette:
+        toc: true
+vignette: |
+    %\VignetteIndexEntry{Getting started with statim}
+    %\VignetteEngine{knitr::rmarkdown}
+    \usepackage[utf8]{inputenc}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+library(statim)
+```
+
+## Introduction
+
+`{statim}` is a new and modified approach of high-level statistical inference in R. It is fully built for statistical inference pipeline, made to be pipe-able, extensible, and exportable. This package is built at top of S7, making `{statim}` flexible but strict. The idea is not completely new, as this inherits traditional statistical modelling approach in R:
+
+``` r
+<statistical-function>(<formula>, <data>)
+```
+
+But it comes with the flavors of tidyverse-esque grammar verbs composition. 
+
+## Emulation of formulas: model IDs
+
+The functions that emulate the `formula` (and its ideas) to describe the model to be written within the pipeline are called model IDs. Normally, they inherit the class of `model_id`, and they should be built with S7. Traditionally, `formula` is used to describe the relationship between LHS (left-hand side) and RHS (right-hand side), but `model_id` take it on different level. 
+
+`{statim}` has built-in `model_id` objects:
+
+1.  `x_by()`: It simply reads as "x by group". It has 2 main arguments: `x` and `group`, and it is ideal for pipeline which compares `x` by `group`. Also, you can use its infix operator version `%by%`. 
+    
+    ``` r 
+    # In a function call
+    x_by(x, group)
+    x_by(x, c(g1, g2))
+    
+    # Using its infix operator version
+    x %by% group
+    x %by% c(g1, g2)
+    ```
+    
+    Both `x` and `group` can accept `<tidyselect>` helpers, such as `starts_with()`.  Only when a data frame is used. 
+
+2.  `rel()`: It simply reads as "relationship between x and y". It has 2 main arguments: `x` and `resp`, and it is ideal for pipeline which describes the relationship of `x` to `resp`.  
+    
+    ``` r 
+    rel(x, y)
+    ```
+    
+    Both `x` and `resp` can accept `<tidyselect>` helpers, such as `starts_with()`. Only when a data frame is used. 
+
+3.  `pairwise()`: With this function, all variables being selected by it will produce pairs one-by-one. Use `direction` to regulate which pairs are kept, and it's `"lt"` (less than) by default. 
+    
+    ``` r 
+    pairwise(x, y, z)
+    ```
+    
+    Note: When using `direction`, the filtration is based on lexicographic
+(alphabetical) ordering. Basically, `direction = "lt"` currently means "keep pairs where
+`name_a` comes before `name_b` alphabetically". Also, it can accept `<tidyselect>` helpers if data frame is given. 
+
+They also emulate `aes()` from `{ggplot2}`, which it captures the expression internally, instead of evaluating them. Take note that every `model_id` must be a captured expression, generally in `language` data structure, just like formula objects in R. 
+
+## General Workflow
+
+![](workflow.jpg)
+
+Usual workflow of writing `{statim}` comes with three (3) stages:
+
+i. *Model processor and definition:* The stage that explains the model of the statistical inference. You'll use define_model() (always at the beginning), and then some functions I still have to think about (like transformations and updating the model)
+
+ii. *Parameterization:* This stage is where you'll define the statistical inference. It can be a model-based inference (e.g. linear regression) or H-test inference (e.g. t-test). They are lazy-loaded, and you should be able to do anything. 
+
+iii. *Output processing and retrieval:* You'll execute the parameterization pipeline, and retrieve the output.
+
+Example:
+
+```{r}
+# i. Model processor and definition
+sleep_dm = define_model(sleep, extra %by% group)
+
+# ii. Parameterization (lazy-loaded)
+sleep_tt = sleep_dm |> prepare_test(TTEST) |> update(.ci = 0.9)
+
+# iii. Output processing and retrieval
+out = conclude(sleep_tt)
+print(out)
+tidy(out)
+```
+
+Since it is pipe-able, you can write down the following example above as:
+
+```{r}
+sleep |> 
+    define_model(extra %by% group) |> 
+    prepare_test(TTEST) |> 
+    update(.ci = 0.9) |> 
+    conclude() |> 
+    tidy()
+```
+

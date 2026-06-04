@@ -1,0 +1,77 @@
+---
+title: "The art of extensibility"
+description: "Writing statim extensions"
+output: 
+    rmarkdown::html_vignette:
+        toc: true
+vignette: |
+    %\VignetteIndexEntry{The art of extensibility}
+    %\VignetteEngine{knitr::rmarkdown}
+    \usepackage[utf8]{inputenc}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+library(statim)
+```
+
+## Rationale
+
+`{statim}` is so extendable, you can extend the existing methods or write your own and make it extensive. 
+
+Here, I plan to extend `TTEST()` with another bootstrapping by simply adding another variation:
+
+```{r}
+add_variant(TTEST, x_by, "another_boot") %<-% variant(
+    fn = function(.proc, .n = 1000L) {
+        x = .proc$x_data[[1]]
+        group_data = .proc$group_data
+        
+        grp = as.character(group_data[[1]])
+        lvls = unique(grp)
+        x1 = x[grp == lvls[[1]]]
+        x2 = x[grp == lvls[[2]]]
+        boot_fn = function(d, i) mean(d[i, 1]) - mean(d[i, 2])
+        b = boot::boot(data.frame(x1, x2), boot_fn, R = .n)
+        boot::boot.ci(b, type = "perc")
+    }
+)
+
+another_boot_tt = 
+    sleep |> 
+    define_model(extra %by% group) |> 
+    prepare_test(TTEST) |> 
+    via("another_boot") |> 
+    conclude()
+
+another_boot_tt
+```
+
+
+`{statim}` has built-in output [S7 classes](https://joshuamarie.com/statim/reference/index.html#base-statistical-inference-output-class), which you can use them so that your own method is used to be automatically processed into `{statim}` internals, like extracting your output in tibble format with `tidy()`. Otherwise, you must register them by your own. 
+
+An example above doesn't use one of built-in output S7 classes, so `tidy()` will fail. Fortunately, you can bring it down by using `making_tidy(<stat_fn>, <model_id / S7::class_formula>) %<-% method_tidy(...)` method:
+
+```{r}
+making_tidy(TTEST, x_by) %<-% method_tidy(
+    another_boot = function(.x, ...) {
+        dat = .x@data
+        tibble::tibble(
+            R = dat$R, 
+            t0 = dat$t0
+        )
+    }
+)
+
+another_boot_tt |> 
+    tidy()
+```
+
+You can clean the `TTEST()` in `x_by` model pipeline slate by simply using `remove_variant()`. 
+
+```{r}
+remove_variant(TTEST, x_by, "another_boot")
+```
