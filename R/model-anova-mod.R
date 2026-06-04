@@ -381,7 +381,7 @@ compute_anova_stats_single = function(obj) {
     for (k in seq_along(term_labels)) {
         cols = seq_len(k) + (start_col - 1L)
         X_sub = if (has_intercept) cbind(1, X[, cols, drop = FALSE]) else X[, cols, drop = FALSE]
-        rss_seq[k] = sum(.lm.fit(X_sub, y)$residuals^2)
+        rss_seq[k] = sum(stats::lm.fit(X_sub, y)$residuals^2)
     }
 
     rss_all = c(rss_baseline, rss_seq)
