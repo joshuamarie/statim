@@ -191,7 +191,7 @@ articles:
   - title: Writing statim extensions
     navbar: Writing statim extensions
     contents:
-    - extend/extensibility
+    - extend/extensibility1
 
 development:
   mode: auto
