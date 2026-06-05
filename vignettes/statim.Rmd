@@ -41,7 +41,7 @@ The functions that emulate the `<formula>` (and its idea) to describe the model 
     x_by(x, group)
     x_by(x, c(g1, g2))
     
-    # Using its infix operator version
+    # infix form
     x %by% group
     x %by% c(g1, g2)
     ```
@@ -56,15 +56,29 @@ The functions that emulate the `<formula>` (and its idea) to describe the model 
     
     Both `x` and `resp` accept `<tidyselect>` helpers, such as `starts_with()`. Only when a data frame is supplied. 
 
-3.  `pairwise()`: With this function, all variables being selected by it will produce pairs one-by-one. Use `direction` to regulate which pairs are kept, and it's `"lt"` (less than) by default. 
+3.  `pairwise()`: With this function, all variables being selected by it will generate all pairwise combinations. Use `direction` to regulate which pairs are kept, and it's `"lt"` (less than) by default. 
     
     ``` r 
     pairwise(x, y, z)
     ```
     
-    Note: When using `direction`, the filtration is based on lexicographic (alphabetical) ordering. Basically, `direction = "lt"` currently means "keep pairs where `name_a` comes before `name_b` alphabetically". Also, it can accept `<tidyselect>` helpers if data frame is given. 
+    Note: When using `direction`, the filtration is based on lexicographic (alphabetical) ordering. Basically, `direction = "lt"` means "keep pairs where `name_a` comes before `name_b` alphabetically". Also, it can accept `<tidyselect>` helpers if data frame is given. 
 
 And if you notice, they also emulate `aes()` mapper from `{ggplot2}`, which it captures the expression internally, instead of evaluating them — indeed they are mappers, just like `<formula>` objects. Take note that every `<model_id>` must be a captured expression, generally in `<language>` data structure, just like formula objects in R. 
+
+If you don't have the given data frame, internally it tries to look up the variables you passed on `<model_id>` objects at the current environment (global environment by default). If you don't want to write intermediate variables by assigning the data you created in a variable, use inline data with `I()` or multiple inlines with `inlines()`:
+
+``` r
+# `x_by()`
+I(rnorm(30)) %by% I(rep(c("a", "b"), each = 30))
+
+# `rel()`
+rel(I(rnorm(30)), I(rnorm(30)))
+
+# `pairwise()`
+pairwise(inlines(rnorm(30), rnorm(30), rnorm(30)))
+```
+
 
 ## General Workflow
 
@@ -72,11 +86,11 @@ And if you notice, they also emulate `aes()` mapper from `{ggplot2}`, which it c
 
 Usual workflow of writing `{statim}` comes with three (3) stages:
 
-i. *Model processor and definition:* The stage that explains the model of the statistical inference. You'll use `define_model()` (always at the beginning), and then some functions to be added in the future (like transformations and updating the model). 
+i. *Model processor and definition:* The stage which explains the model to be analyzed throughout the `{statim}`'s statistical inference pipeline. This stage is where you supplied either data frame (it could be any data structure, as long as they're dispatched into `model_processor()`) or a `<model_id>` (formula objects are special ones) into `define_model()`, and then some functions to be added in the future (like transformations and updating the model). 
 
-ii. *Parameterization:* This stage is where you'll define the statistical inference. It is either a model-based inference (e.g. linear regression) or H-test inference (e.g. t-test). They are lazy-loaded, and you should be able to do anything. 
+ii. *Parameterization:* This stage is always AFTER defining the model to be analyzed within the statistical inference pipeline, a stage which defines the estimation process of the statistical inference. It is either a model-based inference (e.g. linear regression) or H-test inference (e.g. t-test). They are lazy-loaded, and you should be able to do anything. Later updates may include other processes, such as sensitivity analysis. 
 
-iii. *Output processing and retrieval:* You'll execute the parameterization pipeline, and retrieve the output.
+iii. *Execution and retrieval:* You'll execute the first-two stages, especially the parameterization stage, and then retrieve the output.
 
 Example:
 
@@ -104,9 +118,79 @@ sleep |>
     tidy()
 ```
 
+### Eager Form
+
+There are times where you do not need the full pipeline, a quick eager form can do that. For a quick one-shot result, every test exposes an eager form that skips `define_model()` and `prepare_test()` entirely:
+
+```{r}
+TTEST(extra %by% group, sleep, .ci = 0.9)
+```
+
+The eager form accepts the same model ID and data arguments, pass the rest of arguments, and returns the same printed output. The only constraints the "eager form" compensates is you can't use the rest of the API, such as `via()` and `tidy()`. 
+
+## Recalibrating the estimation method
+
+`{statim}` has a way to recalibrate the method of estimation in the statistical inference pipeline. Use `via()` to switch a lazy pipeline to an alternative estimation method. It does not re-run anything — it updates the specification before `conclude()` executes it. Any named arguments after `.method` are forwarded to that variant.
+
+For example, switching from a classical t-test to a permutation test is a single added line, with nothing else changing:
+
+```{r}
+# Classical
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    conclude()
+
+# Permutation: one line added
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    via("permute", n = 999L) |>
+    conclude()
+
+# Bootstrap
+sleep |>
+    define_model(x_by(extra, group)) |>
+    prepare_test(TTEST) |>
+    via("boot", n = 2000L) |>
+    conclude()
+```
+
 ## Hypothesis expressioms
 
-One of the most unique features of `{statim}` is the ability to write down the expression of null hypothesis during the test in a mathematical form, not in a declarative manner like `alternative = "less"` gimmicks. 
+One of the distinguishing features of `{statim}` is the ability to state the null hypothesis as a mathematical expression. The conventional approach in base R uses declarative strings like `alternative = "less"`, which are opaque: they encode a direction without naming the parameter being constrained or the value it is being tested against. You cannot read `alternative = "greater"` and know whether the claim is about a population mean, a population proportion, or a population correlation without reading the surrounding context. After all, hypothesis testing is about testing the null hypothesis of whether you have an evidence to support the claim, and parametric tests are about testing the population population. 
 
+While `{statim}` still supports this, `{statim}` made some redirection with explicit hypothesis expressions built from parameter objects, in `<param_obj>` class, and standard R comparison operators. The expression names the population parameter, the relational operator, and the hypothesized scalar — the same three components that appear in any textbook null hypothesis statement. Internally, `state_null()` parses the expression, extracts those components, and passes them into the test implementation. Any linear combination of parameters is accepted on either side.
 
+The supported operators are `==`, `!=`, `<`, `>`, `<=`, `>=`, and `%=%` (simultaneous equality across multiple parameters). Here are the built-in `<param_obj>` objects:
 
+-  `MU()`: refers to the population mean $\mu$. It has following usages:
+
+    1.  `MU(x)` which means the assumed population mean of the variable `x`. 
+    
+    2.  `MU(x, group == "1")` which means the assumed population mean of the variable `x` given the `group` equal `"1"`. 
+
+-  `RHO()`: or  $\rho$ which refers to the population correlation between 2 variables — `RHO(x, y) == 0` simply means the population correlation between `x` and `y` is 0 or $\rho_{x, y} = 0$. 
+
+Here's a simple example of a t-test that tests the following null hypothesis: 
+
+$$\mu_{x|\text{group}=1} \leq \mu_{x|\text{group}=2}$$
+
+or sometimes this null hypothesis can be written as:
+
+$$\mu_1 \leq \mu_2$$
+
+```{r}
+sleep |>
+    define_model(extra %by% group) |>
+    prepare_test(TTEST) |>
+    state_null(
+        MU(x, group == "1") <= MU(x, group == "2")
+    ) |>
+    conclude()
+```
+
+## Generalization
+
+If you have an inferential statistics tasks, give this package a shot — it's updated and more modernized. Besides, it's written in S7, so type annotation is the least of your worries. And that's pretty much all you need to know when you started working with this package. 
+   
