@@ -1,6 +1,6 @@
 Package: statim
 Type: Package
-Title: Higher Level Interface for Statistical Inference
+Title: A Declarative Interface for Statistical Inference
 Version: 0.0.0.9000
 Authors@R: c(
     person("Joshua", "Marie", 
@@ -11,9 +11,12 @@ Authors@R: c(
            role = "aut",
            comment = c(ORCID = "0000-0001-8159-0804"))
     )
-Description: This is a high-level package, attempting the re-imagination of 
-    "grammar of statistical inference" framework in a package in S7 class, mixing 
-    with 'ggplot2' / 'tidyverse' paradigm. 
+Description: A declarative interface for statistical inference built on the S7 object 
+    system. Models are described using expressive model identifiers, null 
+    hypotheses are stated as mathematical expressions over population parameters, 
+    and estimation is deferred until explicitly requested. Supports hypothesis 
+    testing and model-based inference with an extensible variant system for 
+    registering custom estimation methods.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
