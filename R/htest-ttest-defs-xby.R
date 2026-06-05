@@ -301,10 +301,11 @@ ttest_def_two = test_define(
                 resolved$scalar
             },
             .alt = function(claim, processed = NULL) {
-                switch(claim@op,
-                       "==" = , "!=" = "two.sided",
-                       ">=" = , ">" = "greater",
-                       "<=" = , "<" = "less"
+                switch(
+                    claim@op,
+                    "==" = , "!=" = "two.sided",
+                    ">=" = , ">" = "less", # "greater",
+                    "<=" = , "<" = "greater" # "less"
                 )
             }
         ),
