@@ -37,7 +37,7 @@ What does `{statim}` mean?
 `{statim}` is a Latin word for "immediately, at once". The name carries a double meaning:
 
 - *stat*: as in statistics, the domain this package lives in
-- *im* (*statim*): as in immediate, signalling that inference should be expressible as a direct declaration, not somewhat a sequence of mechanical steps
+- *im* (*statim*): as in "immediate", signalling that inference should be expressible as a direct declaration, not somewhat a sequence of mechanical steps
 
 This simply means: you declare *what* statistical inference you want to perform, then `{statim}` immediately delivers *how*.
 
@@ -81,74 +81,41 @@ For the time being, you can install the current implementation on GitHub:
 pak::pak("joshuamarie/statim")
 ```
 
-## Usages
+## General Usage
+
+Loading a library comes with preference. In this example, `library()` is used for a simple demonstration: 
 
 ```{r}
 library(statim)
 ```
 
-### T-test
+All you need to know is that the usual workflow of `{statim}` has three usual steps:
 
-The pipeline form lets you recalibrate the method without rewriting anything else. Switching from a classical t-test to a permutation t-test is a single `via()` call:
-
-```{r}
-# Classical
-sleep |>
-    define_model(x_by(extra, group)) |>
-    prepare_test(TTEST) |>
-    conclude()
+``` r 
+sleep |>                                # 1
+    define_model(extra %by% group) |>   # 1              
+    prepare_test(TTEST) |>              # 2         
+    update(.ci = 0.9) |>                # 2      
+    conclude() |>                       # 3           
+    tidy()                              # 3          
 ```
 
-```{r}
-# Permutation: one line added, nothing else changes
-sleep |>
-    define_model(x_by(extra, group)) |>
-    prepare_test(TTEST) |>
-    via("permute", n = 500L, seed = 123L) |>
-    conclude()
-```
+1. *Model processor and definition*, where defining the model *to be analyzed* happens at the beginning during statistical inference. Typically, this step where supplying either a data frame or a `<model_id>` objects into `define_model()` occurs, and then some functions to be appended in the future updates. 
 
-For a quick one-shot result, the eager form skips the pipeline entirely:
+2. *Parameterization* and proceed to writing the estimation process of the statistical inference pipeline. It is either a model-based inference (e.g. linear regression) or H-test inference (e.g. t-test). They are lazy-loaded, and you should be able to do anything. 
 
-```{r}
-TTEST(x_by(extra, group), sleep)
-```
+3. *Execution and retrieval* then (re-)executes the first 2 steps and retrieves the output. 
 
-### Correlation test
+See through `vignette("statim")`, and learn more about the API design as a starter. 
 
-The same pipeline shape works for any registered test. Here is the same structure used for a correlation test:
-
-```{r}
-cars |>
-    define_model(rel(speed, dist)) |>
-    prepare_test(CORTEST) |>
-    conclude()
-```
-
-For a quick one-shot result, the eager form works here too:
-
-```{r}
-CORTEST(rel(speed, dist), cars)
-```
-
-## Model IDs
-
-Model IDs are named counterparts to R formulas. Rather than encoding the model structure implicitly in a formula string, each model ID carries an explicit name that tells `{statim}` what kind of relationship is intended:
-
-| Model ID | Analogous formula | Use case |
-|---|---|---|
-| `x_by(x, group)` | `x ~ group` | Compare a variable across groups |
-| `rel(x, resp)` | `resp ~ x` | Test the relationship between two variables |
-| `pairwise(a, b, c)` | *(no formula equivalent)* | All pairwise comparisons across columns |
-
-The name of the model ID directly determines the operation performed. Passing `pairwise(a, b, c)` to a t-test runs a pairwise t-test across every pair of columns; there is no equivalent formula syntax for this. The same model ID can be reused across different tests without any modification.
-
-## Core Ideas
+## Core Semantics
 
 The package is designed around three ideas:
 
-1. **A shared grammar**: every inferential procedure follows the same shape -- `define_model()`, `prepare_test()`, `conclude()` -- regardless of which test or model ID is used. The model ID (e.g. `x_by`, `rel`, `pairwise`) determines what the test does; the grammar stays the same. Eager forms (`TTEST()`, `CORTEST()`, ...) provide a shortcut when the full pipeline is not needed.
+1. **A shared grammar**: every inferential procedure follows the same shape -- `define_model()`, `prepare_test()`, `conclude()` -- regardless of which test or model ID is used. The model ID objects (e.g. `x_by`, `rel`, `pairwise`) determines what the test does; the grammar stays the same. Eager forms (`TTEST()`, `CORTEST()`, ...) provide a shortcut when the full pipeline is not needed.
+
 2. **Composable pipelines**: build up a test specification lazily, recalibrate the estimation method with a single `via()` call, and execute with `conclude()`.
+
 3. **Extensible by design**: every test is a `stat_define()` object; bring your own engine, your own method, your own implementation. Auto dispatch handles `tidy()` for your method without requiring you to write it.
 
 ## License
