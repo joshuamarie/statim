@@ -22,7 +22,7 @@
 #' @param .x A `cld_exec` object produced by [conclude()].
 #' @param ... Passed to the dispatched method.
 #'
-#' @return Any type, typically in a `tibble` data frame format.
+#' @return The statistical output in a `tibble` data frame format.
 #'
 #' @seealso [auto_tidy()], [making_tidy()], [method_tidy()], [class_stat_infer]
 #'
@@ -74,7 +74,14 @@ S7::method(tidy, cld_exec) = function(.x, ...) {
         ))
     }
 
-    tidy_fn(.x, ...)
+    out = tidy_fn(.x, ...)
+
+    if (!inherits(out, "tbl_df"))
+        cli::cli_abort(
+            "The output is preferrably in a tibble format, not {.obj_type_friendly {out}}."
+        )
+
+    out
 }
 
 #' Declare tidy methods for a stat and model type

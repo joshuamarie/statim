@@ -12,7 +12,7 @@ tidy(.x, ...)
 \item{...}{Passed to the dispatched method.}
 }
 \value{
-Any type, typically in a \code{tibble} data frame format.
+The statistical output in a \code{tibble} data frame format.
 }
 \description{
 \code{tidy()} extracts a tibble of primary results from a \code{cld_exec} object
