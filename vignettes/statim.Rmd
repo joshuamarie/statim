@@ -130,7 +130,7 @@ The eager form accepts the same model ID and data arguments, pass the rest of ar
 
 ## Recalibrating the estimation method
 
-`{statim}` has a way to recalibrate the method of estimation in the statistical inference pipeline. Use `via()` to switch a lazy pipeline to an alternative estimation method. It does not re-run anything — it updates the specification before `conclude()` executes it. Any named arguments after `.method` are forwarded to that variant.
+`{statim}` has a way to recalibrate the method of estimation in the statistical inference pipeline. Use `via()` to switch a lazy pipeline to an alternative estimation method. It updates the specification while the whole pipeline is defused before `conclude()` executes it. Any named arguments after `.method` are forwarded to that variant.
 
 For example, switching from a classical t-test to a permutation test is a single added line, with nothing else changing:
 
