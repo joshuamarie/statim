@@ -7,7 +7,7 @@
 PI(x, given = NULL)
 }
 \arguments{
-\item{x}{A bare variable name.}
+\item{x}{An empty or a bare variable name.}
 
 \item{given}{An optional filter predicate as a bare expression.}
 }

@@ -38,7 +38,7 @@ MU = S7::new_class(
 
 #' Proportion of a variable, optionally conditioned on a subgroup
 #'
-#' @param x A bare variable name.
+#' @param x An empty or a bare variable name.
 #' @param given An optional filter predicate as a bare expression.
 #'
 #' @return A `PI` / `param_obj` S7 object.
@@ -58,7 +58,7 @@ PI = S7::new_class(
     constructor = function(x, given = NULL) {
         S7::new_object(
             S7::S7_object(),
-            x = rlang::enquo(x),
+            x = if (missing(x)) NULL else rlang::enquo(x),
             given = if (missing(given)) NULL else rlang::enquo(given)
         )
     }
@@ -161,14 +161,14 @@ S7::method(parse_param_call, MU) = function(x, args, env) {
 }
 
 S7::method(parse_param_call, PI) = function(x, args, env) {
-    if (length(args) < 1L || length(args) > 2L) {
+    if (length(args) > 2L) {
         cli::cli_abort(c(
-            "{.fn PI} requires 1 or 2 arguments.",
-            "i" = "Usage: {.code PI(x)} or {.code PI(x, given)}."
+            "{.fn PI} accepts 0, 1, or 2 arguments.",
+            "i" = "Usage: {.code PI()}, {.code PI(x)}, or {.code PI(x, given)}."
         ))
     }
-    obj = PI(x = !!rlang::new_quosure(quote(.dummy), emptyenv()))
-    S7::prop(obj, "x") = rlang::new_quosure(args[[1]], env)
+    obj = PI()
+    S7::prop(obj, "x") = if (length(args) >= 1L) rlang::new_quosure(args[[1]], env) else NULL
     S7::prop(obj, "given") = if (length(args) == 2L) rlang::new_quosure(args[[2]], env) else NULL
     obj
 }
@@ -213,11 +213,15 @@ S7::method(param_id_label, MU) = function(x) {
 }
 
 S7::method(param_id_label, PI) = function(x) {
-    x_lbl = rlang::as_label(x@x)
-    if (is.null(x@given)) {
-        paste0("PI(", x_lbl, ")")
+    if (is.null(x@x)) {
+        if (is.null(x@given)) "PI()" else paste0("PI(, ", rlang::as_label(x@given), ")")
     } else {
-        paste0("PI(", x_lbl, ", ", rlang::as_label(x@given), ")")
+        x_lbl = rlang::as_label(x@x)
+        if (is.null(x@given)) {
+            paste0("PI(", x_lbl, ")")
+        } else {
+            paste0("PI(", x_lbl, ", ", rlang::as_label(x@given), ")")
+        }
     }
 }
 
