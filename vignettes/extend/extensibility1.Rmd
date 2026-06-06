@@ -1,12 +1,12 @@
 ---
-title: "The art of extensibility 1"
-subtitle: "`tidy()` method"
+title: "Writing new `tidy()` method"
+subtitle: "The art of extensibility 1"
 description: "Writing statim extensions"
 output: 
     rmarkdown::html_vignette:
         toc: true
 vignette: |
-    %\VignetteIndexEntry{The art of extensibility 1}
+    %\VignetteIndexEntry{Writing new `tidy()` method}
     %\VignetteEngine{knitr::rmarkdown}
     \usepackage[utf8]{inputenc}
 ---
@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>"
 )
+
 library(statim)
 ```
 
@@ -66,8 +67,7 @@ making_tidy(TTEST, x_by) %<-% method_tidy(
     }
 )
 
-another_boot_tt |> 
-    tidy()
+another_boot_tt |> tidy()
 ```
 
 You can clean the `TTEST()` in `x_by` model pipeline slate by simply using `remove_variant()`. 
