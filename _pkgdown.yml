@@ -191,6 +191,11 @@ footer:
 
 articles:
 
+  - title: Pointers of statim you need to know
+    navbar: Pointers of statim you need to know
+    contents:
+    - pointers/model_id
+
   - title: Writing statim extensions
     navbar: Writing statim extensions
     contents:
