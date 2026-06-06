@@ -47,7 +47,7 @@ test_that("define_model() with formula dispatches correctly", {
     expect_named(dm@processed, c("data", "vars", "formula"))
 })
 
-# x_by -------------------------------------------------------------------------
+# ---- x_by ----
 
 test_that("x_by() produces an x_by/model_id object", {
     m = x_by(extra, group)
@@ -100,7 +100,7 @@ test_that("%by% is an alias for x_by()", {
     )
 })
 
-# rel --------------------------------------------------------------------------
+# ---- rel ----
 
 test_that("rel() produces a rel/model_id object", {
     m = rel(speed, dist)
@@ -125,7 +125,7 @@ test_that("rel() resolves columns from data frame", {
     expect_equal(dm@processed$resp_data$dist, cars$dist)
 })
 
-# pairwise ---------------------------------------------------------------------
+# ---- pairwise ----
 
 test_that("pairwise() produces a pairwise/model_id object", {
     m = pairwise(a, b, c)
@@ -162,6 +162,7 @@ test_that("pairwise() with direction = 'all' includes self-pairs", {
     dm = define_model(pairwise(a, b, c, direction = "all"), df)
 
     # 3 vars, direction "all": 3 * 3 = 9 pairs
+    # This means "all combinations"
     expect_length(dm@processed$pairs, 9)
 })
 
@@ -173,7 +174,7 @@ test_that("pairwise() with direction = 'eq' returns only self-pairs", {
     expect_true(all(vapply(dm@processed$pairs, \(p) p[[1]] == p[[2]], logical(1))))
 })
 
-# model_id_info ----------------------------------------------------------------
+# ---- model_id_info ----
 
 test_that("model_id_info() for x_by without processed omits vars and counts", {
     info = model_id_info(x_by(extra, group))
@@ -233,6 +234,33 @@ test_that("model_id_info() for formula reports left_var and right_var", {
     expect_equal(info$model_type, "formula")
     expect_equal(info$other_info$left_var, 1)
     expect_equal(info$other_info$right_var, 1)
+})
+
+# ---- prop ----
+
+test_that("define_model() with prop() dispatches on model-ID first style", {
+    dm = define_model(prop(45, 100))
+
+    expect_s7_class(dm, def_model)
+    expect_s7_class(dm@model_id, prop)
+    expect_named(dm@processed, c("x", "n"))
+})
+
+test_that("model_id_info() for prop without processed still includes vars", {
+    info = model_id_info(prop(45, 100))
+
+    expect_equal(info$model_type, "prop")
+    expect_length(info$vars, 2)
+})
+
+test_that("print.def_model() returns invisibly for prop()", {
+    dm = define_model(prop(45, 100))
+
+    expect_invisible(print(dm))
+})
+
+test_that("print.model_id() returns invisibly for prop()", {
+    expect_invisible(print(prop(45, 100)))
 })
 
 # print methods ----------------------------------------------------------------
