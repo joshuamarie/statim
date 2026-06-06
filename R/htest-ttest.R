@@ -140,9 +140,9 @@ class_ttest_two = S7::new_class(
             default = 0.95,
             validator = function(value) {
                 if (length(value) != 1L)
-                    paste0("`ci_level` must be length 1, not ", length(value), ".")
-                if (value >= 1)
-                    "`ci_level must not be greater than or equal to 1`"
+                    return(paste0("`ci_level` must be length 1, not ", length(value), "."))
+                if (value <= 0 || value >= 1)
+                    "`ci_level` must be between 0 and 1 (exclusive)."
             }
         )
     )
