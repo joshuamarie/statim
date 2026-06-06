@@ -14,7 +14,7 @@ status](https://www.r-pkg.org/badges/version/statim)](https://CRAN.R-project.org
 coverage](https://codecov.io/gh/joshuamarie/statim/graph/badge.svg)](https://app.codecov.io/gh/joshuamarie/statim)
 <!-- badges: end -->
 
-**Higher Level Interface for Statistical Inference**
+**A Declarative Interface for Statistical Inference**
 
 ## Package Overview
 
@@ -33,22 +33,19 @@ perform, then `{statim}` immediately delivers *how*.
 
 ## Why statim?
 
-R has a rich statistical ecosystem, but hypothesis testing is served by
-an assortment of disconnected functions. R gained a grammar for graphics
-(`{ggplot2}`) and one for data manipulation (`{dplyr}`), but statistical
-inference has no equivalent: each testing function ships with its own
-interface, its own way of specifying data, and its own output format.
-There is no shared grammar for inference: no way to say *what* you want
-to test without simultaneously committing to *how* the procedure carries
-it out.
+R has a rich statistical ecosystem, but statistical inference in general
+is served by an assortment of disconnected functions. R gained a grammar
+for graphics (`{ggplot2}`) and one for data manipulation (`{dplyr}`),
+but statistical inference has no equivalent: each testing function ships
+with its own interface, its own way of specifying data, and its own
+output format. There is no shared grammar for inference: no way to say
+*what* you want to test without simultaneously committing to *how* the
+procedure carries it out.
 
 `{statim}` is an attempt to re-imagine this from the ground up, the same
 way `{ggplot2}` introduced a grammar for graphics without replacing base
 plotting functions. The core idea is that any inferential procedure can
-be described in three steps: define the structure of the data
-(`define_model()`), declare what you want to infer (`prepare_test()`),
-and optionally recalibrate the estimation method (`via()`). The
-procedure executes only when you call `conclude()`.
+be described in [three steps](#wf).
 
 This separation matters because it makes statistical workflows
 *composable*. Switching from a classical to a permutation procedure does
@@ -90,15 +87,16 @@ pak::pak("joshuamarie/statim")
 
 ## General Usage
 
-Loading a library comes with preference. In this example, `library()` is
-used for a simple demonstration:
+Loading a library comes with [a lot of
+preferences](https://joshuamarie.com/posts/06-load-pkg/). In this
+example, `library()` is used for a simple demonstration:
 
 ``` r
 library(statim)
 ```
 
-All you need to know is that the usual workflow of `{statim}` has three
-usual steps:
+All you need to know is that the usual workflow of `{statim}` comes with
+three usual steps:
 
 ``` r
 sleep |>                                # 1
@@ -115,14 +113,18 @@ sleep |>                                # 1
     `<model_id>` objects into `define_model()` occurs, and then some
     functions to be appended in the future updates.
 
-2.  *Parameterization* and proceed to writing the estimation process of
-    the statistical inference pipeline. It is either a model-based
-    inference (e.g. linear regression) or H-test inference
-    (e.g. t-test). They are lazy-loaded, and you should be able to do
-    anything.
+2.  *Parameterization*, and then proceed to writing the estimation
+    process of the statistical inference pipeline. At the normal level,
+    the statistical inference can be either a model-based inference
+    (e.g. linear regression through `prepare_model()`) or H-test
+    inference (e.g. t-test through `prepare_test()`). They are
+    lazy-loaded, and only executed if needed.
 
 3.  *Execution and retrieval* then (re-)executes the first 2 steps and
-    retrieves the output.
+    retrieves the output. There are several techniques to retrieve the
+    output — e.g. through `tidy()`. Functions like these will worked if
+    there are available method is registered, automatically or from a
+    manual step.
 
 See through `vignette("statim")`, and learn more about the API design as
 a starter.
