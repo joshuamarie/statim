@@ -1,6 +1,6 @@
 #' Base class for all statistical result objects
 #'
-#' `class_stat_infer` is the base S7 class for all result objects returned
+#' `class_stat_infer` is the base abstract S7 class for all result objects returned
 #' by `fn` in [baseline()] and [variant()]. Concrete result classes like
 #' [class_lm_object] inherit from it.
 #'
@@ -58,4 +58,4 @@
 #' @seealso [baseline()], [variant()], [auto_tidy()], [class_lm_object]
 #'
 #' @export
-class_stat_infer = S7::new_class("class_stat_infer")
+class_stat_infer = S7::new_class("class_stat_infer", abstract = TRUE)

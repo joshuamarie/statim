@@ -7,7 +7,7 @@
 class_stat_infer()
 }
 \description{
-\code{class_stat_infer} is the base S7 class for all result objects returned
+\code{class_stat_infer} is the base abstract S7 class for all result objects returned
 by \code{fn} in \code{\link[=baseline]{baseline()}} and \code{\link[=variant]{variant()}}. Concrete result classes like
 \link{class_lm_object} inherit from it.
 }
