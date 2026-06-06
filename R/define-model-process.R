@@ -12,12 +12,7 @@
 #' @name model-processor
 #' @export
 model_processor = S7::new_generic("model_processor", "x")
-# model_processor = function(x, ...) {
-#     UseMethod("model_processor")
-# }
 
-# #' @rdname model-processor
-# #' @export
 S7::method(model_processor, S7::class_formula) =
     function(x, data = NULL, ...) {
         vars = all.vars(x)
@@ -44,8 +39,6 @@ S7::method(model_processor, S7::class_formula) =
         )
     }
 
-# #' @rdname model-processor
-# #' @export
 S7::method(model_processor, x_by) = function(x, data = NULL, ...) {
     proc = two_vars_extract(x@x, x@group, data = data, role2 = "group")
     list(
@@ -54,8 +47,6 @@ S7::method(model_processor, x_by) = function(x, data = NULL, ...) {
     )
 }
 
-# #' @rdname model-processor
-# #' @export
 S7::method(model_processor, rel) = function(x, data = NULL, ...) {
     proc = two_vars_extract(x@x, x@resp, data = data, role2 = "resp")
     list(
@@ -64,8 +55,6 @@ S7::method(model_processor, rel) = function(x, data = NULL, ...) {
     )
 }
 
-# #' @rdname model-processor
-# #' @export
 S7::method(model_processor, pairwise) = function(x, data = NULL, ...) {
     pairwise_data_extract(x, data)
 }
