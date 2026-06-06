@@ -4,9 +4,9 @@
 \name{statim}
 \alias{statim-package}
 \alias{statim}
-\title{statim: Higher Level Interface for Statistical Inference}
+\title{statim: A Declarative Interface for Statistical Inference}
 \description{
-This is a high-level package, attempting the re-imagination of "grammar of statistical inference" framework in a package in S7 class, mixing with 'ggplot2' / 'tidyverse' paradigm.
+A declarative interface for statistical inference built on the S7 object system. Models are described using expressive model identifiers, null hypotheses are stated as mathematical expressions over population parameters, and estimation is deferred until explicitly requested. Supports hypothesis testing and model-based inference with an extensible variant system for registering custom estimation methods.
 }
 \seealso{
 Useful links:
