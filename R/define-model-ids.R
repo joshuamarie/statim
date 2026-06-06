@@ -144,6 +144,50 @@ pairwise = S7::new_class(
     }
 )
 
+#' Define a proportion test model
+#'
+#' `prop()` creates a `prop` model ID for proportion tests. Both arguments
+#' are scalar constants — expressions are not captured.
+#'
+#' @param x Number of successes. A non-negative integer scalar, `x <= n`.
+#' @param n Total number of trials. A positive integer scalar.
+#'
+#' @return A `prop` / `model_id` S7 object.
+#'
+#' @examples
+#' prop(45, 100)
+#'
+#' @export
+prop = S7::new_class(
+    "prop",
+    parent = model_id,
+    properties = list(
+        x = S7::new_property(
+            class = S7::class_numeric,
+            validator = function(value) {
+                if (length(value) != 1L)
+                    return(paste0("`x` must be a scalar, not length ", length(value), "."))
+                if (!is.finite(value) || value != as.integer(value) || value < 0L)
+                    "`x` must be a non-negative integer."
+            }
+        ),
+        n = S7::new_property(
+            class = S7::class_numeric,
+            validator = function(value) {
+                if (length(value) != 1L)
+                    return(paste0("`n` must be a scalar, not length ", length(value), "."))
+                if (!is.finite(value) || value != as.integer(value) || value < 1L)
+                    "`n` must be a positive integer."
+            }
+        )
+    ),
+    constructor = function(x, n) {
+        if (x > n)
+            stop("`x` must not exceed `n`.")
+        S7::new_object(S7::S7_object(), x = x, n = n)
+    }
+)
+
 S7::method(print, model_id) = function(x, ...) {
     info = model_id_info(x)
 

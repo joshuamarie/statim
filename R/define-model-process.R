@@ -58,3 +58,8 @@ S7::method(model_processor, rel) = function(x, data = NULL, ...) {
 S7::method(model_processor, pairwise) = function(x, data = NULL, ...) {
     pairwise_data_extract(x, data)
 }
+
+S7::method(model_processor, prop) = function(x, ...) {
+    list(x = x@x, n = x@n)
+}
+

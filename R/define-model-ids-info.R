@@ -99,6 +99,21 @@ S7::method(model_id_info, pairwise) = function(.model_id, processed = NULL, ...)
     out
 }
 
+S7::method(model_id_info, prop) = function(.model_id, processed = NULL, ...) {
+    list(
+        model_type = "prop",
+        args = paste0(.model_id@x, " / ", .model_id@n),
+        other_info = list(
+            x = .model_id@x,
+            n = .model_id@n
+        ),
+        vars = list(
+            list(name = "x", preview = "<constant>"),
+            list(name = "n", preview = "<constant>")
+        )
+    )
+}
+
 S7::method(model_id_info, S7::class_formula) = function(.model_id, processed = NULL, ...) {
     f = .model_id
     data = processed$data %||% NULL
