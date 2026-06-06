@@ -64,6 +64,19 @@ The functions that emulate the `<formula>` (and its idea) to describe the model 
     
     Note: When using `direction`, the filtration is based on lexicographic (alphabetical) ordering. Basically, `direction = "lt"` means "keep pairs where `name_a` comes before `name_b` alphabetically". Also, it can accept `<tidyselect>` helpers if data frame is given. 
 
+4.  `prop()`: Use this when the data is just a single observed count, namely the number of successes `x` out of `n` trials. Unlike the other model IDs, `prop()` takes scalar constants directly; no variable names or data frame is involved.
+
+    ``` r
+    prop(45, 100)   # 45 successes out of 100 trials
+    ```
+
+    Because the data is embedded in the model ID itself, `define_model()` does
+    not require a data frame:
+
+    ``` r
+    define_model(prop(45, 100))
+    ```
+
 And if you notice, they also emulate `aes()` mapper from `{ggplot2}`, which it captures the expression internally, instead of evaluating them — indeed they are mappers, just like `<formula>` objects. Take note that every `<model_id>` must be a captured expression, generally in `<language>` data structure, just like formula objects in R. 
 
 If you don't have the given data frame, internally it tries to look up the variables you passed on `<model_id>` objects at the current environment (global environment by default). If you don't want to write intermediate variables by assigning the data you created in a variable, use inline data with `I()` or multiple inlines with `inlines()`:
@@ -78,7 +91,6 @@ rel(I(rnorm(30)), I(rnorm(30)))
 # `pairwise()`
 pairwise(inlines(rnorm(30), rnorm(30), rnorm(30)))
 ```
-
 
 ## General Workflow
 
@@ -171,6 +183,12 @@ The supported operators are `==`, `!=`, `<`, `>`, `<=`, `>=`, and `%=%` (simulta
     2.  `MU(x, group == "1")` which means the assumed population mean of the variable `x` given the `group` equal `"1"`. 
 
 -  `RHO()`: or  $\rho$ which refers to the population correlation between 2 variables — `RHO(x, y) == 0` simply means the population correlation between `x` and `y` is 0 or $\rho_{x, y} = 0$. 
+
+-  `PI()`: refers to the population proportion $\pi$. Used with `prop()` pipelines. It accepts zero or one argument:
+
+    1.  `PI()` — the population proportion of the modelled count, when the variable name is already encoded in the model ID via `prop()` (see `?P_TEST`). 
+
+    2.  `PI(x)` — the population proportion of a named variable `x`, for future two-sample proportion tests.
 
 Here's a simple example of a t-test that tests the following null hypothesis: 
 
