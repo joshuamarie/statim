@@ -72,6 +72,8 @@ Collate:
     'stat-exec.R'
     'tidy-core.R'
     'htest-impl-container.R'
+    'htest-proptest-defs.R'
+    'htest-proptest.R'
     'htest-anova-defs-xby.R'
     'htest-anova-defs-formula.R'
     'htest-anova.R'
