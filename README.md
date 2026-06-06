@@ -45,24 +45,44 @@ procedure carries it out.
 `{statim}` is an attempt to re-imagine this from the ground up, the same
 way `{ggplot2}` introduced a grammar for graphics without replacing base
 plotting functions. The core idea is that any inferential procedure can
-be described in [three steps](#wf).
+be described in [three steps](#general-usage).
 
 This separation matters because it makes statistical workflows
-*composable*. Switching from a classical to a permutation procedure does
-not require rewriting your code; it is a single addition to the
-pipeline:
+*composable*. For example, in t-test you just want to switch from
+classical to permutation. `{statim}` won’t need you to do a lot of work
+(which sometimes require rewriting your code) to switch from a classical
+to a permutation procedure does not require rewriting your code, just a
+single addition to the syntax.
 
 ``` r
 # Classical t-test
-sleep |> define_model(x_by(extra, group)) |> prepare_test(TTEST) |> conclude()
+sleep |> 
+    define_model(x_by(extra, group)) |> 
+    prepare_test(TTEST) |> 
+    conclude()
 
-# Permutation t-test: one line added, nothing else changes
-sleep |> define_model(x_by(extra, group)) |> prepare_test(TTEST) |> via("permute", n = 1000L) |> conclude()
+# Permutation t-test
+sleep |> 
+    define_model(x_by(extra, group)) |> 
+    prepare_test(TTEST) |> 
+    via("permute", n = 1000L) |> # Here, one line added, nothing else changes
+    conclude()
+```
 
-# The same pipeline shape works for any registered test
-cars |> define_model(rel(speed, dist)) |> prepare_test(CORTEST) |> conclude()
+The same syntax works for any registered tests, e.g. correlation test:
 
-# For a quick result, the eager form skips the pipeline entirely
+``` r
+cars |> 
+    define_model(rel(speed, dist)) |> 
+    prepare_test(CORTEST) |> 
+    conclude()
+    
+```
+
+For a quick result, the eager form skips the piped syntax entirely:
+
+``` r
+# Only works for `stat_fn` function
 TTEST(x_by(extra, group), sleep)
 CORTEST(rel(speed, dist), cars)
 ```
