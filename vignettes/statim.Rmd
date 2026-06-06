@@ -62,7 +62,7 @@ The functions that emulate the `<formula>` (and its idea) to describe the model 
     pairwise(x, y, z)
     ```
     
-    Note: When using `direction`, the filtration is based on lexicographic (alphabetical) ordering. Basically, `direction = "lt"` means "keep pairs where `name_a` comes before `name_b` alphabetically". Also, it can accept `<tidyselect>` helpers if data frame is given. 
+    Note: When using `direction`, the filtration is based on lexicographic (alphabetical) ordering. Basically, `direction = "lt"` means "keep pairs where `name_a` comes before `name_b` alphabetically". Also, it accepts `<tidyselect>` helpers if a data frame is given. 
 
 4.  `prop()`: Use this when the data is just a single observed count, namely the number of successes `x` out of `n` trials. Unlike the other model IDs, `prop()` takes scalar constants directly; no variable names or data frame is involved.
 
@@ -77,7 +77,7 @@ The functions that emulate the `<formula>` (and its idea) to describe the model 
     define_model(prop(45, 100))
     ```
 
-And if you notice, they also emulate `aes()` mapper from `{ggplot2}`, which it captures the expression internally, instead of evaluating them — indeed they are mappers, just like `<formula>` objects. Take note that every `<model_id>` must be a captured expression, generally in `<language>` data structure, just like formula objects in R. 
+And if you notice, they also emulate `aes()` mapper from `{ggplot2}`, which it captures the expression internally, instead of evaluating them — indeed they are mappers, just like `<formula>` objects. Take note that `model_id` abstract S7 class must be carried as you create another `<model_id>` object (see more details).
 
 If you don't have the given data frame, internally it tries to look up the variables you passed on `<model_id>` objects at the current environment (global environment by default). If you don't want to write intermediate variables by assigning the data you created in a variable, use inline data with `I()` or multiple inlines with `inlines()`:
 
@@ -170,11 +170,11 @@ sleep |>
 
 ## Hypothesis expressioms
 
-One of the distinguishing features of `{statim}` is the ability to state the null hypothesis as a mathematical expression. The conventional approach in base R uses declarative strings like `alternative = "less"`, which are opaque: they encode a direction without naming the parameter being constrained or the value it is being tested against. You cannot read `alternative = "greater"` and know whether the claim is about a population mean, a population proportion, or a population correlation without reading the surrounding context. After all, hypothesis testing is about testing the null hypothesis of whether you have an evidence to support the claim, and parametric tests are about testing the population population. 
+One of the distinguishing features of `{statim}` is the ability to state the null hypothesis as a mathematical expression. The conventional approach in base R uses declarative strings gotchas like `alternative = "less"`. While it is a shortcase, they encode a direction without naming the parameter being constrained or the value it is being tested against. You cannot read `alternative = "greater"` and know whether the claim is about a population mean, a population proportion, or a population correlation without reading the surrounding context. After all, hypothesis testing is about testing the null hypothesis of whether you have an evidence to support the claim, and parametric tests are about testing the population population. 
 
-While `{statim}` still supports this, `{statim}` made some redirection with explicit hypothesis expressions built from parameter objects, in `<param_obj>` class, and standard R comparison operators. The expression names the population parameter, the relational operator, and the hypothesized scalar — the same three components that appear in any textbook null hypothesis statement. Internally, `state_null()` parses the expression, extracts those components, and passes them into the test implementation. Any linear combination of parameters is accepted on either side.
+While `{statim}` still supports this, `{statim}` made some redirection with explicit hypothesis declaration built from parameter objects, in `<param_obj>` class, and standard R comparison operators. The expression names the population parameter, the relational operator, and the hypothesized scalar — the same three components that appear in any textbook null hypothesis statement. Internally, `state_null()` parses the expression, extracts the important components, and passes them into the `fn` implementation from `baseline()` / `variant()`. Any linear combination of parameters is accepted on either side.
 
-The supported operators are `==`, `!=`, `<`, `>`, `<=`, `>=`, and `%=%` (simultaneous equality across multiple parameters). Here are the built-in `<param_obj>` objects:
+The supported operators are `==`, `!=`, `<`, `>`, `<=`, `>=`, and `%=%` (simultaneous equality across multiple parameters). Here are the current built-in `<param_obj>` objects:
 
 -  `MU()`: refers to the population mean $\mu$. It has following usages:
 
