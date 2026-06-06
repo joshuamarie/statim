@@ -54,6 +54,7 @@ reference:
     - x_by
     - rel
     - pairwise
+    - prop
 
   - subtitle: Statistical Inference Parameterization
     desc: Verbs used for preparing and parameterize the equation of statistical inference
@@ -92,6 +93,7 @@ reference:
     - TTEST
     - CORTEST
     - ANOVA
+    - P_TEST
 
   - subtitle: Model-based inference container and executioner
     desc: Container and an eager executioner of a prepared model-based inference function
@@ -135,6 +137,7 @@ reference:
     - class_stat_infer
     - class_ttest_pairwise
     - class_ttest_two
+    - class_p_test
     - class_lm_object
     - class_glm_object
 
