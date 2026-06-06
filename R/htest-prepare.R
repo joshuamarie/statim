@@ -42,10 +42,12 @@ prepare_test = S7::new_generic("prepare_test", dispatch_args = c(".x", ".test"))
 
 S7::method(prepare_test, list(def_model, S7::class_function)) = function(.x, .test, ...) {
     spec = as_test_spec(.test)
+    dots = list(...)
     test_lazy(
         model_id = .x@model_id,
         processed = .x@processed,
-        test_spec = spec
+        test_spec = spec,
+        recalibrate_spec = if (length(dots) > 0L) list(args = dots) else NULL
     )
 }
 
