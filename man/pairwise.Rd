@@ -2,27 +2,40 @@
 % Please edit documentation in R/define-model-ids.R
 \name{pairwise}
 \alias{pairwise}
-\title{'Pairs between variables' model mapping}
+\title{Define all pairwise variable combinations}
 \usage{
 pairwise(..., direction = "lt")
 }
 \arguments{
-\item{...}{Bare variable names, tidyselect helpers (requires \code{data}), or
-\code{I(expr)} for inline data.}
+\item{...}{Bare variable names, tidyselect helpers (requires \code{data} in
+\code{\link[=define_model]{define_model()}}), or \code{I(expr)} for inline data.}
 
-\item{direction}{A string controlling which pairs are kept. One of
-\code{"lt"} (default), \code{"lteq"}, \code{"gt"}, \code{"gteq"}, \code{"eq"}, \code{"neq"},
-or \code{"all"}.}
+\item{direction}{A string controlling which pairs are kept. One of:
+\itemize{
+\item \code{"lt"} (default): keep pairs where \code{name_a} comes before \code{name_b}
+alphabetically (i.e. unique unordered pairs).
+\item \code{"lteq"}, \code{"gt"}, \code{"gteq"}: ordered variants.
+\item \code{"eq"}: keep only self-pairs.
+\item \code{"neq"}: drop self-pairs, keep all others.
+\item \code{"all"}: keep every combination.
+}}
 }
 \value{
-A \code{pairwise} / \code{model_id} S3 object.
+A \code{pairwise} / \code{model_id} S7 object.
 }
 \description{
-Use this when you want to define all pairwise combinations of a set of
-variables.
+\code{pairwise()} creates a \code{pairwise} model ID from a set of variables,
+producing all unique variable pairs. Use \code{direction} to control which
+pairs are retained. Pairs are filtered by lexicographic (alphabetical)
+ordering of variable names.
 }
 \examples{
 pairwise(a, b, c)
+
+# Inline data
 pairwise(I(rnorm(30)), I(rnorm(30)), I(rnorm(30)))
+
+# Keep all ordered pairs
+pairwise(a, b, c, direction = "all")
 
 }

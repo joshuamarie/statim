@@ -2,21 +2,24 @@
 % Please edit documentation in R/define-model-ids.R
 \name{rel}
 \alias{rel}
-\title{'Relationship between two variables' model mapping}
+\title{Describe the relationship between two variables}
 \usage{
 rel(x, resp)
 }
 \arguments{
-\item{x}{The predictor variable. A bare name, \code{c()} of bare names, a
-tidyselect helper (requires \code{data}), or \code{I(expr)} for inline data.}
+\item{x}{The predictor variable. Accepts a bare name, a \code{c()} of bare
+names, a tidyselect helper (requires \code{data} in \code{\link[=define_model]{define_model()}}), or
+\code{I(expr)} for inline data.}
 
 \item{resp}{The response variable. Same rules as \code{x}.}
 }
 \value{
-A \code{rel} / \code{model_id} S3 object.
+A \code{rel} / \code{model_id} S7 object.
 }
 \description{
-Use this when you want to define the relationship between two variables.
+\code{rel()} creates a \code{rel} model ID that reads as "relationship between
+\code{x} and \code{resp}". Expressions are captured unevaluated, similar to how
+\code{\link[ggplot2:aes]{ggplot2::aes()}} captures aesthetics.
 }
 \examples{
 rel(speed, dist)

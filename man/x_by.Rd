@@ -3,32 +3,38 @@
 \name{x_by}
 \alias{x_by}
 \alias{\%by\%}
-\title{'Variable compared by groups' model mapping}
+\title{Compare a variable by group}
 \usage{
 x_by(x, group)
 
 x \%by\% group
 }
 \arguments{
-\item{x}{The response variable. A bare name, \code{c()} of bare names, a
-tidyselect helper (requires \code{data}), or \code{I(expr)} for inline data.}
+\item{x}{The response variable. Accepts a bare name, a \code{c()} of bare
+names, a tidyselect helper (requires \code{data} in \code{\link[=define_model]{define_model()}}), or
+\code{I(expr)} for inline data.}
 
 \item{group}{The grouping variable. Same rules as \code{x}.}
 }
 \value{
-An \code{x_by} / \code{model_id} S3 object.
+An \code{x_by} / \code{model_id} S7 object.
 }
 \description{
-Use this when you want to compare \code{x} by \code{group}.
+\code{x_by()} (and its infix alias \verb{\%by\%}) creates an \code{x_by} model ID that
+reads as "compare \code{x} by \code{group}". Expressions are captured unevaluated,
+similar to how \code{\link[ggplot2:aes]{ggplot2::aes()}} captures aesthetics.
 }
 \examples{
-# bare names (resolved from environment or data)
+# Bare names — resolved later from the data or environment
 x_by(extra, group)
 
-# inline data
+# Infix alias: identical to x_by(extra, group)
+extra \%by\% group
+
+# Inline data via I()
 x_by(I(rnorm(30)), I(rep(c("a", "b"), each = 15)))
 
-# named inline
+# Named inline data
 x_by(I(score = rnorm(30)), I(grp = rep(c("a", "b"), each = 15)))
 
 }

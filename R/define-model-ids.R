@@ -1,29 +1,45 @@
-#' Attach a model-ID class to an object
+#' Base class for model ID objects
 #'
+#' `model_id` is the abstract parent class for all model ID objects in
+#' `{statim}`. Model IDs emulate R's formula interface, as they capture
+#' variable expressions without evaluating them, describing the structure
+#' of a statistical model to be passed into a pipeline.
 #'
-#' @return `model_id` S7/S3 class.
+#' Concrete subclasses include [x_by()], [rel()], and [pairwise()]. You
+#' cannot instantiate `model_id` directly; use one of its subclasses.
+#'
+#' @format NULL
+#' @usage NULL
+#'
+#' @seealso [x_by()], [rel()], [pairwise()]
 #'
 #' @export
-model_id = S7::new_class("model_id")
+model_id = S7::new_class("model_id", abstract = TRUE)
 
-#' 'Variable compared by groups' model mapping
+#' Compare a variable by group
 #'
-#' Use this when you want to compare `x` by `group`.
+#' `x_by()` (and its infix alias `%by%`) creates an `x_by` model ID that
+#' reads as "compare `x` by `group`". Expressions are captured unevaluated,
+#' similar to how [ggplot2::aes()] captures aesthetics.
 #'
-#' @param x The response variable. A bare name, `c()` of bare names, a
-#'   tidyselect helper (requires `data`), or `I(expr)` for inline data.
+#' @param x The response variable. Accepts a bare name, a `c()` of bare
+#'   names, a tidyselect helper (requires `data` in [define_model()]), or
+#'   `I(expr)` for inline data.
 #' @param group The grouping variable. Same rules as `x`.
 #'
-#' @return An `x_by` / `model_id` S3 object.
+#' @return An `x_by` / `model_id` S7 object.
 #'
 #' @examples
-#' # bare names (resolved from environment or data)
+#' # Bare names — resolved later from the data or environment
 #' x_by(extra, group)
 #'
-#' # inline data
+#' # Infix alias: identical to x_by(extra, group)
+#' extra %by% group
+#'
+#' # Inline data via I()
 #' x_by(I(rnorm(30)), I(rep(c("a", "b"), each = 15)))
 #'
-#' # named inline
+#' # Named inline data
 #' x_by(I(score = rnorm(30)), I(grp = rep(c("a", "b"), each = 15)))
 #'
 #' @export
@@ -47,15 +63,18 @@ x_by = S7::new_class(
 #' @export
 `%by%` = x_by
 
-#' 'Relationship between two variables' model mapping
+#' Describe the relationship between two variables
 #'
-#' Use this when you want to define the relationship between two variables.
+#' `rel()` creates a `rel` model ID that reads as "relationship between
+#' `x` and `resp`". Expressions are captured unevaluated, similar to how
+#' [ggplot2::aes()] captures aesthetics.
 #'
-#' @param x The predictor variable. A bare name, `c()` of bare names, a
-#'   tidyselect helper (requires `data`), or `I(expr)` for inline data.
+#' @param x The predictor variable. Accepts a bare name, a `c()` of bare
+#'   names, a tidyselect helper (requires `data` in [define_model()]), or
+#'   `I(expr)` for inline data.
 #' @param resp The response variable. Same rules as `x`.
 #'
-#' @return A `rel` / `model_id` S3 object.
+#' @return A `rel` / `model_id` S7 object.
 #'
 #' @examples
 #' rel(speed, dist)
@@ -77,22 +96,33 @@ rel = S7::new_class(
     }
 )
 
-#' 'Pairs between variables' model mapping
+#' Define all pairwise variable combinations
 #'
-#' Use this when you want to define all pairwise combinations of a set of
-#' variables.
+#' `pairwise()` creates a `pairwise` model ID from a set of variables,
+#' producing all unique variable pairs. Use `direction` to control which
+#' pairs are retained. Pairs are filtered by lexicographic (alphabetical)
+#' ordering of variable names.
 #'
-#' @param ... Bare variable names, tidyselect helpers (requires `data`), or
-#'   `I(expr)` for inline data.
-#' @param direction A string controlling which pairs are kept. One of
-#'   `"lt"` (default), `"lteq"`, `"gt"`, `"gteq"`, `"eq"`, `"neq"`,
-#'   or `"all"`.
+#' @param ... Bare variable names, tidyselect helpers (requires `data` in
+#'   [define_model()]), or `I(expr)` for inline data.
+#' @param direction A string controlling which pairs are kept. One of:
+#'   - `"lt"` (default): keep pairs where `name_a` comes before `name_b`
+#'     alphabetically (i.e. unique unordered pairs).
+#'   - `"lteq"`, `"gt"`, `"gteq"`: ordered variants.
+#'   - `"eq"`: keep only self-pairs.
+#'   - `"neq"`: drop self-pairs, keep all others.
+#'   - `"all"`: keep every combination.
 #'
-#' @return A `pairwise` / `model_id` S3 object.
+#' @return A `pairwise` / `model_id` S7 object.
 #'
 #' @examples
 #' pairwise(a, b, c)
+#'
+#' # Inline data
 #' pairwise(I(rnorm(30)), I(rnorm(30)), I(rnorm(30)))
+#'
+#' # Keep all ordered pairs
+#' pairwise(a, b, c, direction = "all")
 #'
 #' @export
 pairwise = S7::new_class(

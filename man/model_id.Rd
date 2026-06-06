@@ -2,13 +2,17 @@
 % Please edit documentation in R/define-model-ids.R
 \name{model_id}
 \alias{model_id}
-\title{Attach a model-ID class to an object}
-\usage{
-model_id()
-}
-\value{
-\code{model_id} S7/S3 class.
-}
+\title{Base class for model ID objects}
 \description{
-Attach a model-ID class to an object
+\code{model_id} is the abstract parent class for all model ID objects in
+\code{{statim}}. Model IDs emulate R's formula interface, as they capture
+variable expressions without evaluating them, describing the structure
+of a statistical model to be passed into a pipeline.
+}
+\details{
+Concrete subclasses include \code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, and \code{\link[=pairwise]{pairwise()}}. You
+cannot instantiate \code{model_id} directly; use one of its subclasses.
+}
+\seealso{
+\code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, \code{\link[=pairwise]{pairwise()}}
 }
