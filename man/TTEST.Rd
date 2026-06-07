@@ -17,12 +17,13 @@ returns a \code{test_spec} for use in the pipeline via \code{\link[=prepare_test
 \strong{Arguments by model ID} section for the full list per path.}
 }
 \value{
-A \code{cld_exec} object, or a \code{test_spec} when \code{.model = NULL}.
-The object stored in \code{cld_exec@data} depends on the model ID:
+A \code{cld_exec} object (in \code{\link[=conclude]{conclude()}}), a \code{stat_infer_spec} object, or a
+\code{test_spec} when \code{.model = NULL}. Depending on the implementation you wrote, it returns
+any class. However, by default, some implementations use base \code{{statim}} S7 classes.
+For instance:
 \itemize{
-\item \code{x_by()} — a \link{class_ttest_two} object
-\item \code{pairwise()} — a \link{class_ttest_pairwise} object
-\item formula — a \link{class_ttest_two} object
+\item \code{ttest_x_by}, by default, returns a \link{class_ttest_two} object
+\item \code{ttest_pairwise}, by default, returns a \link{class_ttest_pairwise} object
 }
 }
 \description{
@@ -34,9 +35,9 @@ or formula-based comparisons.
 Each model ID routes to a separate implementation. See the linked pages
 for full argument lists, variants, and result class details:
 \itemize{
-\item \code{x_by()} — two-sample or paired t-test. See \link{ttest-xby}.
-\item \code{pairwise()} — pairwise t-tests across variables. See \link{ttest-pairwise}.
-\item formula — one-sample or two-sample t-test. See \link{ttest-formula}.
+\item \code{x_by()}: two-sample or paired t-test. See \link{ttest-xby}.
+\item \code{pairwise()}: pairwise t-tests across variables. See \link{ttest-pairwise}.
+\item \verb{<formula>}: one-sample and/or two-sample t-test. See \link{ttest-formula}.
 }
 }
 

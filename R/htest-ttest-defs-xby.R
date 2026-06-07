@@ -41,6 +41,18 @@
 #'     via("boot", n = 2000) |>
 #'     conclude()
 #'
+#' # Weighted t-test, which allows `state_null()` to have weights
+#' # Around population parameter function `MU()` notation
+#' # Also `%by%` is just the infixed form of `x_by()`
+#' sleep |>
+#'     define_model(extra %by% group) |>
+#'     prepare_test(TTEST) |>
+#'     state_null(
+#'         2 * MU(extra, group == "1") - MU(extra, group == "2") <= 0
+#'     ) |>
+#'     via("weighted") |>
+#'     conclude()
+#'
 #' @keywords internal
 #' @name ttest-xby
 #' @family ttest-implementations
@@ -148,8 +160,8 @@ ttest_def_two = test_define(
                 p.value = switch(
                     .op,
                     "==" = 2 * stats::pt(-abs(tstat), df = df),
-                    ">=" = , ">" = stats::pt(-tstat, df = df),
-                    "<=" = , "<" = stats::pt(tstat, df = df),
+                    ">=" = , ">" = stats::pt(tstat, df = df),
+                    "<=" = , "<" = stats::pt(-tstat, df = df),
                     "!=" = 2 * stats::pt(-abs(tstat), df = df)
                 )
 
@@ -160,11 +172,11 @@ ttest_def_two = test_define(
                         t_crit = stats::qt(1 - alpha / 2, df = df)
                         c(.mu - t_crit * se, .mu + t_crit * se)
                     },
-                    ">=" = , ">" = {
+                    "<=" = , "<" = {
                         t_crit = stats::qt(1 - alpha, df = df)
                         c(.mu - t_crit * se, Inf)
                     },
-                    "<=" = , "<" = {
+                    ">=" = , ">" = {
                         t_crit = stats::qt(1 - alpha, df = df)
                         c(-Inf, .mu + t_crit * se)
                     }

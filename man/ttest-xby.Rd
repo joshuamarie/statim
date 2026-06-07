@@ -52,6 +52,18 @@ sleep |>
     via("boot", n = 2000) |>
     conclude()
 
+# Weighted t-test, which allows `state_null()` to have weights
+# Around population parameter function `MU()` notation
+# Also `\%by\%` is just the infixed form of `x_by()`
+sleep |>
+    define_model(extra \%by\% group) |>
+    prepare_test(TTEST) |>
+    state_null(
+        2 * MU(extra, group == "1") - MU(extra, group == "2") <= 0
+    ) |>
+    via("weighted") |>
+    conclude()
+
 }
 \seealso{
 Other ttest-implementations: 

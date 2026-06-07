@@ -1,4 +1,3 @@
-
 #' T-Test
 #'
 #' `TTEST()` performs a t-test for one-sample, two-sample, paired, pairwise,
@@ -11,19 +10,20 @@
 #' @param ... Additional arguments passed to the implementation. See the
 #'   **Arguments by model ID** section for the full list per path.
 #'
-#' @return A `cld_exec` object, or a `test_spec` when `.model = NULL`.
-#'   The object stored in `cld_exec@data` depends on the model ID:
-#'   - `x_by()` — a [class_ttest_two] object
-#'   - `pairwise()` — a [class_ttest_pairwise] object
-#'   - formula — a [class_ttest_two] object
+#' @return A `cld_exec` object (in [conclude()]), a `stat_infer_spec` object, or a
+#'   `test_spec` when `.model = NULL`. Depending on the implementation you wrote, it returns
+#'   any class. However, by default, some implementations use base `{statim}` S7 classes.
+#'   For instance:
+#'   - `ttest_x_by`, by default, returns a [class_ttest_two] object
+#'   - `ttest_pairwise`, by default, returns a [class_ttest_pairwise] object
 #'
 #' @section Supported model IDs:
 #' Each model ID routes to a separate implementation. See the linked pages
 #' for full argument lists, variants, and result class details:
 #'
-#' - `x_by()` — two-sample or paired t-test. See [ttest-xby].
-#' - `pairwise()` — pairwise t-tests across variables. See [ttest-pairwise].
-#' - formula — one-sample or two-sample t-test. See [ttest-formula].
+#' - `x_by()`: two-sample or paired t-test. See [ttest-xby].
+#' - `pairwise()`: pairwise t-tests across variables. See [ttest-pairwise].
+#' - `<formula>`: one-sample and/or two-sample t-test. See [ttest-formula].
 #'
 #' @inheritSection ttest-xby Arguments
 #' @inheritSection ttest-xby Variants
