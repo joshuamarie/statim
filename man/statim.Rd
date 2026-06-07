@@ -11,8 +11,8 @@ A declarative interface for statistical inference built on the S7 object system.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/joshuamarie/statim}
-  \item Report bugs at \url{https://github.com/joshuamarie/statim/issues}
+  \item \url{https://github.com/s7-stats/statim}
+  \item Report bugs at \url{https://github.com/s7-stats/statim/issues}
 }
 
 }
