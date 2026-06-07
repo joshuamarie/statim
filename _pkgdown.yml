@@ -13,9 +13,9 @@ template:
   math-rendering: katex
 
 home:
-  title: "statim • Higher Level Interface for Statistical Inference"
+  title: "statim • A Declarative Interface for Statistical Inference"
   description: >
-    Higher Level Interface and attempting the re-imagination of "grammar of statistical inference" framework in a package, mixing with 'ggplot2' / 'tidyverse' paradigm.
+    A declarative interface and a re-imagination of "grammar of statistical inference" framework in a package, mixing with 'ggplot2' / 'tidyverse' paradigm.
 
 navbar:
   type: light
