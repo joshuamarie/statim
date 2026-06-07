@@ -79,9 +79,9 @@ For a quick result, the eager form skips the piped syntax entirely:
 TTEST(x_by(extra, group), sleep)
 ```
 
-But it’s not as expressive and assertive as the pipe-able syntax shown
-above, and you can’t process the output after executing this ([see for
-more details](#core-semantics)).
+But it’s not as expressive and assertive as the piped syntax form as
+shown above, and you can’t process the output after executing this ([see
+for more details](#core-semantics)).
 
 ## Installation
 
