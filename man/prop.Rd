@@ -16,7 +16,8 @@ A \code{prop} / \code{model_id} S7 object.
 }
 \description{
 \code{prop()} creates a \code{prop} model ID for proportion tests. Both arguments
-are scalar constants — expressions are not captured.
+are scalar constants, and this implies the arguments are expressions
+that are not captured.
 }
 \examples{
 prop(45, 100)
