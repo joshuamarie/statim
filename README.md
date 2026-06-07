@@ -9,9 +9,9 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/statim)](https://CRAN.R-project.org/package=statim)
-[![R-CMD-check](https://github.com/joshuamarie/statim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/joshuamarie/statim/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/s7-stats/statim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/s7-stats/statim/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/joshuamarie/statim/graph/badge.svg)](https://app.codecov.io/gh/joshuamarie/statim)
+coverage](https://codecov.io/gh/s7-stats/statim/graph/badge.svg)](https://app.codecov.io/gh/s7-stats/statim)
 <!-- badges: end -->
 
 **A Declarative Interface for Statistical Inference**
@@ -102,14 +102,14 @@ GitHub:
 ``` r
 # Development version from GitHub
 # install.packages("pak")
-pak::pak("joshuamarie/statim")
+pak::pak("s7-stats/statim")
 ```
 
 ## General Usage
 
 Loading a library comes with [a lot of
-preferences](https://joshuamarie.com/posts/06-load-pkg/). In this
-example, `library()` is used for a simple demonstration:
+preferences](https://s7-stats.com/posts/06-load-pkg/). In this example,
+`library()` is used for a simple demonstration:
 
 ``` r
 library(statim)
