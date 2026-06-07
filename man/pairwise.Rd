@@ -10,14 +10,15 @@ pairwise(..., direction = "lt")
 \item{...}{Bare variable names, tidyselect helpers (requires \code{data} in
 \code{\link[=define_model]{define_model()}}), or \code{I(expr)} for inline data.}
 
-\item{direction}{A string controlling which pairs are kept. One of:
+\item{direction}{A string controlling which pairs are kept:
 \itemize{
-\item \code{"lt"} (default): keep pairs where \code{name_a} comes before \code{name_b}
-alphabetically (i.e. unique unordered pairs).
-\item \code{"lteq"}, \code{"gt"}, \code{"gteq"}: ordered variants.
-\item \code{"eq"}: keep only self-pairs.
-\item \code{"neq"}: drop self-pairs, keep all others.
-\item \code{"all"}: keep every combination.
+\item \code{"lt"} (default): strict lower triangle, i.e. pairs where index(x) < index(y)
+\item \code{"lteq"}: lower triangle including the diagonal (x <= y)
+\item \code{"gt"}: strict upper triangle (x > y)
+\item \code{"gteq"}: upper triangle including the diagonal (x >= y)
+\item \code{"eq"}: diagonal only (x == y), i.e. each variable paired with itself
+\item \code{"neq"}: all pairs except the diagonal (x != y)
+\item \code{"all"}: all combinations including both directions and the diagonal
 }}
 }
 \value{

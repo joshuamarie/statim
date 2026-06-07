@@ -105,13 +105,14 @@ rel = S7::new_class(
 #'
 #' @param ... Bare variable names, tidyselect helpers (requires `data` in
 #'   [define_model()]), or `I(expr)` for inline data.
-#' @param direction A string controlling which pairs are kept. One of:
-#'   - `"lt"` (default): keep pairs where `name_a` comes before `name_b`
-#'     alphabetically (i.e. unique unordered pairs).
-#'   - `"lteq"`, `"gt"`, `"gteq"`: ordered variants.
-#'   - `"eq"`: keep only self-pairs.
-#'   - `"neq"`: drop self-pairs, keep all others.
-#'   - `"all"`: keep every combination.
+#' @param direction A string controlling which pairs are kept:
+#'   - `"lt"` (default): strict lower triangle, i.e. pairs where index(x) < index(y)
+#'   - `"lteq"`: lower triangle including the diagonal (x <= y)
+#'   - `"gt"`: strict upper triangle (x > y)
+#'   - `"gteq"`: upper triangle including the diagonal (x >= y)
+#'   - `"eq"`: diagonal only (x == y), i.e. each variable paired with itself
+#'   - `"neq"`: all pairs except the diagonal (x != y)
+#'   - `"all"`: all combinations including both directions and the diagonal
 #'
 #' @return A `pairwise` / `model_id` S7 object.
 #'
@@ -147,7 +148,8 @@ pairwise = S7::new_class(
 #' Define a proportion test model
 #'
 #' `prop()` creates a `prop` model ID for proportion tests. Both arguments
-#' are scalar constants — expressions are not captured.
+#' are scalar constants, and this implies the arguments are expressions
+#' that are not captured.
 #'
 #' @param x Number of successes. A non-negative integer scalar, `x <= n`.
 #' @param n Total number of trials. A positive integer scalar.
