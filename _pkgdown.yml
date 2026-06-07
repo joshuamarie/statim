@@ -1,4 +1,4 @@
-url: https://joshuamarie.github.io/statim
+url: https://s7-stats.github.io/statim
 
 template:
   bootstrap: 5
@@ -29,13 +29,9 @@ navbar:
     reference:
       text: Reference
       href: reference/index.html
-    blog:
-      text: Blog
-      icon: fa-blog
-      href: https://joshuamarie.com
     github:
       icon: fab fa-github fa-lg
-      href: https://github.com/joshuamarie/statim
+      href: https://github.com/s7-stats/statim
       aria-label: GitHub
 
 reference:
@@ -187,7 +183,7 @@ footer:
   components:
     built_with: >
       Built with <a href="https://pkgdown.r-lib.org/">pkgdown</a>.
-      Visit my <a href="https://joshuamarie.com">blog</a> for more content.
+      Visit my <a href="https://s7-stats.com">blog</a> for more content.
 
 articles:
 
