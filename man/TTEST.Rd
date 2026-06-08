@@ -98,14 +98,15 @@ sleep |>
     via("permute", n = 2000) |>
     conclude()
 
-# weighted contrast
+# weighted t-test
 sleep |>
     define_model(x_by(extra, group)) |>
     prepare_test(TTEST) |>
     state_null(
         2 * MU(extra, group == "1") <= MU(extra, group == "2")
     ) |>
-    via("weighted") |>
+    # Try to obtain 90\% of the confidence interval
+    via("weighted", .ci = 0.9) |>
     conclude()
 
 # pairwise
