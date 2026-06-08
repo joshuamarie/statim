@@ -1,12 +1,12 @@
 #' Base class for population parameters
 #'
-#' `param_obj` is the base S7 class for all population parameter objects,
-#' analogous to [model_id()]. Concrete subclasses (`MU`, `PI`, `SIGMA`,
-#' `RHO`) inherit from it. The base class is a pure marker — each subclass
-#' declares its own properties.
+#' `param_obj` is the abstract base S7 class for all population parameter
+#' objects, analogous to [model_id()]. Concrete subclasses (`MU`, `PI`,
+#' `SIGMA`, `RHO`) inherit from it. The base class is a pure marker — each
+#' subclass declares its own properties.
 #'
 #' @export
-param_obj = S7::new_class("param_obj")
+param_obj = S7::new_class("param_obj", abstract = TRUE)
 
 #' Mean of a variable, optionally conditioned on a subgroup
 #'
@@ -44,6 +44,7 @@ MU = S7::new_class(
 #' @return A `PI` / `param_obj` S7 object.
 #'
 #' @examples
+#' PI()
 #' PI(success)
 #' PI(success, group == "treatment")
 #'
@@ -193,8 +194,10 @@ S7::method(parse_param_call, RHO) = function(x, args, env) {
             "i" = "Usage: {.code RHO(x, y)}."
         ))
     }
-    obj = RHO(x = !!rlang::new_quosure(quote(.dummy), emptyenv()),
-              y = !!rlang::new_quosure(quote(.dummy), emptyenv()))
+    obj = RHO(
+        x = !!rlang::new_quosure(quote(.dummy), emptyenv()),
+        y = !!rlang::new_quosure(quote(.dummy), emptyenv())
+    )
     S7::prop(obj, "x") = rlang::new_quosure(args[[1]], env)
     S7::prop(obj, "y") = rlang::new_quosure(args[[2]], env)
     obj

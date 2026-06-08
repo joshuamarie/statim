@@ -7,8 +7,8 @@
 param_obj()
 }
 \description{
-\code{param_obj} is the base S7 class for all population parameter objects,
-analogous to \code{\link[=model_id]{model_id()}}. Concrete subclasses (\code{MU}, \code{PI}, \code{SIGMA},
-\code{RHO}) inherit from it. The base class is a pure marker — each subclass
-declares its own properties.
+\code{param_obj} is the abstract base S7 class for all population parameter
+objects, analogous to \code{\link[=model_id]{model_id()}}. Concrete subclasses (\code{MU}, \code{PI},
+\code{SIGMA}, \code{RHO}) inherit from it. The base class is a pure marker — each
+subclass declares its own properties.
 }

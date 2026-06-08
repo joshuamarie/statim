@@ -18,6 +18,7 @@ A \code{PI} / \code{param_obj} S7 object.
 Proportion of a variable, optionally conditioned on a subgroup
 }
 \examples{
+PI()
 PI(success)
 PI(success, group == "treatment")
 
