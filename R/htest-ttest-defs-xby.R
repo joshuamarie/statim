@@ -18,7 +18,7 @@
 #' \describe{
 #'   \item{`"boot"`}{Bootstrap CI. Accepts `n` (reps) and `seed`.}
 #'   \item{`"permute"`}{Permutation test. Accepts `n` and `seed`.}
-#'   \item{`"weighted"`}{Weighted contrast. Accepts `.w`, `.mu`, `.ci`, `.op`.}
+#'   \item{`"contrast"`}{Welch-Satterthwaite linear contrast test. Accepts `.w`, `.mu`, `.ci`, `.op`.}
 #' }
 #'
 #' @section Result class:
@@ -26,8 +26,8 @@
 #' [class_ttest_two] inherit [auto_tidy()] and [print()] automatically.
 #'
 #' @section Hypothesis claims:
-#' Supports [MU()] via [state_null()]. The `weighted` variant additionally
-#' accepts contrast coefficients via `.w`.
+#' Supports [MU()] via [state_null()]. The `contrast` variant performs Welch-Satterthwaite linear contrast test
+#' and additionally accepts contrast coefficients via `.w`.
 #'
 #' @examples
 #' sleep |>
@@ -41,7 +41,7 @@
 #'     via("boot", n = 2000) |>
 #'     conclude()
 #'
-#' # Weighted t-test, which allows `state_null()` to have weights
+#' # contrast t-test, which allows `state_null()` to have weights
 #' # Around population parameter function `MU()` notation
 #' # Also `%by%` is just the infixed form of `x_by()`
 #' sleep |>
@@ -50,7 +50,7 @@
 #'     state_null(
 #'         2 * MU(extra, group == "1") - MU(extra, group == "2") <= 0
 #'     ) |>
-#'     via("weighted") |>
+#'     via("contrast") |>
 #'     conclude()
 #'
 #' @keywords internal
@@ -115,9 +115,9 @@ ttest_def_two = test_define(
                 )
             }
         ),
-        weighted = variant(
-            # ---- Weighted t-test ----
-            # ---- variant: "weighted" ----
+        contrast = variant(
+            # ---- contrast t-test ----
+            # ---- variant: "contrast" ----
             fn = function(.proc, .mu = 0, .ci = 0.95, .w = NULL, .op = "==") {
                 x = .proc$x_data[[1]]
                 group_data = .proc$group_data
@@ -305,8 +305,8 @@ ttest_def_two = test_define(
                 if (!valid_two_sample && !valid_one_sample) {
                     cli::cli_abort(c(
                         "T-test only supports simple mean differences.",
-                        "i" = "Found weighted contrast: {.val {coefs}}.",
-                        "i" = "Use {.code via(\"weighted\")} for weighted hypotheses."
+                        "i" = "Found contrast coefficients: {.val {coefs}}.",
+                        "i" = "Use {.code via(\"contrast\")} for contrast hypotheses."
                     ))
                 }
 
@@ -321,7 +321,7 @@ ttest_def_two = test_define(
                 )
             }
         ),
-        weighted = map_claim(
+        contrast = map_claim(
             .mu = function(claim, processed) claim_contrast_coefs(claim)$scalar,
             .op = function(claim, processed) claim_contrast_coefs(claim)$op,
             .w = function(claim, processed) claim_contrast_coefs(claim)$coefs

@@ -169,22 +169,22 @@ test_that("boot variant is reproducible with seed", {
     expect_equal(run()@data$ci, run()@data$ci)
 })
 
-test_that("weighted variant returns cld_exec", {
+test_that("contrast variant returns cld_exec", {
     result = sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
-        via("weighted") |>
+        via("contrast") |>
         conclude()
 
     expect_s7_class(result, cld_exec)
-    expect_equal(result@cld_meta$method, "weighted")
+    expect_equal(result@cld_meta$method, "contrast")
 })
 
-test_that("weighted variant result is a class_ttest_two", {
+test_that("contrast variant result is a class_ttest_two", {
     result = sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
-        via("weighted") |>
+        via("contrast") |>
         conclude()
 
     expect_s7_class(result@data, class_ttest_two)
@@ -193,12 +193,12 @@ test_that("weighted variant result is a class_ttest_two", {
     expect_length(result@data@lower_ci, length(result@data@group))
 })
 
-test_that("weighted variant with wrong number of groups errors", {
+test_that("contrast variant with wrong number of groups errors", {
     expect_error(
         iris |>
             define_model(x_by(Sepal.Length, Species)) |>
             prepare_test(TTEST) |>
-            via("weighted") |>
+            via("contrast") |>
             conclude(),
         class = "rlang_error"
     )
@@ -268,11 +268,11 @@ test_that("tidy() on boot variant returns a tibble with lower and upper", {
     expect_true(all(c("lower", "upper") %in% names(result)))
 })
 
-test_that("tidy() on weighted variant returns a tibble with expected columns", {
+test_that("tidy() on contrast variant returns a tibble with expected columns", {
     result = sleep |>
         define_model(x_by(extra, group)) |>
         prepare_test(TTEST) |>
-        via("weighted") |>
+        via("contrast") |>
         conclude() |>
         tidy()
 

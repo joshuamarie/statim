@@ -54,7 +54,7 @@
 #'     via("permute", n = 2000) |>
 #'     conclude()
 #'
-#' # weighted t-test
+#' # Contrast t-test
 #' sleep |>
 #'     define_model(x_by(extra, group)) |>
 #'     prepare_test(TTEST) |>
@@ -62,7 +62,7 @@
 #'         2 * MU(extra, group == "1") <= MU(extra, group == "2")
 #'     ) |>
 #'     # Try to obtain 90% of the confidence interval
-#'     via("weighted", .ci = 0.9) |>
+#'     via("contrast", .ci = 0.9) |>
 #'     conclude()
 #'
 #' # pairwise
@@ -110,7 +110,7 @@ TTEST = HTEST_FN(
 #' Slots (populated automatically by [TTEST]):
 #'
 #' - `group`: name of the grouping variable.
-#' - `estimate`: mean difference (or weighted contrast estimate).
+#' - `estimate`: mean difference (or linear contrast estimate).
 #' - `t_stat`: t-statistic.
 #' - `df`: degrees of freedom.
 #' - `p_val`: p-value.
@@ -119,8 +119,8 @@ TTEST = HTEST_FN(
 #' - `ci_level`: confidence level, e.g. `0.95`.
 #'
 #' @section Shared by variants:
-#' Both `default` and `weighted` return a `class_ttest_two`, so
-#' [auto_tidy()] and [print()] are inherited by `weighted` for free.
+#' Both the default (`base`) and `contrast` return a `class_ttest_two`, so
+#' [auto_tidy()] and [print()] are inherited by `contrast` for free.
 #'
 #' @seealso [TTEST], [auto_tidy()], [class_stat_infer]
 #'
