@@ -24,7 +24,7 @@ The following arguments are passed via \code{...} in \code{\link[=TTEST]{TTEST()
 \describe{
 \item{\code{"boot"}}{Bootstrap CI. Accepts \code{n} (reps) and \code{seed}.}
 \item{\code{"permute"}}{Permutation test. Accepts \code{n} and \code{seed}.}
-\item{\code{"contrast"}}{contrast contrast. Accepts \code{.w}, \code{.mu}, \code{.ci}, \code{.op}.}
+\item{\code{"contrast"}}{Welch-Satterthwaite linear contrast test. Accepts \code{.w}, \code{.mu}, \code{.ci}, \code{.op}.}
 }
 }
 

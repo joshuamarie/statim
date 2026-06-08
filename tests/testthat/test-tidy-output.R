@@ -41,11 +41,11 @@ test_that("tidy() on boot variant lower is less than upper", {
     expect_lt(result$lower, result$upper)
 })
 
-test_that("tidy() on weighted variant returns tibble with expected columns", {
+test_that("tidy() on `contrast` variant returns tibble with expected columns", {
     result = sleep |>
         define_model(extra %by% group) |>
         prepare_test(TTEST) |>
-        via("weighted") |>
+        via("contrast") |>
         conclude() |>
         tidy()
 

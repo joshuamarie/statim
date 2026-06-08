@@ -15,7 +15,7 @@ automatically. Downstream packages can use it as a \code{parent} in
 Slots (populated automatically by \link{TTEST}):
 \itemize{
 \item \code{group}: name of the grouping variable.
-\item \code{estimate}: mean difference (or weighted contrast estimate).
+\item \code{estimate}: mean difference (or linear contrast estimate).
 \item \code{t_stat}: t-statistic.
 \item \code{df}: degrees of freedom.
 \item \code{p_val}: p-value.
@@ -26,8 +26,8 @@ Slots (populated automatically by \link{TTEST}):
 }
 \section{Shared by variants}{
 
-Both \code{default} and \code{weighted} return a \code{class_ttest_two}, so
-\code{\link[=auto_tidy]{auto_tidy()}} and \code{\link[=print]{print()}} are inherited by \code{weighted} for free.
+Both the default (\code{base}) and \code{contrast} return a \code{class_ttest_two}, so
+\code{\link[=auto_tidy]{auto_tidy()}} and \code{\link[=print]{print()}} are inherited by \code{contrast} for free.
 }
 
 \seealso{
