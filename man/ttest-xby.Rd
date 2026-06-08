@@ -24,7 +24,7 @@ The following arguments are passed via \code{...} in \code{\link[=TTEST]{TTEST()
 \describe{
 \item{\code{"boot"}}{Bootstrap CI. Accepts \code{n} (reps) and \code{seed}.}
 \item{\code{"permute"}}{Permutation test. Accepts \code{n} and \code{seed}.}
-\item{\code{"weighted"}}{Weighted contrast. Accepts \code{.w}, \code{.mu}, \code{.ci}, \code{.op}.}
+\item{\code{"contrast"}}{contrast contrast. Accepts \code{.w}, \code{.mu}, \code{.ci}, \code{.op}.}
 }
 }
 
@@ -36,8 +36,8 @@ Returns a \link{class_ttest_two} object. All variants that also return
 
 \section{Hypothesis claims}{
 
-Supports \code{\link[=MU]{MU()}} via \code{\link[=state_null]{state_null()}}. The \code{weighted} variant additionally
-accepts contrast coefficients via \code{.w}.
+Supports \code{\link[=MU]{MU()}} via \code{\link[=state_null]{state_null()}}. The \code{contrast} variant performs Welch-Satterthwaite linear contrast test
+and additionally accepts contrast coefficients via \code{.w}.
 }
 
 \examples{
@@ -52,7 +52,7 @@ sleep |>
     via("boot", n = 2000) |>
     conclude()
 
-# Weighted t-test, which allows `state_null()` to have weights
+# contrast t-test, which allows `state_null()` to have weights
 # Around population parameter function `MU()` notation
 # Also `\%by\%` is just the infixed form of `x_by()`
 sleep |>
@@ -61,7 +61,7 @@ sleep |>
     state_null(
         2 * MU(extra, group == "1") - MU(extra, group == "2") <= 0
     ) |>
-    via("weighted") |>
+    via("contrast") |>
     conclude()
 
 }

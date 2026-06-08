@@ -58,7 +58,7 @@ The following arguments are passed via \code{...} in \code{\link[=TTEST]{TTEST()
 \describe{
 \item{\code{"boot"}}{Bootstrap CI. Accepts \code{n} (reps) and \code{seed}.}
 \item{\code{"permute"}}{Permutation test. Accepts \code{n} and \code{seed}.}
-\item{\code{"weighted"}}{Weighted contrast. Accepts \code{.w}, \code{.mu}, \code{.ci}, \code{.op}.}
+\item{\code{"contrast"}}{contrast contrast. Accepts \code{.w}, \code{.mu}, \code{.ci}, \code{.op}.}
 }
 }
 
@@ -70,8 +70,8 @@ Returns a \link{class_ttest_two} object. All variants that also return
 
 \section{Hypothesis claims}{
 
-Supports \code{\link[=MU]{MU()}} via \code{\link[=state_null]{state_null()}}. The \code{weighted} variant additionally
-accepts contrast coefficients via \code{.w}.
+Supports \code{\link[=MU]{MU()}} via \code{\link[=state_null]{state_null()}}. The \code{contrast} variant performs Welch-Satterthwaite linear contrast test
+and additionally accepts contrast coefficients via \code{.w}.
 }
 
 \examples{
@@ -98,7 +98,7 @@ sleep |>
     via("permute", n = 2000) |>
     conclude()
 
-# weighted t-test
+# Contrast t-test
 sleep |>
     define_model(x_by(extra, group)) |>
     prepare_test(TTEST) |>
