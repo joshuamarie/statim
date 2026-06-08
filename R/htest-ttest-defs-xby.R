@@ -160,7 +160,7 @@ ttest_def_two = test_define(
                 p.value = switch(
                     .op,
                     "==" = 2 * stats::pt(-abs(tstat), df = df),
-                    ">=" = , ">" = stats::pt(tstat, df = df),
+                    ">=" = , ">" = stats::pt(-tstat, df = df, lower.tail = FALSE),
                     "<=" = , "<" = stats::pt(-tstat, df = df),
                     "!=" = 2 * stats::pt(-abs(tstat), df = df)
                 )
@@ -170,15 +170,15 @@ ttest_def_two = test_define(
                     .op,
                     "==" = , "!=" = {
                         t_crit = stats::qt(1 - alpha / 2, df = df)
-                        c(.mu - t_crit * se, .mu + t_crit * se)
+                        c(est_val - t_crit * se, est_val + t_crit * se)
                     },
                     "<=" = , "<" = {
                         t_crit = stats::qt(1 - alpha, df = df)
-                        c(.mu - t_crit * se, Inf)
+                        c(est_val - t_crit * se, Inf)
                     },
                     ">=" = , ">" = {
                         t_crit = stats::qt(1 - alpha, df = df)
-                        c(-Inf, .mu + t_crit * se)
+                        c(-Inf, est_val + t_crit * se)
                     }
                 )
 
