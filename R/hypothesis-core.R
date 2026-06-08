@@ -216,6 +216,8 @@ attach_claim_to_lazy = function(lazy, claim) {
         }
     }
 
+    validate_claim_vars(lazy@model_id, lazy@processed, claim)
+
     lazy@claims = claim
     lazy
 }
