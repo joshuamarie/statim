@@ -262,11 +262,11 @@ S7::method(print, cld_exec) = function(x, ...) {
 
     cat("\n")
     cat(cli::rule(left = "Model", line = "="), "\n\n")
-    cat("Model ID :", info$model_type, "\n")
-    cat("Args :", info$args, "\n")
-    if (length(info$other_info) > 0L) {
-        for (nm in names(info$other_info)) {
-            cat("   ", nm, ":", info$other_info[[nm]], "\n")
+    cat("Model ID :", info@model_type, "\n")
+    cat("Args :", info@args, "\n")
+    if (length(info@other_info) > 0L) {
+        for (nm in names(info@other_info)) {
+            cat("   ", nm, ":", info@other_info[[nm]], "\n")
         }
     }
     if (nzchar(meta$data_name)) {
@@ -298,11 +298,11 @@ S7::method(print, cld_exec) = function(x, ...) {
 #
 #     cat("\n")
 #     cat(cli::rule(left = "Model", line = "="), "\n\n")
-#     cat("Model ID :", info$model_type, "\n")
-#     cat("Args     :", info$args, "\n")
-#     if (length(info$other_info) > 0L) {
-#         for (nm in names(info$other_info)) {
-#             cat("   ", nm, ":", info$other_info[[nm]], "\n")
+#     cat("Model ID :", info@model_type, "\n")
+#     cat("Args     :", info@args, "\n")
+#     if (length(info@other_info) > 0L) {
+#         for (nm in names(info@other_info)) {
+#             cat("   ", nm, ":", info@other_info[[nm]], "\n")
 #         }
 #     }
 #     if (!is.null(meta$data_name) && nzchar(meta$data_name)) {

@@ -179,43 +179,43 @@ test_that("pairwise() with direction = 'eq' returns only self-pairs", {
 test_that("model_id_info() for x_by without processed omits vars and counts", {
     info = model_id_info(x_by(extra, group))
 
-    expect_equal(info$model_type, "x_by")
-    expect_match(info$args, "extra")
-    expect_match(info$args, "group")
-    expect_null(info$vars)
-    expect_length(info$other_info, 0)
+    expect_equal(info@model_type, "x_by")
+    expect_match(info@args, "extra")
+    expect_match(info@args, "group")
+    expect_length(info@vars, 0)
+    expect_length(info@other_info, 0)
 })
 
 test_that("model_id_info() for x_by with processed includes vars and counts", {
     dm = define_model(x_by(extra, group), sleep)
     info = model_id_info(dm@model_id, dm@processed)
 
-    expect_equal(info$other_info$x_vars, 1)
-    expect_equal(info$other_info$by_vars, 1)
-    expect_length(info$vars, 2)
+    expect_equal(info@other_info$x_vars, 1)
+    expect_equal(info@other_info$by_vars, 1)
+    expect_length(info@vars, 2)
 })
 
 test_that("model_id_info() for rel without processed omits vars", {
     info = model_id_info(rel(speed, dist))
 
-    expect_equal(info$model_type, "rel")
-    expect_null(info$vars)
+    expect_equal(info@model_type, "rel")
+    expect_length(info@vars, 0)
 })
 
 test_that("model_id_info() for rel with processed includes vars and counts", {
     dm = define_model(rel(speed, dist), cars)
     info = model_id_info(dm@model_id, dm@processed)
 
-    expect_equal(info$other_info$x_vars, 1)
-    expect_equal(info$other_info$resp_vars, 1)
-    expect_length(info$vars, 2)
+    expect_equal(info@other_info$x_vars, 1)
+    expect_equal(info@other_info$resp_vars, 1)
+    expect_length(info@vars, 2)
 })
 
 test_that("model_id_info() for pairwise includes direction in other_info", {
     info = model_id_info(pairwise(a, b, c))
 
-    expect_equal(info$model_type, "pairwise")
-    expect_equal(info$other_info$direction, "lt")
+    expect_equal(info@model_type, "pairwise")
+    expect_equal(info@other_info$direction, "lt")
 })
 
 test_that("model_id_info() for pairwise with processed includes n_pairs", {
@@ -223,17 +223,43 @@ test_that("model_id_info() for pairwise with processed includes n_pairs", {
     dm = define_model(pairwise(a, b, c), df)
     info = model_id_info(dm@model_id, dm@processed)
 
-    expect_equal(info$other_info$n_pairs, 3)
-    expect_length(info$vars, 3)
+    expect_equal(info@other_info$n_pairs, 3)
+    expect_length(info@vars, 3)
 })
 
 test_that("model_id_info() for formula reports left_var and right_var", {
     dm = define_model(extra ~ group, sleep)
     info = model_id_info(dm@model_id, dm@processed)
 
-    expect_equal(info$model_type, "formula")
-    expect_equal(info$other_info$left_var, 1)
-    expect_equal(info$other_info$right_var, 1)
+    expect_equal(info@model_type, "formula")
+    expect_equal(info@other_info$left_var, 1)
+    expect_equal(info@other_info$right_var, 1)
+})
+
+test_that("model_id_info() for unregistered subclass returns property names in args", {
+    my_id = S7::new_class("my_id", parent = model_id, properties = list(foo = S7::class_any))
+    info = model_id_info(my_id(foo = 1))
+
+    expect_equal(info@model_type, "my_id")
+    expect_match(info@args, "foo")
+    expect_false(info@registered)
+    expect_length(info@vars, 0)
+    expect_length(info@other_info, 0)
+})
+
+test_that("define_model() with unregistered model_id subclass prints without error", {
+    my_id = S7::new_class("my_id", parent = model_id, properties = list(foo = S7::class_any))
+    dm = define_model(my_id(foo = 1))
+
+    expect_invisible(print(dm))
+    expect_output(print(dm), "Unregistered")
+})
+
+test_that("model_id_info() for known subclasses sets registered = TRUE", {
+    expect_true(model_id_info(x_by(extra, group))@registered)
+    expect_true(model_id_info(rel(speed, dist))@registered)
+    expect_true(model_id_info(pairwise(a, b, c))@registered)
+    expect_true(model_id_info(prop(45, 100))@registered)
 })
 
 # ---- prop ----
@@ -249,8 +275,8 @@ test_that("define_model() with prop() dispatches on model-ID first style", {
 test_that("model_id_info() for prop without processed still includes vars", {
     info = model_id_info(prop(45, 100))
 
-    expect_equal(info$model_type, "prop")
-    expect_length(info$vars, 2)
+    expect_equal(info@model_type, "prop")
+    expect_length(info@vars, 2)
 })
 
 test_that("print.def_model() returns invisibly for prop()", {

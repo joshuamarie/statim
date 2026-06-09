@@ -51,14 +51,24 @@ model_id_info = S7::new_generic(
 class_model_inform = S7::new_class(
     name = "class_model_inform",
     properties = list(
-        model_id = S7::new_property(class = model_id),
+        model_id = S7::new_property(
+            class = S7::class_any,
+            validator = function(value) {
+                if (!S7::S7_inherits(value, model_id) && !inherits(value, "formula"))
+                    "must be a `model_id` subclass or a formula."
+            }
+        ),
         model_type = S7::new_property(
             class = S7::class_character,
-            getter = function(self) S7::S7_class(self@model_id)@name
+            getter = function(self) {
+                if (inherits(self@model_id, "formula")) "formula"
+                else S7::S7_class(self@model_id)@name
+            }
         ),
         args = S7::new_property(class = S7::class_character, default = "<?>"),
         other_info = S7::new_property(class = S7::class_list, default = list()),
-        vars = S7::new_property(class = S7::class_list, default = list())
+        vars = S7::new_property(class = S7::class_list, default = list()),
+        registered = S7::new_property(class = S7::class_logical, default = FALSE)
     )
 )
 
@@ -82,7 +92,7 @@ S7::method(model_id_info, x_by) = function(.model_id, processed = NULL, ...) {
     other_info = list()
     vars = list()
 
-    if (!is.null(processed)) {
+    if (!is.null(processed) && length(processed)) {
         other_info = list(
             x_vars = ncol(processed$x_data),
             by_vars = ncol(processed$group_data)
@@ -96,7 +106,8 @@ S7::method(model_id_info, x_by) = function(.model_id, processed = NULL, ...) {
         model_id = .model_id,
         args = paste0(x_lbl, " | ", g_lbl),
         other_info = other_info,
-        vars = vars
+        vars = vars,
+        registered = TRUE
     )
 }
 
@@ -107,7 +118,7 @@ S7::method(model_id_info, rel) = function(.model_id, processed = NULL, ...) {
     other_info = list()
     vars = list()
 
-    if (!is.null(processed)) {
+    if (!is.null(processed) && length(processed)) {
         other_info = list(
             x_vars = ncol(processed$x_data),
             resp_vars = ncol(processed$resp_data)
@@ -121,7 +132,8 @@ S7::method(model_id_info, rel) = function(.model_id, processed = NULL, ...) {
         model_id = .model_id,
         args = paste0(x_lbl, " ; ", r_lbl),
         other_info = other_info,
-        vars = vars
+        vars = vars,
+        registered = TRUE
     )
 }
 
@@ -131,7 +143,7 @@ S7::method(model_id_info, pairwise) = function(.model_id, processed = NULL, ...)
     other_info = list(direction = .model_id@direction)
     vars = list()
 
-    if (!is.null(processed)) {
+    if (!is.null(processed) && length(processed)) {
         other_info$n_pairs = length(processed$pairs)
         vars = vars_preview(as.list(processed$data))
     }
@@ -140,7 +152,8 @@ S7::method(model_id_info, pairwise) = function(.model_id, processed = NULL, ...)
         model_id = .model_id,
         args = paste(lbls, collapse = ", "),
         other_info = other_info,
-        vars = vars
+        vars = vars,
+        registered = TRUE
     )
 }
 
@@ -148,14 +161,12 @@ S7::method(model_id_info, prop) = function(.model_id, processed = NULL, ...) {
     class_model_inform(
         model_id = .model_id,
         args = paste0(.model_id@x, " / ", .model_id@n),
-        other_info = list(
-            x = .model_id@x,
-            n = .model_id@n
-        ),
+        other_info = list(x = .model_id@x, n = .model_id@n),
         vars = list(
             list(name = "x", preview = "<constant>"),
             list(name = "n", preview = "<constant>")
-        )
+        ),
+        registered = TRUE
     )
 }
 
@@ -171,7 +182,7 @@ S7::method(model_id_info, S7::class_formula) = function(.model_id, processed = N
     )
     vars = list()
 
-    if (!is.null(processed)) {
+    if (!is.null(processed) && length(processed)) {
         all_vars = c(lhs_vars, rhs_vars)
         avail = all_vars[all_vars %in% names(processed$data)]
         vars = vars_preview(as.list(processed$data[, avail, drop = FALSE]))
@@ -181,7 +192,8 @@ S7::method(model_id_info, S7::class_formula) = function(.model_id, processed = N
         model_id = .model_id,
         args = deparse(.model_id),
         other_info = other_info,
-        vars = vars
+        vars = vars,
+        registered = TRUE
     )
 }
 

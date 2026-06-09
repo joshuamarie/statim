@@ -59,7 +59,7 @@ S7::method(print, def_model) = function(x, ...) {
     cat("Model ID :", info@model_type, "\n")
     cat("Args :", info@args, "\n")
 
-    if (info@args == "<?>") {
+    if (!info@registered) {
         cat("Note : Unregistered <model_id> subclass (must define a `model_id_info()` method.)\n")
     } else {
         if (length(info@other_info)) {
