@@ -119,6 +119,7 @@ reference:
     - model_id
     - model-processor
     - model_id_info
+    - class_model_inform
 
   - subtitle: Implementation containers
     desc: Declare how a test runs
