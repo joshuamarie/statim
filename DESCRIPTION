@@ -69,6 +69,7 @@ Collate:
     'hypothesis-helpers.R'
     'hypothesis-mappers.R'
     'hypothesis-core.R'
+    'hypothesis-validators.R'
     'stat-exec.R'
     'tidy-core.R'
     'htest-impl-container.R'
