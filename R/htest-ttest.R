@@ -1,11 +1,11 @@
 #' T-Test
 #'
-#' `TTEST()` performs a t-test for one-sample, two-sample, paired, pairwise,
-#' or formula-based comparisons.
+#' `TTEST()` performs a t-test for one-sample, two-sample, paired, pairwise, or
+#' formula-based comparisons. If `TTEST` is supplied within the lazy-loaded pipeline,
+#' supply `TTEST` as a function within i.e. `prepare_test(.test = TTEST)` call.
 #'
 #' @param .model A model ID from `x_by()`, `pairwise()`, or a formula.
-#'   When supplied, the test executes immediately. When `NULL` (default),
-#'   returns a `test_spec` for use in the pipeline via [prepare_test()].
+#'   When supplied, the test executes immediately.
 #' @param .data A data frame. Only used on the standalone path.
 #' @param ... Additional arguments passed to the implementation. See the
 #'   **Arguments by model ID** section for the full list per path.

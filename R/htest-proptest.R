@@ -1,11 +1,11 @@
 #' Proportion Test
 #'
 #' `P_TEST()` performs a one-sample proportion test using either an exact
-#' binomial test or a normal approximation.
+#' binomial test or a normal approximation. If `P_TEST` is supplied within the lazy-loaded pipeline,
+#' supply `P_TEST` as a function within i.e. `prepare_test(.test = P_TEST)` call.
 #'
-#' @param .model A `prop()` model ID. When supplied, the test executes
-#'   immediately. When `NULL` (default), returns a `test_spec` for use in
-#'   the pipeline via [prepare_test()].
+#' @param .model A registered model ID, e.g. [prop()]. When supplied, the test executes
+#'   immediately.
 #' @param .data Unused. Accepted for pipeline consistency.
 #' @param ... Additional arguments passed to the implementation. See the
 #'   **Arguments** and **Variants** sections below.

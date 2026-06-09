@@ -1,11 +1,11 @@
 #' ANOVA
 #'
 #' `ANOVA()` performs an analysis of variance for one-way, two-way,
-#' or formula-based comparisons.
+#' or formula-based comparisons. If `ANOVA` is supplied within the lazy-loaded pipeline,
+#' supply `ANOVA` as a function within i.e. `prepare_test(.test = ANOVA)` call.
 #'
 #' @param .model A model ID from `x_by()` or a formula.
-#'   When supplied, the test executes immediately. When `NULL` (default),
-#'   returns a `test_spec` for use in the pipeline via [prepare_test()].
+#'   When supplied, the test executes immediately.
 #' @param .data A data frame. Only used on the standalone path.
 #' @param ... Additional arguments passed to the implementation.
 #'

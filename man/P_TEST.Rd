@@ -7,9 +7,8 @@
 P_TEST(.model = NULL, .data = NULL, ...)
 }
 \arguments{
-\item{.model}{A \code{prop()} model ID. When supplied, the test executes
-immediately. When \code{NULL} (default), returns a \code{test_spec} for use in
-the pipeline via \code{\link[=prepare_test]{prepare_test()}}.}
+\item{.model}{A registered model ID, e.g. \code{\link[=prop]{prop()}}. When supplied, the test executes
+immediately.}
 
 \item{.data}{Unused. Accepted for pipeline consistency.}
 
@@ -22,7 +21,8 @@ The object stored in \code{cld_exec@data} is a \link{class_p_test} object.
 }
 \description{
 \code{P_TEST()} performs a one-sample proportion test using either an exact
-binomial test or a normal approximation.
+binomial test or a normal approximation. If \code{P_TEST} is supplied within the lazy-loaded pipeline,
+supply \code{P_TEST} as a function within i.e. \code{prepare_test(.test = P_TEST)} call.
 }
 \section{Arguments}{
 

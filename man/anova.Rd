@@ -8,8 +8,7 @@ ANOVA(.model = NULL, .data = NULL, ...)
 }
 \arguments{
 \item{.model}{A model ID from \code{x_by()} or a formula.
-When supplied, the test executes immediately. When \code{NULL} (default),
-returns a \code{test_spec} for use in the pipeline via \code{\link[=prepare_test]{prepare_test()}}.}
+When supplied, the test executes immediately.}
 
 \item{.data}{A data frame. Only used on the standalone path.}
 
@@ -20,7 +19,8 @@ A \code{cld_exec} object (pipeline), or a \code{test_spec} object.
 }
 \description{
 \code{ANOVA()} performs an analysis of variance for one-way, two-way,
-or formula-based comparisons.
+or formula-based comparisons. If \code{ANOVA} is supplied within the lazy-loaded pipeline,
+supply \code{ANOVA} as a function within i.e. \code{prepare_test(.test = ANOVA)} call.
 }
 \section{Supported model IDs}{
 

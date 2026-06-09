@@ -8,8 +8,7 @@ TTEST(.model = NULL, .data = NULL, ...)
 }
 \arguments{
 \item{.model}{A model ID from \code{x_by()}, \code{pairwise()}, or a formula.
-When supplied, the test executes immediately. When \code{NULL} (default),
-returns a \code{test_spec} for use in the pipeline via \code{\link[=prepare_test]{prepare_test()}}.}
+When supplied, the test executes immediately.}
 
 \item{.data}{A data frame. Only used on the standalone path.}
 
@@ -27,8 +26,9 @@ For instance:
 }
 }
 \description{
-\code{TTEST()} performs a t-test for one-sample, two-sample, paired, pairwise,
-or formula-based comparisons.
+\code{TTEST()} performs a t-test for one-sample, two-sample, paired, pairwise, or
+formula-based comparisons. If \code{TTEST} is supplied within the lazy-loaded pipeline,
+supply \code{TTEST} as a function within i.e. \code{prepare_test(.test = TTEST)} call.
 }
 \section{Supported model IDs}{
 

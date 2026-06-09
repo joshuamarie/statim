@@ -7,9 +7,8 @@
 CORTEST(.model = NULL, .data = NULL, ...)
 }
 \arguments{
-\item{.model}{A model ID from \code{rel()}. When supplied, the test executes
-immediately. When \code{NULL} (default), returns a \code{test_spec} for use in
-the pipeline via \code{\link[=prepare_test]{prepare_test()}}.}
+\item{.model}{A registered model ID for \code{CORTEST()}, e.g. \code{\link[=rel]{rel()}}.
+When supplied, the test executes immediately.}
 
 \item{.data}{A data frame. Only used on the standalone path.}
 
@@ -22,7 +21,8 @@ object (pipeline).
 }
 \description{
 \code{CORTEST()} performs a correlation test for one-to-one or many-to-one
-variable relationships.
+variable relationships. If \code{CORTEST} is supplied within the lazy-loaded pipeline,
+supply \code{CORTEST} as a function i.e. \code{prepare_test(.test = CORTEST)} call.
 }
 \section{Supported model IDs}{
 

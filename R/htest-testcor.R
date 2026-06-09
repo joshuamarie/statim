@@ -1,11 +1,11 @@
 #' Correlation Test
 #'
 #' `CORTEST()` performs a correlation test for one-to-one or many-to-one
-#' variable relationships.
+#' variable relationships. If `CORTEST` is supplied within the lazy-loaded pipeline,
+#' supply `CORTEST` as a function i.e. `prepare_test(.test = CORTEST)` call.
 #'
-#' @param .model A model ID from `rel()`. When supplied, the test executes
-#'   immediately. When `NULL` (default), returns a `test_spec` for use in
-#'   the pipeline via [prepare_test()].
+#' @param .model A registered model ID for `CORTEST()`, e.g. [rel()].
+#'   When supplied, the test executes immediately.
 #' @param .data A data frame. Only used on the standalone path.
 #' @param ... Additional arguments passed to the implementation:
 #'   `.cor_type`, `.alt`, `.ci` for the classical path.
