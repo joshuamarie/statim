@@ -13,6 +13,10 @@
 #' @export
 model_processor = S7::new_generic("model_processor", "x")
 
+S7::method(model_processor, model_id) = function(x, data = NULL, ...) {
+    list()
+}
+
 S7::method(model_processor, S7::class_formula) =
     function(x, data = NULL, ...) {
         vars = all.vars(x)
