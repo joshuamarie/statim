@@ -156,9 +156,10 @@ reference:
     contents:
     - param_obj
 
-  - subtitle: Modelled hypothesis management
+  - subtitle: Modelled hypothesis management and validators
     desc: Core helpers to parse the modelled hypotheses, objects from `state_null()`
     contents:
+    - claim-vars-validators
     - claim_scalar_diff
     - claim_contrast_coefs
 
