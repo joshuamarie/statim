@@ -10,13 +10,16 @@
 #'   When `NULL`, count-based fields in `other_info` and `vars` are omitted.
 #' @param ... Currently unused.
 #'
-#' @return A list with fields:
+#' @return A `class_model_inform` S7 object with fields:
 #' \describe{
-#'   \item{`model_type`}{A string naming the primary model ID class.}
-#'   \item{`args`}{A formatted string summarising the model's arguments.}
-#'   \item{`other_info`}{A named list of model-type-specific metadata.}
+#'   \item{`model_id`}{The original model ID object.}
+#'   \item{`model_type`}{Derived from the class name of `model_id`.}
+#'   \item{`args`}{A formatted string summarising the model's arguments.
+#'     Defaults to `"<?>"` for unregistered subclasses.}
+#'   \item{`other_info`}{A named list of model-type-specific metadata.
+#'     Empty for unregistered subclasses.}
 #'   \item{`vars`}{A list of lists with `name` and `preview` fields.
-#'     Only present when `processed` is supplied.}
+#'     Empty for unregistered subclasses or when `processed` is `NULL`.}
 #' }
 #'
 #' @examples
@@ -34,74 +37,116 @@ model_id_info = S7::new_generic(
     function(.model_id, processed = NULL, ...) S7::S7_dispatch()
 )
 
+#' Output class for model ID metadata
+#'
+#' `class_model_inform` is the S7 output class returned by [model_id_info()].
+#' `model_type` is derived automatically from the stored `model_id` object.
+#' All other properties default to empty / unknown values, which are filled in
+#' by registered [model_id_info()] methods for known subclasses.
+#'
+#' @format NULL
+#' @usage NULL
+#'
+#' @export
+class_model_inform = S7::new_class(
+    name = "class_model_inform",
+    properties = list(
+        model_id = S7::new_property(class = model_id),
+        model_type = S7::new_property(
+            class = S7::class_character,
+            getter = function(self) S7::S7_class(self@model_id)@name
+        ),
+        args = S7::new_property(class = S7::class_character, default = "<?>"),
+        other_info = S7::new_property(class = S7::class_list, default = list()),
+        vars = S7::new_property(class = S7::class_list, default = list())
+    )
+)
+
+# Fallback: any unregistered model_id subclass.
+# model_type is derived via the getter; args lists known property names
+# as a breadcrumb for the developer.
+S7::method(model_id_info, model_id) = function(.model_id, processed = NULL, ...) {
+    prop_names = names(S7::S7_class(.model_id)@properties)
+    args = if (length(prop_names)) paste(prop_names, collapse = ", ") else "<?>"
+
+    class_model_inform(
+        model_id = .model_id,
+        args = args
+    )
+}
+
 S7::method(model_id_info, x_by) = function(.model_id, processed = NULL, ...) {
     x_lbl = format_quo_label(.model_id@x)
     g_lbl = format_quo_label(.model_id@group)
 
-    out = list(
-        model_type = "x_by",
-        args = paste0(x_lbl, " | ", g_lbl),
-        other_info = list()
-    )
+    other_info = list()
+    vars = list()
 
     if (!is.null(processed)) {
-        out$other_info = list(
+        other_info = list(
             x_vars = ncol(processed$x_data),
             by_vars = ncol(processed$group_data)
         )
-        out$vars = vars_preview(
+        vars = vars_preview(
             c(as.list(processed$x_data), as.list(processed$group_data))
         )
     }
 
-    out
+    class_model_inform(
+        model_id = .model_id,
+        args = paste0(x_lbl, " | ", g_lbl),
+        other_info = other_info,
+        vars = vars
+    )
 }
 
 S7::method(model_id_info, rel) = function(.model_id, processed = NULL, ...) {
     x_lbl = format_quo_label(.model_id@x)
     r_lbl = format_quo_label(.model_id@resp)
 
-    out = list(
-        model_type = "rel",
-        args = paste0(x_lbl, " ; ", r_lbl),
-        other_info = list()
-    )
+    other_info = list()
+    vars = list()
 
     if (!is.null(processed)) {
-        out$other_info = list(
+        other_info = list(
             x_vars = ncol(processed$x_data),
             resp_vars = ncol(processed$resp_data)
         )
-        out$vars = vars_preview(
+        vars = vars_preview(
             c(as.list(processed$x_data), as.list(processed$resp_data))
         )
     }
 
-    out
+    class_model_inform(
+        model_id = .model_id,
+        args = paste0(x_lbl, " ; ", r_lbl),
+        other_info = other_info,
+        vars = vars
+    )
 }
 
 S7::method(model_id_info, pairwise) = function(.model_id, processed = NULL, ...) {
     lbls = vapply(.model_id@dots_quos, format_quo_label, character(1))
 
-    out = list(
-        model_type = "pairwise",
-        args = paste(lbls, collapse = ", "),
-        other_info = list(
-            direction = .model_id@direction
-        )
-    )
+    other_info = list(direction = .model_id@direction)
+    vars = list()
 
     if (!is.null(processed)) {
-        out$other_info$n_pairs = length(processed$pairs)
-        out$vars = vars_preview(as.list(processed$data))
+        other_info$n_pairs = length(processed$pairs)
+        vars = vars_preview(as.list(processed$data))
     }
 
-    out
+    class_model_inform(
+        model_id = .model_id,
+        args = paste(lbls, collapse = ", "),
+        other_info = other_info,
+        vars = vars
+    )
 }
 
 S7::method(model_id_info, prop) = function(.model_id, processed = NULL, ...) {
-    list(
-        model_type = "prop",
+    class_model_inform(
+        model_id = .model_id,
         args = paste0(.model_id@x, " / ", .model_id@n),
         other_info = list(
             x = .model_id@x,
@@ -115,28 +160,29 @@ S7::method(model_id_info, prop) = function(.model_id, processed = NULL, ...) {
 }
 
 S7::method(model_id_info, S7::class_formula) = function(.model_id, processed = NULL, ...) {
-    f = .model_id
     data = processed$data %||% NULL
-    trms = stats::terms(f, data = data)
-    lhs_vars = all.vars(rlang::f_lhs(f))
+    trms = stats::terms(.model_id, data = data)
+    lhs_vars = all.vars(rlang::f_lhs(.model_id))
     rhs_vars = attr(trms, "term.labels")
 
-    out = list(
-        model_type = "formula",
-        args = deparse(f),
-        other_info = list(
-            left_var = length(lhs_vars),
-            right_var = length(rhs_vars)
-        )
+    other_info = list(
+        left_var = length(lhs_vars),
+        right_var = length(rhs_vars)
     )
+    vars = list()
 
     if (!is.null(processed)) {
         all_vars = c(lhs_vars, rhs_vars)
         avail = all_vars[all_vars %in% names(processed$data)]
-        out$vars = vars_preview(as.list(processed$data[, avail, drop = FALSE]))
+        vars = vars_preview(as.list(processed$data[, avail, drop = FALSE]))
     }
 
-    out
+    class_model_inform(
+        model_id = .model_id,
+        args = deparse(.model_id),
+        other_info = other_info,
+        vars = vars
+    )
 }
 
 format_quo_label = function(quo) {

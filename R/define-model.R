@@ -56,17 +56,25 @@ S7::method(print, def_model) = function(x, ...) {
 
     cat("\n")
     cat(cli::rule(left = "Model Definition", line = "-"), "\n\n")
-    cat("Model ID :", info$model_type, "\n")
-    cat("Args :", info$args, "\n")
+    cat("Model ID :", info@model_type, "\n")
+    cat("Args :", info@args, "\n")
 
-    cat("Other info:\n")
-    for (nm in names(info$other_info)) {
-        cat("   ", nm, ":", info$other_info[[nm]], "\n")
-    }
+    if (info@args == "<?>") {
+        cat("Note : Unregistered <model_id> subclass (must define a `model_id_info()` method.)\n")
+    } else {
+        if (length(info@other_info)) {
+            cat("Other info:\n")
+            for (nm in names(info@other_info)) {
+                cat("   ", nm, ":", info@other_info[[nm]], "\n")
+            }
+        }
 
-    cat("Variables :\n")
-    for (v in info$vars) {
-        cat("   ", v$name, ":", v$preview, "\n")
+        if (length(info@vars)) {
+            cat("Variables :\n")
+            for (v in info@vars) {
+                cat("   ", v$name, ":", v$preview, "\n")
+            }
+        }
     }
 
     cat("\n")

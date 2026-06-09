@@ -194,8 +194,8 @@ S7::method(print, model_id) = function(x, ...) {
     info = model_id_info(x)
 
     cat(cli::rule(left = "Model Definition", line = "-"), "\n\n")
-    cat("Model ID :", info$model_type, "\n")
-    cat("Args :", info$args, "\n")
+    cat("Model ID :", info@model_type, "\n")
+    cat("Args :", info@args, "\n")
 
     invisible(x)
 }

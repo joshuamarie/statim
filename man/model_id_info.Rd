@@ -16,13 +16,16 @@ When \code{NULL}, count-based fields in \code{other_info} and \code{vars} are om
 \item{...}{Currently unused.}
 }
 \value{
-A list with fields:
+A \code{class_model_inform} S7 object with fields:
 \describe{
-\item{\code{model_type}}{A string naming the primary model ID class.}
-\item{\code{args}}{A formatted string summarising the model's arguments.}
-\item{\code{other_info}}{A named list of model-type-specific metadata.}
+\item{\code{model_id}}{The original model ID object.}
+\item{\code{model_type}}{Derived from the class name of \code{model_id}.}
+\item{\code{args}}{A formatted string summarising the model's arguments.
+Defaults to \code{"<?>"} for unregistered subclasses.}
+\item{\code{other_info}}{A named list of model-type-specific metadata.
+Empty for unregistered subclasses.}
 \item{\code{vars}}{A list of lists with \code{name} and \code{preview} fields.
-Only present when \code{processed} is supplied.}
+Empty for unregistered subclasses or when \code{processed} is \code{NULL}.}
 }
 }
 \description{
