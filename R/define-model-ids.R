@@ -11,7 +11,7 @@
 #' @format NULL
 #' @usage NULL
 #'
-#' @seealso [x_by()], [rel()], [pairwise()]
+#' @seealso [x_by()], [rel()], [pairwise()], [prop()]
 #'
 #' @export
 model_id = S7::new_class("model_id", abstract = TRUE)

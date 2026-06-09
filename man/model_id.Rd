@@ -14,5 +14,5 @@ Concrete subclasses include \code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()
 cannot instantiate \code{model_id} directly; use one of its subclasses.
 }
 \seealso{
-\code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, \code{\link[=pairwise]{pairwise()}}
+\code{\link[=x_by]{x_by()}}, \code{\link[=rel]{rel()}}, \code{\link[=pairwise]{pairwise()}}, \code{\link[=prop]{prop()}}
 }
