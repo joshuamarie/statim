@@ -68,24 +68,24 @@ test_that("define_model() with prop() populates processed with x and n", {
 test_that("model_id_info() for prop returns correct model_type", {
     info = model_id_info(prop(45, 100))
 
-    expect_equal(info$model_type, "prop")
+    expect_equal(info@model_type, "prop")
 })
 
 test_that("model_id_info() for prop includes x and n in other_info", {
     info = model_id_info(prop(45, 100))
 
-    expect_equal(info$other_info$x, 45)
-    expect_equal(info$other_info$n, 100)
+    expect_equal(info@other_info$x, 45)
+    expect_equal(info@other_info$n, 100)
 })
 
 test_that("model_id_info() for prop always includes vars", {
     info = model_id_info(prop(45, 100))
 
-    expect_length(info$vars, 2)
-    expect_equal(info$vars[[1]]$name, "x")
-    expect_equal(info$vars[[2]]$name, "n")
-    expect_equal(info$vars[[1]]$preview, "<constant>")
-    expect_equal(info$vars[[2]]$preview, "<constant>")
+    expect_length(info@vars, 2)
+    expect_equal(info@vars[[1]]$name, "x")
+    expect_equal(info@vars[[2]]$name, "n")
+    expect_equal(info@vars[[1]]$preview, "<constant>")
+    expect_equal(info@vars[[2]]$preview, "<constant>")
 })
 
 # ---- P-TEST ----
