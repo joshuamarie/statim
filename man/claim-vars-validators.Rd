@@ -8,7 +8,7 @@
 \alias{check_x_and_given}
 \title{Validate hypothesis parameter references against a model's declared variables}
 \usage{
-validate_claim_vars(model_id, ...)
+validate_claim_vars(model_id, processed, claims, ...)
 
 check_param_nodes(claims, x_vars, by_vars)
 
@@ -19,7 +19,12 @@ check_x_and_given(x_quo, given_quo, x_vars, by_vars, cls_name)
 \arguments{
 \item{model_id}{A <\link{model_id}> object (usually carried by \code{\link[=define_model]{define_model()}}).}
 
+\item{processed}{The processed list from \code{lazy@processed}, as returned by
+\code{\link[=model_processor]{model_processor()}}.}
+
 \item{claims}{A single \code{null_claim} or a \code{null_claims} object.}
+
+\item{...}{Currently unused.}
 
 \item{x_vars}{A character vector of declared x-variable names, or \code{NULL}
 to skip x-variable validation.}
@@ -34,9 +39,6 @@ to skip x-variable validation.}
 \item{given_quo}{A quosure holding the \code{given} slot value, or \code{NULL}.}
 
 \item{cls_name}{A string naming the param class, used in error messages.}
-
-\item{processed}{The processed list from \code{lazy@processed}, as returned by
-\code{\link[=model_processor]{model_processor()}}.}
 }
 \value{
 \code{invisible(NULL)}, or aborts with a consolidated error.

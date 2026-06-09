@@ -8,6 +8,7 @@
 #' @param processed The processed list from `lazy@processed`, as returned by
 #'   [model_processor()].
 #' @param claims A single `null_claim` or a `null_claims` object.
+#' @param ... Currently unused.
 #'
 #' @return `invisible(NULL)`, or aborts with a consolidated error.
 #'
@@ -30,13 +31,17 @@
 #'
 #' @name claim-vars-validators
 #' @export
-validate_claim_vars = S7::new_generic("validate_claim_vars", "model_id")
+validate_claim_vars = S7::new_generic(
+    "validate_claim_vars",
+    "model_id",
+    fun = function(model_id, processed, claims, ...) S7::S7_dispatch()
+)
 
-S7::method(validate_claim_vars, model_id) = function(model_id, processed, claims) {
+S7::method(validate_claim_vars, model_id) = function(model_id, processed, claims, ...) {
     invisible(NULL)
 }
 
-S7::method(validate_claim_vars, x_by) = function(model_id, processed, claims) {
+S7::method(validate_claim_vars, x_by) = function(model_id, processed, claims, ...) {
     check_param_nodes(
         claims,
         x_vars = names(processed$x_data),
@@ -44,7 +49,7 @@ S7::method(validate_claim_vars, x_by) = function(model_id, processed, claims) {
     )
 }
 
-S7::method(validate_claim_vars, rel) = function(model_id, processed, claims) {
+S7::method(validate_claim_vars, rel) = function(model_id, processed, claims, ...) {
     check_param_nodes(
         claims,
         x_vars = c(names(processed$x_data), names(processed$resp_data)),
@@ -52,7 +57,7 @@ S7::method(validate_claim_vars, rel) = function(model_id, processed, claims) {
     )
 }
 
-S7::method(validate_claim_vars, pairwise) = function(model_id, processed, claims) {
+S7::method(validate_claim_vars, pairwise) = function(model_id, processed, claims, ...) {
     check_param_nodes(
         claims,
         x_vars = processed$var_names,
@@ -60,7 +65,7 @@ S7::method(validate_claim_vars, pairwise) = function(model_id, processed, claims
     )
 }
 
-S7::method(validate_claim_vars, prop) = function(model_id, processed, claims) {
+S7::method(validate_claim_vars, prop) = function(model_id, processed, claims, ...) {
     invisible(NULL)
 }
 
