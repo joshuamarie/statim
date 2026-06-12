@@ -4,7 +4,7 @@
 #' merges user-supplied arguments with the variant's declared defaults.
 #' Works for both `test_lazy` and `model_lazy` pipelines.
 #'
-#' @param .x A `test_lazy` or `model_lazy` object.
+#' @param .x An object.
 #' @param .method A string naming the method variant. Must match a named
 #'   [variant()] in the [agendas()] of the matched [stat_define()].
 #'   E.g. `"boot"`, `"permute"`, `"permute_rfast"`.
